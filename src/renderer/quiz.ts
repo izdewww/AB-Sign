@@ -1,8 +1,8 @@
 import type { Label } from './letters';
 
-export type Prompt = { letter: Label; kind: 'match' | 'camera' };
-export type QuizPlan = { count: number; prompts: Prompt[] };
-export type Question = Prompt & { choices: Label[] };
+export type Prompt<T extends string = Label> = { letter: T; kind: 'match' | 'camera' };
+export type QuizPlan<T extends string = Label> = { count: number; prompts: Prompt<T>[] };
+export type Question<T extends string> = Prompt<T> & { choices: T[] };
 
 export function shuffle<T>(values: readonly T[], random = Math.random): T[] {
   const order = [...values];
@@ -13,7 +13,7 @@ export function shuffle<T>(values: readonly T[], random = Math.random): T[] {
   return order;
 }
 
-export function makeQuiz(plan: QuizPlan, letters: readonly Label[], random = Math.random): Question[] {
+export function makeQuiz<T extends string>(plan: QuizPlan<T>, letters: readonly T[], random = Math.random): Question<T>[] {
   const order = shuffle(plan.prompts, random);
   const chosen = order.slice(0, plan.count);
   // Keep both formats in a mixed round whenever there is room for both.

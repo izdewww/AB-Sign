@@ -1,6 +1,5 @@
 import type { CSSProperties, ReactNode } from 'react';
 import { Icon } from './icons';
-import type { Label } from './letters';
 
 export function StepProgress({ value, total, label }: { value: number; total: number; label: string }) {
   return <div className="step-progress" role="progressbar" aria-label={label} aria-valuemin={0} aria-valuemax={total} aria-valuenow={value}>
@@ -8,10 +7,10 @@ export function StepProgress({ value, total, label }: { value: number; total: nu
   </div>;
 }
 
-export function AnswerChoices({ options, value, correct, checked, choose }: {
-  options: Label[]; value?: Label; correct?: Label; checked?: boolean; choose: (label: Label) => void;
+export function AnswerChoices<T extends string>({ options, value, correct, checked, choose, group = 'Choose a letter' }: {
+  options: T[]; value?: T; correct?: T; checked?: boolean; choose: (label: T) => void; group?: string;
 }) {
-  return <div className="choices answer-cards" role="group" aria-label="Choose a letter" data-count={options.length}>{options.map((label) => {
+  return <div className="choices answer-cards" role="group" aria-label={group} data-count={options.length} data-words={group !== 'Choose a letter' || undefined}>{options.map((label) => {
     const selected = label === value;
     const state = checked && label === correct ? 'right' : selected ? checked ? 'retry' : 'selected' : undefined;
     return <button key={label} className="choice" disabled={checked} aria-pressed={selected} data-answer={state} onClick={() => choose(label)}>

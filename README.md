@@ -4,7 +4,7 @@
 
 # A-B Sign!
 
-A desktop app in development for teaching children Filipino Sign Language (FSL) through video demonstrations, sign-matching quizzes, and webcam practice. It is designed for instructors and student-teachers to use offline, without accounts.
+A Windows desktop app for teaching children Filipino Sign Language (FSL) through video demonstrations, sign-matching quizzes, and webcam practice. Accounts, lessons, and progress stay on the device.
 
 ![Windows x64](https://img.shields.io/badge/target-Windows%20x64-2563eb)
 ![Electron](https://img.shields.io/badge/Electron-desktop-47848f)
@@ -20,14 +20,23 @@ A desktop app in development for teaching children Filipino Sign Language (FSL) 
 
 ![The learning path shows nine pastel lesson cards covering A through Z.](docs/images/lesson-library.png)
 
+## Local accounts
+
+- **Students** add a name or choose it from the list. Each student keeps their own lesson progress, quiz results, and badges.
+- **Teachers** select **Teacher sign-in**. The built-in account starts with the password `TeacherStart24!`. Replace it at first sign-in. To change it again, open **Account** and enter the current and new passwords.
+- Open **Students** to view progress, edit a name, or remove an account and its progress. The app asks before removing an account.
+- Progress from older versions was shared and stays separate from the new student accounts.
+
 ## For teachers
 
-1. Open **For teachers** and create a blank lesson or edit an alphabet lesson. Use **Hide alphabet lessons** for an empty learner library.
-2. Add signs, replace pictures, and upload optional MP4 or WebM videos. The alphabet lessons start with empty video slots.
+1. Open **Lessons** and create a blank lesson or edit an alphabet lesson. Use **Hide alphabet lessons** to hide the bundled examples.
+2. Add signs, replace pictures, and upload optional MP4 or WebM videos. The alphabet lessons start with empty video slots. Add a fingerspelling step to reveal a word one sign at a time.
 3. Add a quiz if you want one. Choose the signs, question types, and number of questions. Each round shuffles the questions and answer choices using letters from that lesson.
 4. Preview your work and select **Use on this device** when it is ready for learners.
 
 Picture matching covers A–Z. Webcam practice covers 24 letters. J and Z are available in lessons and picture quizzes, and teachers can upload videos to show the movement.
+
+Numbers, Greetings, Family Members, Food & Colors, and Words start empty. Teachers add their own pictures or videos and can build matching quizzes from them. Webcam recognition for numbers and words is planned.
 
 ## Quick start
 
@@ -43,7 +52,7 @@ npm start
 | `npm run check` | Type-checks the desktop and React code |
 | `node --test scripts/test-quiz.mjs` | Checks question and answer randomization |
 | `npm run build` | Compiles the app and copies local model and WASM assets |
-| `npm run smoke` | Checks the alphabet library, teacher uploads, mixed quizzes, and synthetic camera recognition in Electron |
+| `npm run smoke` | Checks account permissions and persistence, student progress, lessons, quizzes, and synthetic camera recognition in Electron |
 | `npm run make` | Builds a Windows x64 ZIP under `out/make/` |
 
 The [Windows workflow](.github/workflows/desktop.yml) runs these checks and attaches the ZIP to successful runs. [GitHub Actions](https://github.com/izdewww/AB-Sign/actions/workflows/desktop.yml)

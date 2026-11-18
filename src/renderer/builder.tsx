@@ -3,15 +3,17 @@ import { LessonStep, stepTitle } from './course';
 import { Icon } from './icons';
 import { cameraSupports, findLetter, isLabel, labels } from './letters';
 import { LessonMedia } from './lesson-media';
-import { lessonLetters, quizFor, type Lesson, type Step, type TeacherLesson, type TeacherLibrary } from './lessons';
+import { categories, categoryFor, lessonTerms, quizFor, type Category, type Lesson, type Step, type TeacherLesson, type TeacherLibrary } from './lessons';
 import type { Prompt } from './quiz';
 
 const stepNames: Record<Step['kind'], string> = {
-  look: 'Show a sign', video: 'Play a video', match: 'Match a sign', camera: 'Try the camera', spell: 'Spell a word',
+  look: 'Show a sign', video: 'Play a video', match: 'Match a sign', camera: 'Try the camera', spell: 'Read a fingerspelled word', media: 'Show a sign',
 };
 
 function newStep(kind: Step['kind'], id: string = crypto.randomUUID()): Step {
-  return kind === 'spell' ? { id, kind, word: '' } : { id, kind, letter: '' };
+  if (kind === 'spell') return { id, kind, word: '' };
+  if (kind === 'media') return { id, kind, term: '' };
+  return { id, kind, letter: '' };
 }
 
 async function checkImage(file: File) {
@@ -49,7 +51,7 @@ function checkVideo(file: File) {
   });
 }
 
-export function Builder({ library, id }: { library: TeacherLibrary; id?: string }) {
+export function Builder({ library, id, category }: { library: TeacherLibrary; id?: string; category?: string }) {
   const { status, items } = library;
   const [message, setMessage] = useState('');
   const [busy, setBusy] = useState(false);
@@ -66,18 +68,18 @@ export function Builder({ library, id }: { library: TeacherLibrary; id?: string 
         }}>{items.some(({ starter, hidden }) => starter && !hidden) ? 'Hide alphabet lessons' : 'Show alphabet lessons'}</button>}
       </div>
       {message && <p className="notice section-actions" role="status">{message}</p>}
-      {items.length > 0 && <ul className="lesson-list paper section-actions">{items.map((item) => <li key={item.id}><div><h2>{item.draft.title || 'Untitled lesson'}</h2><p>{item.hidden ? 'Hidden from learners' : item.published ? 'Ready on this device' : 'Draft'}</p></div><a className="button secondary" href={`#builder/${item.id}`} aria-label={`Edit ${item.draft.title || 'untitled lesson'}`}>Edit</a></li>)}</ul>}
+      {items.length > 0 && <ul className="lesson-list paper section-actions">{items.map((item) => <li key={item.id}><div><h2>{item.draft.title || 'Untitled lesson'}</h2><p>{categoryFor(item.draft.category).title} · {item.hidden ? 'Hidden from learners' : item.published ? 'Ready on this device' : 'Draft'}</p></div><a className="button secondary" href={`#builder/${item.id}`} aria-label={`Edit ${item.draft.title || 'untitled lesson'}`}>Edit</a></li>)}</ul>}
       {items.length === 0 && <p className="notice section-actions">Lessons you save will show here.</p>}
     </section>
   );
   const selected = items.find((item) => item.id === id);
-  if (selected || id === 'new') return <Editor key={id} library={library} entry={selected} />;
+  if (selected || id === 'new') return <Editor key={id} library={library} entry={selected} category={categoryFor(category).id} />;
   return <section><header className="page-heading"><h1>Lesson not found</h1></header><a className="button secondary" href="#builder">My lessons</a></section>;
 }
 
-function Editor({ library, entry }: { library: TeacherLibrary; entry?: TeacherLesson }) {
+function Editor({ library, entry, category }: { library: TeacherLibrary; entry?: TeacherLesson; category: Category }) {
   const [draft, setDraft] = useState<Lesson>(() => {
-    if (!entry) return { id: crypto.randomUUID(), title: '', steps: [], revision: 1 };
+    if (!entry) return { id: crypto.randomUUID(), title: '', category, steps: [], revision: 1 };
     return {
       ...entry.draft,
       steps: entry.draft.steps.map((step) => step.kind === 'camera' && isLabel(step.letter) && !cameraSupports(step.letter) ? { ...step, kind: 'look' } : step),
@@ -91,6 +93,8 @@ function Editor({ library, entry }: { library: TeacherLibrary; entry?: TeacherLe
   const [error, setError] = useState('');
   const index = Math.max(0, draft.steps.findIndex(({ id }) => id === selectedId));
   const step = draft.steps[index];
+  const currentCategory = categoryFor(draft.category).id;
+  const alphabet = currentCategory === 'alphabet';
   const dirty = useRef(false);
   const queue = useRef(Promise.resolve());
   const update = (change: SetStateAction<Lesson>) => {
@@ -131,7 +135,7 @@ function Editor({ library, entry }: { library: TeacherLibrary; entry?: TeacherLe
     setError('');
     try {
       await (field === 'image' ? checkImage(file) : checkVideo(file));
-      update((current) => ({ ...current, steps: current.steps.map((item) => item.id === step.id && 'letter' in item ? { ...item, [field]: file } : item) }));
+      update((current) => ({ ...current, steps: current.steps.map((item) => item.id === step.id && item.kind !== 'spell' ? { ...item, [field]: file } : item) }));
     }
     catch (problem) { setError(problem instanceof Error ? problem.message : 'Could not open that file.'); }
     finally { setBusy(false); }
@@ -142,7 +146,8 @@ function Editor({ library, entry }: { library: TeacherLibrary; entry?: TeacherLe
     if (!draft.steps.length) return 'Add at least one step.';
     if (draft.steps.some((step) => 'letter' in step && !isLabel(step.letter))) return 'Choose a letter for every sign step.';
     if (draft.steps.some((step) => step.kind === 'spell' && !/^[A-Z]{2,12}$/.test(step.word))) return 'Spelling steps need 2 to 12 letters.';
-    if (draft.quiz && !quizFor(draft)) return 'Add at least two different letters and choose quiz questions, or turn off the quiz.';
+    if (draft.steps.some((step) => step.kind === 'media' && (!step.term.trim() || (!step.image && !step.video)))) return 'Name each sign and add a picture or video.';
+    if (draft.quiz && !quizFor(draft)) return 'Add at least two different signs and choose quiz questions, or turn off the quiz.';
     return '';
   }
 
@@ -166,9 +171,9 @@ function Editor({ library, entry }: { library: TeacherLibrary; entry?: TeacherLe
     }
   }
 
-  function togglePrompt(prompt: Prompt) {
+  function togglePrompt(prompt: Prompt<string>) {
     if (!draft.quiz) return;
-    const has = (item: Prompt) => item.kind === prompt.kind && item.letter === prompt.letter;
+    const has = (item: Prompt<string>) => item.kind === prompt.kind && item.letter === prompt.letter;
     const prompts = draft.quiz.prompts.some(has) ? draft.quiz.prompts.filter((item) => !has(item)) : [...draft.quiz.prompts, prompt];
     update({ ...draft, quiz: { count: Math.max(1, Math.min(draft.quiz.count, prompts.length)), prompts } });
   }
@@ -176,7 +181,7 @@ function Editor({ library, entry }: { library: TeacherLibrary; entry?: TeacherLe
   if (preview !== undefined) return (
     <section>
       <div className="actions preview-toolbar"><button className="button secondary" onClick={() => setPreview(undefined)}>Back to editing</button><p>Preview · Step {Math.min(preview + 1, draft.steps.length)} of {draft.steps.length}</p></div>
-      {draft.steps[preview] ? <LessonStep key={draft.steps[preview].id} step={draft.steps[preview]} next={() => setPreview(preview + 1)} /> : <h1>Preview complete</h1>}
+      {draft.steps[preview] ? <LessonStep key={draft.steps[preview].id} step={draft.steps[preview]} lesson={draft} next={() => setPreview(preview + 1)} /> : <h1>Preview complete</h1>}
     </section>
   );
   return (
@@ -186,13 +191,17 @@ function Editor({ library, entry }: { library: TeacherLibrary; entry?: TeacherLe
       <div className="builder-board">
         <aside className="builder-rail paper" aria-label="Lesson steps">
           <h2>Steps ({draft.steps.length})</h2>
-          <ol className="builder-steps">{draft.steps.map((item) => <li key={item.id}><button className="step-select" aria-current={item.id === step?.id ? 'step' : undefined} onClick={() => selectStep(item.id)}>{stepTitle(item)}</button></li>)}</ol>
+          <ol className="builder-steps">{draft.steps.map((item) => <li key={item.id}><button className="step-select" aria-current={item.id === step?.id ? 'step' : undefined} onClick={() => selectStep(item.id)}>{stepTitle(item, true)}</button></li>)}</ol>
           <button className="button secondary" disabled={busy || draft.steps.length >= 20} onClick={() => {
-            const step = newStep('look'); update({ ...draft, steps: [...draft.steps, step] }); selectStep(step.id);
+            const step = newStep(alphabet ? 'look' : 'media'); update({ ...draft, steps: [...draft.steps, step] }); selectStep(step.id);
           }}>Add step</button>
         </aside>
         <div className="simple-form builder-editor paper">
           <label>Lesson name<input value={draft.title} disabled={busy} onChange={(event) => update({ ...draft, title: event.target.value })} maxLength={60} placeholder="For example, First letters" /></label>
+          <label>Category<select value={currentCategory} disabled={busy || draft.steps.length > 0}
+            onChange={(event) => update({ ...draft, category: categoryFor(event.target.value).id })}>
+            {categories.map(({ id, title }) => <option key={id} value={id}>{title}</option>)}
+          </select></label>
           {step && <section className="builder-step" key={step.id}>
             <div className="builder-step-header"><h2>Step {index + 1}</h2><div className="actions">
               <button className="button secondary" disabled={index === 0 || busy} aria-label={`Move step ${index + 1} up`} onClick={() => move(index, -1)}>Up</button>
@@ -200,48 +209,53 @@ function Editor({ library, entry }: { library: TeacherLibrary; entry?: TeacherLe
               <button className="button secondary" disabled={busy} aria-label={`Remove step ${index + 1}`} onClick={() => update({ ...draft, steps: draft.steps.filter((item) => item.id !== step.id) })}>Remove</button>
             </div></div>
             <div className="editor-fields">
-              <label>What will learners do?<select disabled={busy} value={step.kind} onChange={(event) => {
+              {step.kind === 'media' ? <label>{currentCategory === 'numbers' ? 'Number' : 'Word or phrase'}
+                <input value={step.term} maxLength={40} disabled={busy} onChange={(event) => updateStep(index, { ...step, term: event.target.value })} />
+              </label> : <><label>What will learners do?<select disabled={busy} value={step.kind} onChange={(event) => {
                 const kind = event.target.value as Step['kind'];
-                updateStep(index, 'letter' in step && kind !== 'spell'
+                updateStep(index, 'letter' in step && kind !== 'spell' && kind !== 'media'
                   ? { ...step, kind, letter: kind === 'camera' && !cameraSupports(step.letter) ? '' : step.letter }
                   : newStep(kind, step.id));
               }}>{Object.entries(stepNames).filter(([kind]) => ['look', 'spell'].includes(kind) || kind === step.kind).map(([kind, label]) => <option value={kind} key={kind}>{label}</option>)}</select></label>
-              {step.kind === 'spell' ? <label>Letters to spell<input value={step.word} disabled={busy} maxLength={12} onChange={(event) => updateStep(index, { ...step, word: event.target.value.toUpperCase() })} /></label> :
+              {step.kind === 'spell' ? <label>Word to reveal at the end<input value={step.word} disabled={busy} maxLength={12} onChange={(event) => updateStep(index, { ...step, word: event.target.value.toUpperCase() })} /></label> :
                 <label>Letter<select value={step.letter} disabled={busy} onChange={(event) => {
                   const value = event.target.value; updateStep(index, { ...step, letter: isLabel(value) ? value : '' });
-                }}><option value="">Choose a letter</option>{labels.filter((label) => step.kind !== 'camera' || cameraSupports(label)).map((label) => <option key={label}>{label}</option>)}</select></label>}
+                }}><option value="">Choose a letter</option>{labels.filter((label) => step.kind !== 'camera' || cameraSupports(label)).map((label) => <option key={label}>{label}</option>)}</select></label>}</>}
             </div>
-            {'letter' in step && <div className="media-fields">
+            {step.kind !== 'spell' && <div className="media-fields">
               {(['image', 'video'] as const).map((field) => <div key={field} className="media-picker">
                 <label onDragOver={(event) => event.preventDefault()} onDrop={(event) => {
                   event.preventDefault();
                   if (event.dataTransfer.files.length !== 1) { setError('Choose one file for this step.'); return; }
                   void loadMedia(step, field, event.dataTransfer.files[0]);
-                }}>{field === 'image' ? 'Picture' : 'Video (optional)'} <span className="small-copy">{step[field]?.name ?? (field === 'image' ? (step.letter ? 'Dataset photo' : 'No picture selected') : 'No video added')}</span>
+                }}>{field === 'image' ? 'Picture' : 'Video (optional)'} <span className="small-copy">{step[field]?.name ?? (field === 'image' ? ('letter' in step && step.letter ? 'Dataset photo' : 'No picture selected') : 'No video added')}</span>
                   <input type="file" data-media={field} accept={field === 'image' ? '.png,.jpg,.jpeg,.webp' : '.mp4,.webm'} disabled={busy} onChange={(event) => {
                     const file = event.target.files?.[0]; event.target.value = ''; void loadMedia(step, field, file);
                   }} />
                   <span className="media-pick-action">{step[field] ? 'Replace' : 'Upload'} {field === 'image' ? 'picture' : 'video'}</span>
                 </label>
-                {step[field] && <button className="button secondary" disabled={busy} onClick={() => updateStep(index, { ...step, [field]: undefined })}>{field === 'image' ? 'Use dataset photo' : 'Remove video'}</button>}
+                {step[field] && <button className="button secondary" disabled={busy} onClick={() => updateStep(index, { ...step, [field]: undefined })}>{field === 'image' ? ('letter' in step ? 'Use dataset photo' : 'Remove picture') : 'Remove video'}</button>}
               </div>)}
             </div>}
           </section>}
         </div>
         <aside className="learner-preview paper">
           <h2>Learner preview</h2>
-          {step ? <><p>{stepTitle(step)}</p>{'letter' in step ? isLabel(step.letter) && <LessonMedia key={step.id + (step.video?.name ?? '')} letter={findLetter(step.letter)} file={step.video} image={step.image} /> : <span className="preview-letters">{step.word}</span>}</> : <p>Add a step to see it here.</p>}
+          {step ? <><p>{stepTitle(step)}</p>{step.kind === 'spell' ? <span className="preview-letters">{step.word}</span> :
+            (step.kind === 'media' ? Boolean(step.image || step.video) : isLabel(step.letter)) &&
+              <LessonMedia key={step.id + (step.video?.name ?? '')} name={step.kind === 'media' ? step.term : undefined}
+                letter={'letter' in step && isLabel(step.letter) ? findLetter(step.letter) : undefined} file={step.video} image={step.image} />}</> : <p>Add a step to see it here.</p>}
           <button className="button secondary" disabled={busy || !draft.steps.length} onClick={() => { const issue = validate(); setError(issue); if (!issue) setPreview(0); }}>Preview</button>
         </aside>
       </div>
       <section className="builder-quiz paper" aria-labelledby="builder-quiz-title">
-        <div className="section-heading"><div><h2 id="builder-quiz-title">Lesson quiz</h2><p>Choose the letters and ways to ask. The order and choices change each round.</p></div>
+        <div className="section-heading"><div><h2 id="builder-quiz-title">Lesson quiz</h2><p>Choose the signs to practice. The order and choices change each round.</p></div>
           <button className="button secondary" aria-pressed={Boolean(draft.quiz)} disabled={busy} onClick={() => update({ ...draft, quiz: draft.quiz ? undefined : { count: 1, prompts: [] } })}>{draft.quiz ? 'Remove quiz' : 'Add quiz'}</button>
         </div>
-        {draft.quiz && (lessonLetters(draft).length < 2 ? <p className="notice">Add two different letters to start a quiz.</p> : <>
-          <div className="quiz-variables">{lessonLetters(draft).map((letter) => <fieldset key={letter}>
-            <legend>Letter {letter}</legend>{(['match', 'camera'] as const).filter((kind) => kind === 'match' || cameraSupports(letter)).map((kind) => <label key={kind}>
-              <input type="checkbox" disabled={busy} checked={Boolean(draft.quiz?.prompts.some((item) => item.kind === kind && item.letter === letter))} onChange={() => togglePrompt({ letter, kind })} /> {kind === 'match' ? 'Picture match' : 'Camera'}
+        {draft.quiz && (lessonTerms(draft).length < 2 ? <p className="notice">Add two different signs to start a quiz.</p> : <>
+          <div className="quiz-variables">{lessonTerms(draft).map((letter) => <fieldset key={letter}>
+            <legend>{alphabet ? 'Letter ' : ''}{letter}</legend>{(['match', 'camera'] as const).filter((kind) => kind === 'match' || (alphabet && cameraSupports(letter))).map((kind) => <label key={kind}>
+              <input type="checkbox" disabled={busy} checked={Boolean(draft.quiz?.prompts.some((item) => item.kind === kind && item.letter === letter))} onChange={() => togglePrompt({ letter, kind })} /> {kind === 'match' ? (alphabet ? 'Picture match' : 'Match the sign') : 'Camera'}
             </label>)}
           </fieldset>)}</div>
           <label className="quiz-length">Questions per round<select disabled={busy || !draft.quiz.prompts.length} value={draft.quiz.count} onChange={(event) => update({ ...draft, quiz: { ...draft.quiz!, count: Number(event.target.value) } })}>

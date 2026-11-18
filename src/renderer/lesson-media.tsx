@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import type { Letter } from './letters';
 
-export function SignPhoto({ letter, image, prompt = false }: { letter: Letter; image?: File; prompt?: boolean }) {
+export function SignPhoto({ letter, image, prompt = false, name }: { letter?: Letter; image?: File; prompt?: boolean; name?: string }) {
   const [source, setSource] = useState<{ file: File; url: string }>();
   useEffect(() => {
     if (!image) return;
@@ -9,10 +9,12 @@ export function SignPhoto({ letter, image, prompt = false }: { letter: Letter; i
     setSource({ file: image, url });
     return () => URL.revokeObjectURL(url);
   }, [image]);
-  return <img src={source && source.file === image ? source.url : letter.photo} alt={prompt ? 'Picture of a hand sign' : letter.description} width="300" height="300" />;
+  const url = source?.file === image ? source?.url ?? letter?.photo : letter?.photo;
+  if (!url) return <p>{image ? 'Opening picture…' : 'No picture'}</p>;
+  return <img src={url} alt={prompt ? 'Picture of a hand sign' : letter?.description ?? 'Sign for ' + name} width="300" height="300" />;
 }
 
-export function LessonMedia({ letter, file, image }: { letter: Letter; file?: File; image?: File }) {
+export function LessonMedia({ letter, file, image, name, prompt }: { letter?: Letter; file?: File; image?: File; name?: string; prompt?: boolean }) {
   const [source, setSource] = useState('');
   const [error, setError] = useState(false);
   const [slow, setSlow] = useState(false);
@@ -25,10 +27,11 @@ export function LessonMedia({ letter, file, image }: { letter: Letter; file?: Fi
     return () => URL.revokeObjectURL(url);
   }, [file]);
 
-  if (!file || error) return <div className="practice-photo">{error && <p role="status">This video can’t play. Use the picture instead.</p>}<SignPhoto letter={letter} image={image} /></div>;
+  if (!file || error) return <div className="practice-photo">{error && <p role="status">This video can’t play on this device.</p>}<SignPhoto letter={letter} image={image} name={name} prompt={prompt} /></div>;
   return (
     <div className="lesson-video">
-      <video ref={player} src={source || undefined} controls preload="metadata" muted playsInline aria-label={`Video for letter ${letter.label}`} onError={() => setError(true)} />
+      <video ref={player} src={source || undefined} controls preload="metadata" muted playsInline
+        aria-label={prompt ? 'Video of a hand sign' : letter ? `Video for letter ${letter.label}` : 'Video for ' + name} onError={() => setError(true)} />
       <div className="actions">
         <button className="button secondary" aria-pressed={slow} onClick={() => {
           if (player.current) player.current.playbackRate = slow ? 1 : .5;

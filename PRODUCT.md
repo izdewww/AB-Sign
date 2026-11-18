@@ -14,4 +14,4 @@ Children learn Filipino Sign Language by looking at examples and trying short ac
 
 ## Constraints
 
-Use simple language, large controls, the supplied logo, and its colors. The app works without accounts and keeps lessons and progress on the device. Teachers can start from an empty editor or edit and hide the example alphabet lessons. The examples use one Porton dataset photo per letter and have empty slots for teacher videos. Each lesson can have an optional randomized quiz. Picture matching covers A–Z. Camera practice offers 24 letters, with J and Z taught through pictures and teacher videos.
+Use simple language, large controls, the supplied logo, and its colors. Students choose a local name and see their own progress. The password-protected teacher account manages students, reviews progress, and publishes lessons. Teachers can edit alphabet examples or add media and matching quizzes in any category. Camera practice offers 24 letters. Lesson completion celebrates with confetti and awards a badge.

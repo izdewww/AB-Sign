@@ -1,25 +1,56 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, type CSSProperties } from 'react';
 import { Camera } from './camera';
 import type { ClassroomStore } from './classroom';
+import { Fingerspelling } from './fingerspelling';
 import { Icon } from './icons';
 import { LessonMedia } from './lesson-media';
 import { LessonQuiz } from './lesson-quiz';
 import { StepProgress } from './learning-ui';
 import { cameraSupports, findLetter, isLabel, moves } from './letters';
-import { lessonLetters, quizFor, type Step, type TeacherLibrary } from './lessons';
+import { categories, categoryFor, quizFor, type Lesson, type Step, type TeacherLibrary } from './lessons';
 
 type LibraryView = { library: TeacherLibrary; store: ClassroomStore };
 
 export function LearningPath({ library, store }: LibraryView) {
   return <section>
-    <header className="page-heading"><h1>Learning path</h1><p>Choose any lesson to get started.</p></header>
+    <header className="page-heading"><h1>Learning path</h1><p>Choose a category and find a lesson.</p></header>
+    {library.status !== 'ready' && <p role="status">{library.status === 'loading' ? 'Opening lessons…' : 'Could not open lessons. Restart the app to try again.'}</p>}
+    <div className="library-grid category-grid">{categories.map((category) => {
+      const lessons = library.visible.filter((lesson) => categoryFor(lesson.category).id === category.id);
+      const finished = lessons.filter((lesson) => store.data.completed.includes(lesson.id)).length;
+      return <a key={category.id} data-category={category.id} className="library-card paper" href={'#category/' + category.id}>
+        <div className={'category-cover ' + category.tone}><span aria-hidden="true">{category.mark}</span>
+          {store.data.badges.includes(category.id) && <Icon name="trophy" />}</div>
+        <div className="category-card-copy"><h2>{category.title}</h2><p>{category.detail}</p>
+          {lessons.length > 0 && <StepProgress value={finished} total={lessons.length} label={category.title + ' progress'} />}
+          <span className="text-link">{lessons.length ? `${finished} of ${lessons.length} finished` : 'No lessons yet'} <Icon name="arrow" /></span>
+        </div>
+      </a>;
+    })}</div>
+  </section>;
+}
+
+export function CategoryView({ id, library, store, teacher }: LibraryView & { id?: string; teacher: boolean }) {
+  const category = categoryFor(id);
+  const lessons = library.visible.filter((lesson) => categoryFor(lesson.category).id === category.id);
+  const finished = lessons.filter((lesson) => store.data.completed.includes(lesson.id)).length;
+  return <section>
+    <a className="back-link" href="#path">Learning path</a>
+    <header className={'category-heading path-card ' + category.tone}><div><h1>{category.title}</h1><p>{category.detail}</p>
+      {lessons.length > 0 && <p>{finished} of {lessons.length} lessons finished</p>}</div>
+      <span className="category-mark" aria-hidden="true">{category.mark}</span></header>
+    <h2 className="section-actions">Lessons</h2>
     {library.status !== 'ready' ? <p role="status">{library.status === 'loading' ? 'Opening lessons…' : 'Could not open lessons. Restart the app to try again.'}</p> :
-      library.visible.length ? <div className="library-grid">{library.visible.map((lesson, index) =>
-        <a key={lesson.id} className="library-card paper" href={'#lesson/' + lesson.id}>
-          <div className={'library-cover ' + ['mint', 'sky', 'peach', 'yellow'][index % 4]}>{lessonLetters(lesson).slice(0, 3).map((letter) => <span key={letter}>{letter}</span>)}</div>
+      lessons.length ? <div className="library-grid section-actions">{lessons.map((lesson, index) => {
+        const cover = [...new Set(lesson.steps.flatMap((step) => 'letter' in step && isLabel(step.letter) ? [step.letter] : []))].slice(0, 3);
+        return <a key={lesson.id} className="library-card paper" href={'#lesson/' + lesson.id}>
+          <div className={'library-cover ' + ['mint', 'sky', 'peach', 'yellow'][index % 4]}>{cover.length > 0
+            ? cover.map((letter) => <span key={letter}>{letter}</span>) : <span><Icon name="book" /></span>}</div>
           <div className="library-card-copy"><div><h2>{lesson.title}</h2><p>{store.data.completed.includes(lesson.id) ? 'Finished' : lesson.steps.length + (lesson.steps.length === 1 ? ' step' : ' steps')}</p></div><Icon name="arrow" /></div>
-        </a>)}</div> :
-        <div className="paper empty"><h2>No lessons yet</h2><a className="button primary" href="#builder/new">Create a lesson</a></div>}
+        </a>;
+      })}</div> :
+        <div className="paper empty section-actions"><h2>No lessons here yet</h2>{!teacher && <a className="button secondary" href="#path">Choose a category</a>}</div>}
+    {teacher && <a className="button primary section-actions" href={'#builder/new/' + category.id}>Create a lesson</a>}
   </section>;
 }
 
@@ -32,9 +63,11 @@ export function DashboardStrip({ library, store }: LibraryView) {
 
 export function LessonView({ id, action, position, library, store }: LibraryView & { id?: string; action?: string; position?: string }) {
   const lesson = library.visible.find((item) => item.id === id);
+  const category = categoryFor(lesson?.category);
   const index = Number(position);
   const step = lesson && (action === 'demo' || action === 'practice') && Number.isInteger(index) && index >= 0 ? lesson.steps[index] : undefined;
   const quiz = lesson && quizFor(lesson);
+  const celebrated = action === 'finished' && Boolean(lesson && store.data.completed.includes(lesson.id));
   useEffect(() => {
     if (lesson && step) {
       const resume = 'lesson/' + lesson.id + '/demo/' + index;
@@ -55,54 +88,72 @@ export function LessonView({ id, action, position, library, store }: LibraryView
       <div className="lesson-heading-copy"><p>{lesson.title}</p><StepProgress value={index} total={lesson.steps.length} label="Steps finished" /></div>
       <span className="question-count">{index + 1} of {lesson.steps.length}</span>
     </header>
-    <LessonStep step={step} previous={index > 0 ? '#lesson/' + lesson.id + '/demo/' + (index - 1) : undefined}
+    <LessonStep step={step} lesson={lesson} previous={index > 0 ? '#lesson/' + lesson.id + '/demo/' + (index - 1) : undefined}
       action={index + 1 === lesson.steps.length ? 'Finish lesson' : 'Next step'} next={() => {
         if (index + 1 < lesson.steps.length) location.hash = 'lesson/' + lesson.id + '/demo/' + (index + 1);
-        else { store.complete(lesson.id); location.hash = 'lesson/' + lesson.id + '/finished'; }
+        else {
+          const categoryDone = library.visible.filter((value) => categoryFor(value.category).id === category.id)
+            .every((value) => value.id === lesson.id || store.data.completed.includes(value.id));
+          const categoryEarned = categoryDone && !store.data.badges.includes(category.id);
+          store.complete(lesson.id, categoryEarned ? category.id : undefined);
+          location.hash = 'lesson/' + lesson.id + (categoryEarned ? '/finished/category' : '/finished');
+        }
       }} />
   </section>;
 
   return <section>
-    <a className="back-link" href="#path">Learning path</a>
-    <div className="path-card mint">
-      <div><h1>{action === 'finished' ? 'Lesson finished!' : lesson.title}</h1><p>{action === 'finished' ? lesson.title : lesson.steps.length + (lesson.steps.length === 1 ? ' step' : ' steps')}</p></div>
+    <a className="back-link" href={'#category/' + category.id}>{category.title}</a>
+    <div className={'path-card mint' + (celebrated ? ' celebrate-card' : '')}>
+      {celebrated && <Confetti />}
+      <div><h1>{celebrated ? 'Lesson finished!' : lesson.title}</h1><p>{celebrated ? lesson.title : lesson.steps.length + (lesson.steps.length === 1 ? ' step' : ' steps')}</p>
+        {celebrated && <div className="badge-list"><span><Icon name="trophy" /> Lesson badge</span>
+          {position === 'category' && store.data.badges.includes(category.id) && <span><Icon name="trophy" /> {category.title} badge</span>}</div>}</div>
       <div className="actions">
-        {action === 'finished' ? <a className="button primary" href="#path">Choose a lesson</a> :
+        {celebrated ? <a className="button primary" href={'#category/' + category.id}>Choose a lesson</a> :
           <a className="button primary" href={'#lesson/' + lesson.id + '/demo/0'}>Start lesson <Icon name="arrow" /></a>}
         {quiz && <a className="button secondary" href={'#lesson/' + lesson.id + '/quiz'}>Take quiz</a>}
       </div>
     </div>
-    {action !== 'finished' && <ul className="lesson-list paper section-actions">{lesson.steps.map((item, stepIndex) => <li key={item.id}>
+    {!celebrated && <><h2 className="section-actions">In this lesson</h2><ul className="lesson-list paper section-actions">{lesson.steps.map((item, stepIndex) => <li key={item.id}>
       <h2>{stepTitle(item)}</h2><a className="text-link" aria-label={'Open step ' + (stepIndex + 1)} href={'#lesson/' + lesson.id + '/demo/' + stepIndex}>Open <Icon name="arrow" /></a>
-    </li>)}</ul>}
+    </li>)}</ul></>}
   </section>;
 }
 
-export function stepTitle(step: Step) {
-  if (step.kind === 'spell') return step.word ? 'Spell ' + step.word : 'Spelling step';
+function Confetti() {
+  return <div className="confetti" aria-hidden="true">{Array.from({ length: 20 }, (_, index) => <span key={index}
+    style={{ '--left': `${(index * 37) % 97}%`, '--delay': `${index % 7 * 45}ms`, '--spin': `${(index % 2 ? -1 : 1) * (280 + index * 13)}deg` } as CSSProperties} />)}</div>;
+}
+
+export function stepTitle(step: Step, showWord = false) {
+  if (step.kind === 'spell') return showWord && step.word ? 'Read signs for ' + step.word : 'Read the signs';
+  if (step.kind === 'media') return step.term.trim() || 'New sign';
   if (!step.letter) return 'New sign';
   if (step.kind === 'camera' && cameraSupports(step.letter)) return 'Sign ' + step.letter;
   return (step.video ? 'Watch ' : 'Look at ') + step.letter;
 }
 
-export function LessonStep({ step, next, previous, action = 'Next step' }: { step: Step; next: () => void; previous?: string; action?: string }) {
-  const [typed, setTyped] = useState('');
-  const [picture, setPicture] = useState(false);
+export function LessonStep({ step, lesson, next, previous, action = 'Next step' }: { step: Step; lesson?: Lesson; next: () => void; previous?: string; action?: string }) {
+  const [practice, setPractice] = useState(step.kind === 'camera');
+  if (step.kind === 'spell') return <Fingerspelling key={step.id} word={step.word} lesson={lesson} next={next} previous={previous} action={action} />;
+  if (step.kind === 'media') return <div><div className="page-heading"><h1>{stepTitle(step)}</h1><p>Watch the sign and try it yourself.</p></div>
+    <div className="study-stage paper sky"><LessonMedia name={step.term} image={step.image} file={step.video} /></div>
+    <div className="actions section-actions">{previous && <a className="button secondary" href={previous}>Previous step</a>}
+      <button className="button primary" onClick={next}>{action} <Icon name="arrow" /></button></div></div>;
   const sign = 'letter' in step && isLabel(step.letter) ? findLetter(step.letter) : undefined;
-  const camera = step.kind === 'camera' && sign && cameraSupports(sign.label) && !picture;
+  const camera = sign && cameraSupports(sign.label) && practice;
   return <div>
     <div className="page-heading"><h1>{stepTitle(step)}</h1></div>
-    {step.kind === 'spell' ? <div className="paper empty">
-      <label className="simple-form">Type the letters in order<input spellCheck={false} value={typed} maxLength={step.word.length} onChange={(event) => setTyped(event.target.value.toUpperCase())} /></label>
-    </div> : sign && (camera ?
-      <Camera target={sign.label} image={step.image} match={() => setPicture(true)} fallback={<button className="button secondary" onClick={() => setPicture(true)}>Use picture</button>} /> :
+    {sign && (camera ?
+      <Camera target={sign.label} image={step.image} match={() => setPractice(false)} fallback={<button className="button secondary" onClick={() => setPractice(false)}>Back to demonstration</button>} /> :
       <div className={'study-stage paper ' + sign.tone}>
         <LessonMedia letter={sign} image={step.image} file={step.video} />
         {moves(sign.label) && !step.video && <p>{sign.label} is a moving sign. This picture shows one moment.</p>}
       </div>)}
     <div className="actions section-actions">
       {previous && <a className="button secondary" href={previous}>Previous step</a>}
-      <button className="button primary" disabled={step.kind === 'spell' && typed !== step.word} onClick={next}>{action} <Icon name="arrow" /></button>
+      {sign && !camera && cameraSupports(sign.label) && <button className="button secondary" onClick={() => setPractice(true)}>Try this sign</button>}
+      <button className="button primary" onClick={next}>{action} <Icon name="arrow" /></button>
     </div>
   </div>;
 }

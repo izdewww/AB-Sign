@@ -17,7 +17,7 @@
 
 ![Build pipeline from npm install through checks and ZIP packaging, and model pipeline from Kaggle images to packaged MediaPipe task.](images/pipelines.png)
 
-The build verifies the model checksum and copies the model and MediaPipe WASM files. Camera practice runs in a worker and stops when the learner leaves. The app keeps camera frames in memory. The renderer stores small progress summaries locally. IndexedDB holds drafts, published versions, teacher pictures and videos, and optional quiz settings. Editing a draft leaves the published lesson available until the teacher saves the updated version for learners.
+The build verifies the model checksum and copies the model and MediaPipe WASM files. Camera practice runs in a worker and stops when the learner leaves. The app keeps camera frames in memory. Electron keeps the teacher password hash, roster, and student progress in a local classroom file. The preload exposes account actions to the app, and Electron checks the current role before teacher actions. IndexedDB holds drafts, learner versions, teacher pictures and videos, and quiz settings.
 
 `npm run smoke` uses a fake camera, a generated WebM clip, and labeled photos to check the main flows and local model inference. The webcam test exercises the packaged code path. Classroom camera behavior and recognition on new signers require separate validation.
 

@@ -1,7 +1,9 @@
-import { app, BrowserWindow, nativeImage, net, protocol, session } from 'electron';
+import { app, BrowserWindow, ipcMain, nativeImage, net, protocol, session } from 'electron';
 import { resolve, sep } from 'node:path';
+import { mkdtempSync, rmSync, rmdirSync } from 'node:fs';
 import { pathToFileURL } from 'node:url';
 import { verifyDesktop } from './smoke.cjs';
+import { localAccounts } from './accounts.cjs';
 
 const page = 'app://local/';
 const smoke = process.argv.includes('--smoke-test');
@@ -52,14 +54,25 @@ app.whenReady().then(async () => {
   });
 
   const icon = nativeImage.createFromPath(resolve(root, 'ab-sign.ico'));
+  const fixtureDirectory = smoke ? mkdtempSync(resolve(app.getPath('temp'), 'ab-sign-smoke-')) : undefined;
+  const accountsFile = resolve(fixtureDirectory ?? app.getPath('userData'), 'classroom-v1.json');
+  const accounts = localAccounts(accountsFile);
   const window = new BrowserWindow({
     title: 'A-B Sign!', width: 1280, height: 900, minWidth: 800, minHeight: 600,
     icon,
     show: !smoke,
     webPreferences: {
       session: browserSession, sandbox: true, contextIsolation: true, nodeIntegration: false,
-      backgroundThrottling: !(smoke && process.env.AB_SIGN_SMOKE_DIR),
+      preload: resolve(__dirname, 'preload.cjs'), devTools: !app.isPackaged || smoke,
+      backgroundThrottling: !smoke,
     },
+  });
+  ipcMain.handle('ab-sign:accounts', (event, command) => {
+    if (window.isDestroyed() || event.sender !== window.webContents || !event.senderFrame ||
+      event.senderFrame !== window.webContents.mainFrame || !isAppOrigin(event.senderFrame.url)) {
+      return { ok: false, error: 'Account access is unavailable.' };
+    }
+    return accounts(command);
   });
   browserSession.setPermissionCheckHandler((contents, permission, origin, details) =>
     contents === window.webContents && details.isMainFrame && isAppOrigin(origin) &&
@@ -74,8 +87,25 @@ app.whenReady().then(async () => {
   await window.loadURL(page);
 
   if (smoke) {
-    if (icon.isEmpty()) throw new Error('The desktop logo did not load.');
-    await verifyDesktop(window);
+    try {
+      if (icon.isEmpty()) throw new Error('The desktop logo did not load.');
+      await verifyDesktop(window);
+      const reopened = localAccounts(accountsFile);
+      const saved = reopened({ action: 'state' });
+      if (!saved.ok || saved.state.active || saved.state.students.length !== 1 || saved.state.students[0].name !== 'Maya S') {
+        throw new Error('The classroom file did not preserve the edited roster.');
+      }
+      if (reopened({ action: 'login', password: 'TeacherStart24!' }).ok ||
+        !reopened({ action: 'login', password: 'ClassroomExample24!' }).ok) throw new Error('The new teacher password did not persist.');
+      const student = reopened({ action: 'student-progress', id: saved.state.students[0].id });
+      if (!student.ok || !student.progress?.badges.includes('numbers') || student.progress.attempts.length < 2) {
+        throw new Error('Student quiz scores and badges did not persist.');
+      }
+    } finally {
+      rmSync(accountsFile, { force: true });
+      rmSync(accountsFile + '.tmp', { force: true });
+      if (fixtureDirectory) rmdirSync(fixtureDirectory);
+    }
     app.exit(0);
   }
 }).catch((error: unknown) => {
