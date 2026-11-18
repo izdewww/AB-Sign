@@ -50,7 +50,7 @@ export async function verifyDesktop(window: BrowserWindow) {
   const letter = '.editor-fields label:nth-child(2) select';
 
   await waitFor(`document.querySelector('.welcome h1') && document.querySelector('.brand img')?.naturalWidth > 0`);
-  const asset = await runner.executeJavaScript(`fetch('/vision/fsl-az-v1.task').then(r => r.ok && r.arrayBuffer()).then(b => b.byteLength > 0)`);
+  const asset = await runner.executeJavaScript(`fetch('/vision/fsl-az-v2.task').then(r => r.ok && r.arrayBuffer()).then(b => b.byteLength > 0)`);
   if (!asset) throw new Error('The local model could not be read.');
   await button('See lessons');
   await heading('Learning path');

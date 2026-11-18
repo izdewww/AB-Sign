@@ -23,6 +23,6 @@ The build verifies the model checksum and copies the model and MediaPipe WASM fi
 
 Training is a separate development task. Follow the [training guide](../model-training/README.md) for the dataset, Python environment, and export commands.
 
-The bundled model now covers A–Z. The earlier A/B/C pilot used a smaller benchmark. [Alphabet evaluation](../model-training/artifacts/fsl-az-v1.json) · [A/B/C pilot chart](images/results.png)
+The bundled v2 model has A–Z labels. The app offers camera practice for 24 letters. [v2 evaluation](../model-training/artifacts/fsl-az-v2.json) · [A/B/C pilot chart](images/results.png)
 
 The implementation plan tracks the desktop screens, lesson content, camera behavior, and verification. Classroom validation requires full webcam frames from independent signers. [Implementation plan](../IMPLEMENTATION_PLAN.md)

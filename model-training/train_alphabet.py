@@ -1,5 +1,6 @@
 """Train and benchmark an A–Z FSL Gesture Recognizer from still images."""
 
+import argparse
 import hashlib
 import importlib.metadata
 import json
@@ -19,9 +20,10 @@ from train_abc import (
 LABELS = tuple(string.ascii_uppercase)
 MODEL = "fsl-az-v1.task"
 SCORE_THRESHOLD = 0.5
+CAMERA_LABELS = tuple(letter for letter in LABELS if letter not in {"J", "Z"})
 
 
-def prepare(destination):
+def prepare(destination, *, holdout_fraction=None):
     if sha256(ARCHIVE) != ARCHIVE_HASH:
         raise ValueError("Expected the verified Kaggle v1 archive")
 
@@ -65,6 +67,20 @@ def prepare(destination):
         raw["validation"][letter] = [row for row in records if row[0] not in held_out]
         test_fallback.append(letter)
 
+    comparison_hash = hashlib.sha256()
+    for letter in LABELS:
+        for _, name, data in one_per_source(raw["test"][letter]):
+            comparison_hash.update(name.encode("utf-8") + b"\0" + hashlib.sha256(data).digest())
+
+    if holdout_fraction is not None:
+        for letter in LABELS:
+            records = raw["validation"][letter]
+            groups = sorted({record[0] for record in records})
+            random.Random(f"validation-{SEED}-{letter}").shuffle(groups)
+            kept = set(groups[:max(1, round(len(groups) * holdout_fraction))])
+            raw["validation"][letter] = [row for row in records if row[0] in kept]
+            raw["train"][letter].extend(row for row in records if row[0] not in kept)
+
     counts = {}
     for split, by_letter in raw.items():
         counts[split] = {}
@@ -81,7 +97,8 @@ def prepare(destination):
             counts[split][letter] = len(records)
 
     return dict(archive_images=total, ungrouped_excluded=ungrouped, exact_duplicates_skipped=duplicates,
-                image_counts=counts, test_from_validation_family=test_fallback)
+                image_counts=counts, test_from_validation_family=test_fallback,
+                test_samples_sha256=comparison_hash.hexdigest(), validation_family_holdout_fraction=holdout_fraction)
 
 
 def evaluate(recognizer, source):
@@ -113,6 +130,9 @@ def evaluate(recognizer, source):
 
 
 def main():
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--candidate", action="store_true", help="Train an expanded candidate without changing the shipped model")
+    candidate = parser.parse_args().candidate
     os.environ.setdefault("TF_CPP_MIN_LOG_LEVEL", "2")
     os.environ.setdefault("MPLCONFIGDIR", str(WORK / "matplotlib"))
     tempfile.tempdir = str(WORK / "tmp")
@@ -127,7 +147,7 @@ def main():
     with tempfile.TemporaryDirectory(dir=WORK) as directory:
         work = Path(directory)
         images = work / "photos"
-        source = prepare(images)
+        source = prepare(images, holdout_fraction=0.2 if candidate else None)
         print("Prepared image counts:", {k: sum(v.values()) for k, v in source["image_counts"].items()}, flush=True)
 
         datasets = []
@@ -151,17 +171,18 @@ def main():
             print(f"Usable images in {split}: {raw.size}", flush=True)
 
         export = work / "export"
+        model_name = "fsl-az-v2.task" if candidate else MODEL
         options = maker.GestureRecognizerOptions(
-            hparams=maker.HParams(export_dir=str(export), epochs=45, batch_size=64),
-            model_options=maker.ModelOptions(layer_widths=[128, 64]),
+            hparams=maker.HParams(export_dir=str(export), epochs=75 if candidate else 45, batch_size=64),
+            model_options=maker.ModelOptions(layer_widths=[256, 128, 64] if candidate else [128, 64]),
         )
         model = maker.GestureRecognizer.create(*datasets, options)
-        model.export_model(MODEL)
-        task = export / MODEL
-        write_artifacts(task, images, source, admitted)
+        model.export_model(model_name)
+        task = export / model_name
+        write_artifacts(task, images, source, admitted, WORK if candidate else ROOT / "artifacts")
 
 
-def write_artifacts(task, images, source, admitted):
+def write_artifacts(task, images, source, admitted, artifacts):
     import mediapipe as mp
 
     bundle = task.read_bytes()
@@ -174,23 +195,28 @@ def write_artifacts(task, images, source, admitted):
     if any(result["per_letter"][letter]["support"] != source["image_counts"]["test"][letter] for letter in LABELS):
         raise ValueError("Test counts do not match the prepared split")
 
-    artifacts = ROOT / "artifacts"
+    camera_rows = {letter: result["per_letter"][letter] for letter in CAMERA_LABELS}
     report = dict(
-        model=MODEL, model_sha256=sha256(task), labels=list(LABELS), seed=SEED,
+        model=task.name, model_sha256=sha256(task), labels=list(LABELS), seed=SEED,
         dataset="japorton/fsl-dataset/versions/1", archive_sha256=ARCHIVE_HASH,
         versions={name: importlib.metadata.version(name) for name in ("mediapipe", "mediapipe-model-maker", "tensorflow")},
         runtime=dict(hand_options=V2_HAND_OPTIONS, frame_margin=V2_MARGIN, score_threshold=SCORE_THRESHOLD),
         usable_images=admitted, **source, test=result,
+        camera_benchmark=dict(
+            minimum_required_recall=0.9,
+            below_target={letter: row["recall"] for letter, row in camera_rows.items() if row["recall"] < 0.9},
+        ),
         limitations=[
             "Cropped photos only. Signer identities are unavailable.",
             "J and Z predictions classify poses, not the full motion.",
             "No labeled non-sign hands for measuring false accepts.",
         ],
     )
-    (artifacts / MODEL).write_bytes(bundle)
-    (artifacts / MODEL).with_suffix(".json").write_text(json.dumps(report, indent=2) + "\n", encoding="utf-8")
-    print(f"Exported {MODEL}: {result['correct']}/{result['images']} correct ({result['accuracy']:.2%})", flush=True)
+    (artifacts / task.name).write_bytes(bundle)
+    (artifacts / task.name).with_suffix(".json").write_text(json.dumps(report, indent=2) + "\n", encoding="utf-8")
+    print(f"Exported {task.name}: {result['correct']}/{result['images']} correct ({result['accuracy']:.2%})", flush=True)
     print("Recall by letter:", {letter: round(row["recall"], 3) for letter, row in result["per_letter"].items()}, flush=True)
+    print("Camera letters below 90%:", report["camera_benchmark"]["below_target"], flush=True)
 
 
 if __name__ == "__main__":

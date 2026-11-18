@@ -56,9 +56,9 @@ The [Windows workflow](.github/workflows/desktop.yml) runs these checks and atta
 
 ## Model results
 
-The bundled model got **1,723 of 1,933 held-out photos correct (89.14%)** across all 26 trained labels. The app offers webcam practice for 24 of them. J and Z require motion and are excluded from camera practice. Classroom webcam accuracy on independent signers remains unverified. [Training guide](model-training/README.md) · [Alphabet evaluation](model-training/artifacts/fsl-az-v1.json) · [Earlier A/B/C benchmark](docs/images/results.png)
+The bundled **v2 model** got **1,613 of 1,770 held-out photos correct (91.13%)** across the 24 camera letters. It reached 90% on 18 letters. Compared with v1 on the same photos, D improved from 75.0% to 92.5% and Q from 74.0% to 90.9%. Overall accuracy for the 24 letters fell from 92.20% to 91.13%, and M, N, R, S, U, and Y remain below 90%. Classroom webcam accuracy on independent signers remains unverified. [Training guide](model-training/README.md) · [v2 evaluation](model-training/artifacts/fsl-az-v2.json) · [v1 evaluation](model-training/artifacts/fsl-az-v1.json)
 
-![Held-out photo accuracy by letter for the A–Z model.](docs/images/alphabet-results.png)
+![Held-out photo accuracy for each of the 24 letters available in camera practice.](docs/images/alphabet-results.png)
 
 ## Credits
 

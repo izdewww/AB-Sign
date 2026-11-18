@@ -46,7 +46,7 @@ self.onmessage = async ({ data }: MessageEvent<{ kind: 'start' } | { kind: 'fram
     if (data.kind === 'start') {
       const assets = new URL('/vision/wasm', self.location.href).href;
       recognizer = await GestureRecognizer.createFromOptions(await FilesetResolver.forVisionTasks(assets, true), {
-        baseOptions: { modelAssetPath: new URL('/vision/fsl-az-v1.task', self.location.href).href },
+        baseOptions: { modelAssetPath: new URL('/vision/fsl-az-v2.task', self.location.href).href },
         runningMode: 'VIDEO', numHands: 1, minHandDetectionConfidence: .25, minHandPresenceConfidence: .25,
       });
       self.postMessage({ kind: 'ready' } satisfies CameraReport);

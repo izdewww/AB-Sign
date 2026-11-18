@@ -88,20 +88,22 @@ for index, (label, result, color) in enumerate(rows):
 draw.text((48, 330), "Live webcam accuracy on independent signers remains unverified.", font=font(18), fill=SUBTLE)
 image.save(OUT / "results.png")
 
-report = json.loads((ROOT / "model-training/artifacts/fsl-az-v1.json").read_text(encoding="utf-8"))
-test = report["test"]
+report = json.loads((ROOT / "model-training/artifacts/fsl-az-v2.json").read_text(encoding="utf-8"))
+camera_rows = [(letter, row) for letter, row in report["test"]["per_letter"].items() if letter not in {"J", "Z"}]
+correct = sum(row["correct"] for _, row in camera_rows)
+images = sum(row["support"] for _, row in camera_rows)
 image, draw = canvas(
-    590, "Alphabet model results",
-    f"{test['correct']:,} of {test['images']:,} held-out photos correct ({test['accuracy']:.1%})",
+    560, "Camera letter results · v2",
+    f"{correct:,} of {images:,} held-out photos correct ({correct / images:.2%}) across 24 letters",
 )
-for index, (letter, result) in enumerate(test["per_letter"].items()):
-    column, row = divmod(index, 13)
+for index, (letter, result) in enumerate(camera_rows):
+    column, row = divmod(index, 12)
     x, y = 48 + 568 * column, 138 + 30 * row
     recall = result["recall"]
     draw.text((x, y), letter, font=font(18, True), fill=INK)
     draw.rounded_rectangle((x + 30, y + 4, x + 383, y + 19), radius=7, fill="#e1ebe5")
     if recall:
-        draw.rounded_rectangle((x + 30, y + 4, x + 30 + round(353 * recall), y + 19), radius=7, fill=GREEN)
+        draw.rounded_rectangle((x + 30, y + 4, x + 30 + round(353 * recall), y + 19), radius=7, fill=GREEN if recall >= .9 else "#a94c27")
     draw.text((x + 398, y), f"{recall:.1%} ({result['correct']}/{result['support']})", font=font(17), fill=INK)
-draw.text((48, 548), "Cropped photos. J and Z show hand shapes. Classroom webcam accuracy remains unverified.", font=font(18), fill=SUBTLE)
+draw.text((48, 518), "Orange bars fell below 90%. Classroom webcam accuracy remains unverified.", font=font(18), fill=SUBTLE)
 image.save(OUT / "alphabet-results.png")

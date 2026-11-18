@@ -1,16 +1,18 @@
 # Train the FSL alphabet model
 
-The desktop build uses the A–Z MediaPipe task trained on John Gabriel Porton’s Kaggle photos. From the repository root, run this command after preparing the Windows environment below.
+The desktop build uses v2 of the A–Z MediaPipe task trained on John Gabriel Porton’s Kaggle photos. From the repository root, run this command after preparing the Windows environment below.
 
 ```powershell
-& './model-training/.work/venv/Scripts/python.exe' -B -u './model-training/train_alphabet.py'
+& './model-training/.work/venv/Scripts/python.exe' -B -u './model-training/train_alphabet.py' --candidate
 ```
 
-The script exports [the alphabet task](artifacts/fsl-az-v1.task) and [results for each letter](artifacts/fsl-az-v1.json). It uses numeric filenames for training, letter-prefixed filenames for validation, and `Image_` filenames for testing. J, Q, and Z have no `Image_` family, so their letter-prefixed source groups are separated between validation and test. Unknown filename patterns are excluded. Exact duplicate files are skipped, and evaluation uses one photo per recognizable source group.
+The script saves the trial model and report in `.work/`. It starts with numeric filenames for training, letter-prefixed filenames for validation, and `Image_` filenames for testing. J, Q, and Z have no `Image_` family, so their letter-prefixed source groups are separated between validation and test first. Expanded training moves whole groups from the remaining validation pool to training and keeps the original test photos. Unknown filename patterns and exact duplicate files are skipped. Evaluation uses one photo per recognizable source group. [Bundled v2 task](artifacts/fsl-az-v2.task) · [v2 results](artifacts/fsl-az-v2.json)
 
 The score includes missed hand detections and uncertain answers. Signer identities are unavailable, so the test does not establish accuracy on independent signers. J and Z use still hand shapes. The archive has no labeled non-sign hands to measure false accepts.
 
-The exported task classified **1,723 of 1,933 held-out photos correctly (89.14%)**. MediaPipe admitted 4,921 training photos and 2,887 validation photos after hand detection. [Per-letter benchmark chart](../docs/images/alphabet-results.png)
+### Per-letter camera benchmark
+
+The app offers camera practice for 24 letters. v2 got **1,613/1,770 (91.13%)** correct on those letters, compared with **1,632/1,770 (92.20%)** for v1. Both models reached 90% recall on 18 letters. v2 improved D and Q, while M, N, R, S, U, and Y fell below 90%. MediaPipe admitted 7,892 training photos and 578 validation photos when training v2. [Per-letter benchmark chart](../docs/images/alphabet-results.png) · [Earlier v1 results](artifacts/fsl-az-v1.json)
 
 ## Earlier A/B/C pilot
 
