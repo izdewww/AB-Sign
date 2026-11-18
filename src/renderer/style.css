@@ -1,0 +1,7 @@
+:root { font: 18px/1.5 system-ui, sans-serif; color: #182a21; background: #f6faf6; }
+body { margin: 0; min-height: 100vh; display: grid; place-items: center; text-align: center; }
+main { padding: 2rem; }
+img { border-radius: 50%; }
+h1 { margin: .5rem 0; font-size: 2.5rem; line-height: 1.1; color: #1b7339; }
+p { margin: .5rem 0; }
+.status { margin-top: 1.25rem; color: #496254; font-size: .875rem; }

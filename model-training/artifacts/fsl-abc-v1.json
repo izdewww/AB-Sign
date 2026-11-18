@@ -1,0 +1,105 @@
+{
+  "model": "fsl-abc-v1.task",
+  "model_sha256": "243502f0e03fd695b08c46dbf33c99810cb606026721c7f42c7f24619f6601a6",
+  "dataset": "japorton/fsl-dataset/versions/1",
+  "dataset_license": "CC0-1.0 (listed by Kaggle)",
+  "archive_sha256": "cddcc7e896ac1a1427f0fa5c2aefb321b6f0b715b9b8072d775f3047b075a15f",
+  "split": {
+    "train": "numeric",
+    "validation": "letter-prefixed",
+    "test": "Image_"
+  },
+  "validation_limit": "Filename-family split only. Signer identities are unavailable. Cropped still images only.",
+  "seed": 2718,
+  "versions": {
+    "mediapipe": "0.10.21",
+    "mediapipe-model-maker": "0.2.1.4",
+    "tensorflow": "2.15.1"
+  },
+  "labels": [
+    "none",
+    "A",
+    "B",
+    "C"
+  ],
+  "image_counts": {
+    "train": {
+      "A": 183,
+      "B": 140,
+      "C": 162,
+      "none": 161
+    },
+    "validation": {
+      "A": 123,
+      "B": 152,
+      "C": 134,
+      "none": 136
+    },
+    "test": {
+      "A": 58,
+      "B": 78,
+      "C": 81,
+      "none": 72
+    }
+  },
+  "exact_duplicates_skipped": 434,
+  "usable_train": 537,
+  "usable_validation": 484,
+  "test": {
+    "images": 289,
+    "accuracy_including_no_hand_as_miss": 0.7508650519031141,
+    "negative_false_accept_rate": 0.0,
+    "per_label": {
+      "A": {
+        "precision": 1.0,
+        "recall": 0.6206896551724138,
+        "f1": 0.7659574468085106
+      },
+      "B": {
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0
+      },
+      "C": {
+        "precision": 0.98,
+        "recall": 0.6049382716049383,
+        "f1": 0.7480916030534351
+      },
+      "none": {
+        "precision": 1.0,
+        "recall": 0.75,
+        "f1": 0.8571428571428571
+      }
+    },
+    "confusion": {
+      "A": {
+        "A": 36,
+        "B": 0,
+        "C": 1,
+        "none": 0,
+        "no_hand": 21
+      },
+      "B": {
+        "A": 0,
+        "B": 78,
+        "C": 0,
+        "none": 0,
+        "no_hand": 0
+      },
+      "C": {
+        "A": 0,
+        "B": 0,
+        "C": 49,
+        "none": 0,
+        "no_hand": 32
+      },
+      "none": {
+        "A": 0,
+        "B": 0,
+        "C": 0,
+        "none": 54,
+        "no_hand": 18
+      }
+    }
+  }
+}
