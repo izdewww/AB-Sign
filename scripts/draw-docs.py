@@ -45,20 +45,20 @@ def flow(draw, y, blocks, color):
             draw.polygon([(x + 279, center), (x + 270, center - 6), (x + 270, center + 6)], fill=GREEN)
 
 
-image, draw = canvas(420, "Desktop architecture", "A-B Sign!  ·  local application and camera plan")
-draw.text((48, 135), "STARTER", font=font(17, True), fill=GREEN)
+image, draw = canvas(420, "Desktop architecture", "A-B Sign!  ·  local application and camera practice")
+draw.text((48, 135), "DESKTOP APP", font=font(17, True), fill=GREEN)
 flow(draw, 165, [
     ("Electron main", "Opens the window"), ("React renderer", "Desktop interface"),
     ("Local app files", "App protocol"), ("Vision assets", "FSL model and WASM"),
 ], PALE)
-draw.text((48, 282), "PLANNED CAMERA FLOW", font=font(17, True), fill=GREEN)
+draw.text((48, 282), "CAMERA PRACTICE", font=font(17, True), fill=GREEN)
 flow(draw, 312, [
     ("Webcam", "Video stays local"), ("Vision worker", "MediaPipe inference"),
     ("Practice feedback", "Matches the target"), ("Local progress", "Saves the outcome"),
 ], BLUE)
 image.save(OUT / "architecture.png")
 
-image, draw = canvas(420, "Build and model pipelines", "Desktop build and offline A/B/C model preparation")
+image, draw = canvas(420, "Build and model pipelines", "Desktop build and offline A–Z model preparation")
 draw.text((48, 135), "WINDOWS BUILD", font=font(17, True), fill=GREEN)
 flow(draw, 165, [
     ("Install", "npm ci"), ("Verify", "Type-check and build"),
@@ -66,7 +66,7 @@ flow(draw, 165, [
 ], PALE)
 draw.text((48, 282), "MODEL TRAINING", font=font(17, True), fill=GREEN)
 flow(draw, 312, [
-    ("Kaggle images", "Group source variants"), ("Train", "A, B, C and none"),
+    ("Kaggle images", "Group source variants"), ("Train", "All alphabet hand shapes"),
     ("Evaluate", "Replay saved task"), ("Bundle", "Task file and WASM"),
 ], BLUE)
 image.save(OUT / "pipelines.png")
@@ -87,3 +87,21 @@ for index, (label, result, color) in enumerate(rows):
     draw.text((1040, y), f"{accuracy:.1%}", font=font(24, True), fill=INK)
 draw.text((48, 330), "Live webcam accuracy on independent signers remains unverified.", font=font(18), fill=SUBTLE)
 image.save(OUT / "results.png")
+
+report = json.loads((ROOT / "model-training/artifacts/fsl-az-v1.json").read_text(encoding="utf-8"))
+test = report["test"]
+image, draw = canvas(
+    590, "Alphabet model results",
+    f"{test['correct']:,} of {test['images']:,} held-out photos correct ({test['accuracy']:.1%})",
+)
+for index, (letter, result) in enumerate(test["per_letter"].items()):
+    column, row = divmod(index, 13)
+    x, y = 48 + 568 * column, 138 + 30 * row
+    recall = result["recall"]
+    draw.text((x, y), letter, font=font(18, True), fill=INK)
+    draw.rounded_rectangle((x + 30, y + 4, x + 383, y + 19), radius=7, fill="#e1ebe5")
+    if recall:
+        draw.rounded_rectangle((x + 30, y + 4, x + 30 + round(353 * recall), y + 19), radius=7, fill=GREEN)
+    draw.text((x + 398, y), f"{recall:.1%} ({result['correct']}/{result['support']})", font=font(17), fill=INK)
+draw.text((48, 548), "Cropped photos. J and Z show hand shapes. Classroom webcam accuracy remains unverified.", font=font(18), fill=SUBTLE)
+image.save(OUT / "alphabet-results.png")

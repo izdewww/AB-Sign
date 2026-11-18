@@ -1,17 +1,40 @@
-import { app, BrowserWindow, net, protocol, session } from 'electron';
+import { app, BrowserWindow, nativeImage, net, protocol, session } from 'electron';
 import { resolve, sep } from 'node:path';
 import { pathToFileURL } from 'node:url';
+import { verifyDesktop } from './smoke.cjs';
 
 const page = 'app://local/';
 const smoke = process.argv.includes('--smoke-test');
+const ownsInstance = smoke || app.requestSingleInstanceLock();
+if (!ownsInstance) app.quit();
+if (smoke) app.commandLine.appendSwitch('use-fake-device-for-media-stream');
+app.on('second-instance', () => {
+  const window = BrowserWindow.getAllWindows()[0];
+  if (!window) return;
+  if (window.isMinimized()) window.restore();
+  window.focus();
+});
+
+function isAppOrigin(value?: string) {
+  if (!value) return false;
+  try {
+    const url = new URL(value);
+    return url.protocol === 'app:' && url.host === 'local' && !url.username && !url.password;
+  } catch {
+    return false;
+  }
+}
 
 protocol.registerSchemesAsPrivileged([
   { scheme: 'app', privileges: { standard: true, secure: true, supportFetchAPI: true, stream: true } },
 ]);
 
 app.whenReady().then(async () => {
+  if (!ownsInstance) return;
+  app.setAppUserModelId('com.absign.desktop');
   const root = resolve(app.getAppPath(), 'dist');
-  protocol.handle('app', async (request) => {
+  const browserSession = smoke ? session.fromPartition('desktop-smoke') : session.defaultSession;
+  browserSession.protocol.handle('app', async (request) => {
     const url = new URL(request.url);
     if (url.host !== 'local' || request.method !== 'GET') return new Response(null, { status: 404 });
 
@@ -21,35 +44,38 @@ app.whenReady().then(async () => {
       if (!file.startsWith(root + sep)) return new Response(null, { status: 404 });
       const result = await net.fetch(pathToFileURL(file).href);
       const headers = new Headers(result.headers);
-      headers.set('Content-Security-Policy', "default-src 'self'; script-src 'self' 'wasm-unsafe-eval'; object-src 'none'; base-uri 'none'");
+      headers.set('Content-Security-Policy', "default-src 'self'; script-src 'self' 'wasm-unsafe-eval'; worker-src 'self'; img-src 'self' blob:; media-src 'self' blob:; object-src 'none'; base-uri 'none'");
       return new Response(result.body, { status: result.status, headers });
     } catch {
       return new Response(null, { status: 404 });
     }
   });
 
-  session.defaultSession.setPermissionCheckHandler(() => false);
-  session.defaultSession.setPermissionRequestHandler((_contents, _permission, respond) => respond(false));
+  const icon = nativeImage.createFromPath(resolve(root, 'ab-sign.ico'));
   const window = new BrowserWindow({
     title: 'A-B Sign!', width: 1280, height: 900, minWidth: 800, minHeight: 600,
+    icon,
     show: !smoke,
-    webPreferences: { sandbox: true, contextIsolation: true, nodeIntegration: false },
+    webPreferences: {
+      session: browserSession, sandbox: true, contextIsolation: true, nodeIntegration: false,
+      backgroundThrottling: !(smoke && process.env.AB_SIGN_SMOKE_DIR),
+    },
+  });
+  browserSession.setPermissionCheckHandler((contents, permission, origin, details) =>
+    contents === window.webContents && details.isMainFrame && isAppOrigin(origin) &&
+    (permission === 'fullscreen' || (permission === 'media' && details.mediaType === 'video')));
+  browserSession.setPermissionRequestHandler((contents, permission, respond, details) => {
+    const request = details as Electron.MediaAccessPermissionRequest;
+    respond(contents === window.webContents && request.isMainFrame && isAppOrigin(request.requestingUrl) &&
+      (permission === 'fullscreen' || (permission === 'media' && request.mediaTypes?.length === 1 && request.mediaTypes[0] === 'video')));
   });
   window.webContents.setWindowOpenHandler(() => ({ action: 'deny' }));
   window.webContents.on('will-navigate', (event) => event.preventDefault());
   await window.loadURL(page);
 
   if (smoke) {
-    const ready = await window.webContents.executeJavaScript(`new Promise(resolve => {
-      const end = Date.now() + 5000;
-      const timer = setInterval(() => {
-        const heading = document.querySelector('h1')?.textContent === 'A-B Sign!';
-        if (heading || Date.now() > end) { clearInterval(timer); resolve(heading); }
-      }, 25);
-    })`);
-    const asset = await window.webContents.executeJavaScript(`fetch('/vision/fsl-abc-v1.task', {method:'GET'}).then(r => r.ok && r.arrayBuffer()).then(b => b.byteLength > 0)`);
-    if (!ready || !asset) throw new Error('The desktop renderer or packaged model did not load.');
-    console.log('Desktop renderer and local model asset loaded.');
+    if (icon.isEmpty()) throw new Error('The desktop logo did not load.');
+    await verifyDesktop(window);
     app.exit(0);
   }
 }).catch((error: unknown) => {

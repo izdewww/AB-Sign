@@ -1,4 +1,18 @@
-# Train the A/B/C FSL model
+# Train the FSL alphabet model
+
+The desktop build uses the A–Z MediaPipe task trained on John Gabriel Porton’s Kaggle photos. From the repository root, run this command after preparing the Windows environment below.
+
+```powershell
+& './model-training/.work/venv/Scripts/python.exe' -B -u './model-training/train_alphabet.py'
+```
+
+The script exports [the alphabet task](artifacts/fsl-az-v1.task) and [results for each letter](artifacts/fsl-az-v1.json). It uses numeric filenames for training, letter-prefixed filenames for validation, and `Image_` filenames for testing. J, Q, and Z have no `Image_` family, so their letter-prefixed source groups are separated between validation and test. Unknown filename patterns are excluded. Exact duplicate files are skipped, and evaluation uses one photo per recognizable source group.
+
+The score includes missed hand detections and uncertain answers. Signer identities are unavailable, so the test does not establish accuracy on independent signers. J and Z use still hand shapes. The archive has no labeled non-sign hands to measure false accepts.
+
+The exported task classified **1,723 of 1,933 held-out photos correctly (89.14%)**. MediaPipe admitted 4,921 training photos and 2,887 validation photos after hand detection. [Per-letter benchmark chart](../docs/images/alphabet-results.png)
+
+## Earlier A/B/C pilot
 
 This workflow trains a MediaPipe Gesture Recognizer task using version 1 of John Gabriel Porton's FSL alphabet dataset. Kaggle lists the archive under CC0. A, B, and C are the target labels. The `none` examples come from other static letter classes. The model learns from cropped still images. [Kaggle dataset](https://www.kaggle.com/datasets/japorton/fsl-dataset) · [Kaggle metadata](https://www.kaggle.com/api/v1/datasets/view/japorton/fsl-dataset) · [Google training notebook](https://github.com/google-ai-edge/mediapipe-samples/blob/main/examples/customization/gesture_recognizer.ipynb)
 

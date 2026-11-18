@@ -1,6 +1,7 @@
 module.exports = {
   packagerConfig: {
     asar: true,
+    icon: 'src/renderer/public/ab-sign.ico',
     executableName: 'ab-sign',
     ignore: (path) => Boolean(path) && !/^\/(dist(?:-electron)?|node_modules)(?:\/|$)|^\/package\.json$/.test(path),
   },

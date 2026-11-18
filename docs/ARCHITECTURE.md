@@ -2,12 +2,12 @@
 
 [README](../README.md) · [Implementation plan](../IMPLEMENTATION_PLAN.md) · [Training guide](../model-training/README.md)
 
-![Desktop architecture from renderer through local assets and planned webcam processing.](images/architecture.png)
+![Desktop architecture from renderer through local assets and webcam processing.](images/architecture.png)
 
 | Location | Responsibility |
 | --- | --- |
-| `src/main/` | Electron lifecycle, window, local asset protocol, and permission defaults |
-| `src/renderer/` | React desktop starter and styling |
+| `src/main/` | Electron window, local asset protocol, camera permission checks, and app smoke test |
+| `src/renderer/` | React pages, local progress, teacher lesson storage, and webcam worker |
 | `scripts/` | Model checksum verification and local build asset preparation |
 | `model-training/` | Dataset preparation, training, and benchmark reports |
 | `.github/workflows/` | Windows verification and ZIP build |
@@ -17,10 +17,12 @@
 
 ![Build pipeline from npm install through checks and ZIP packaging, and model pipeline from Kaggle images to packaged MediaPipe task.](images/pipelines.png)
 
-The build verifies the selected model’s checksum and copies the model and MediaPipe WASM files into the local renderer output. `npm run smoke` checks that Electron can load the renderer and read the model file.
+The build verifies the model checksum and copies the model and MediaPipe WASM files. Camera practice runs in a worker and stops when the learner leaves. The app keeps camera frames in memory. The renderer stores small progress summaries locally. IndexedDB holds drafts, published versions, teacher pictures and videos, and optional quiz settings. Editing a draft leaves the published lesson available until the teacher saves the updated version for learners.
+
+`npm run smoke` uses a fake camera, a generated WebM clip, and labeled photos to check the main flows and local model inference. The webcam test exercises the packaged code path. Classroom camera behavior and recognition on new signers require separate validation.
 
 Training is a separate development task. Follow the [training guide](../model-training/README.md) for the dataset, Python environment, and export commands.
 
-![Measured accuracy for the original and updated runtime on the same cropped-image benchmark.](images/results.png)
+The bundled model now covers A–Z. The earlier A/B/C pilot used a smaller benchmark. [Alphabet evaluation](../model-training/artifacts/fsl-az-v1.json) · [A/B/C pilot chart](images/results.png)
 
-The [implementation plan](../IMPLEMENTATION_PLAN.md) tracks the 18 prototype screens, lesson content, local progress, camera behavior, and release checks. Classroom validation requires full webcam frames from independent signers.
+The implementation plan tracks the desktop screens, lesson content, camera behavior, and verification. Classroom validation requires full webcam frames from independent signers. [Implementation plan](../IMPLEMENTATION_PLAN.md)

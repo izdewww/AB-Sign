@@ -16,7 +16,18 @@ A desktop app in development for teaching children Filipino Sign Language (FSL) 
 
 ## Project status
 
-The repository includes a runnable desktop starter, local model assets, reproducible training scripts, and a Windows build workflow. The lesson player, faculty builder, progress storage, and webcam scoring are implementation milestones in the [plan](IMPLEMENTATION_PLAN.md).
+**Learn** includes nine editable alphabet lessons with one dataset photo per letter. Lessons group three letters at a time, with Y and Z in the last lesson. Learners can open any lesson and take its optional quiz.
+
+![The learning path shows nine pastel lesson cards covering A through Z.](docs/images/lesson-library.png)
+
+## For teachers
+
+1. Open **For teachers** and create a blank lesson or edit an alphabet lesson. Use **Hide alphabet lessons** for an empty learner library.
+2. Add signs, replace pictures, and upload optional MP4 or WebM videos. The alphabet lessons start with empty video slots.
+3. Add a quiz if you want one. Choose the signs, question types, and number of questions. Each round shuffles the questions and answer choices using letters from that lesson.
+4. Preview your work and select **Use on this device** when it is ready for learners.
+
+Picture matching covers A–Z. Webcam practice covers 24 letters. J and Z are available in lessons and picture quizzes, and teachers can upload videos to show the movement.
 
 ## Quick start
 
@@ -30,24 +41,25 @@ npm start
 | Command | What it does |
 | --- | --- |
 | `npm run check` | Type-checks the desktop and React code |
-| `npm run build` | Compiles the starter and copies local model and WASM assets |
-| `npm run smoke` | Opens the built renderer in Electron and checks access to the model file |
+| `node --test scripts/test-quiz.mjs` | Checks question and answer randomization |
+| `npm run build` | Compiles the app and copies local model and WASM assets |
+| `npm run smoke` | Checks the alphabet library, teacher uploads, mixed quizzes, and synthetic camera recognition in Electron |
 | `npm run make` | Builds a Windows x64 ZIP under `out/make/` |
 
 The [Windows workflow](.github/workflows/desktop.yml) runs these checks and attaches the ZIP to successful runs. [GitHub Actions](https://github.com/izdewww/AB-Sign/actions/workflows/desktop.yml)
 
 ## Architecture
 
-![Electron serves the React window and local assets. The planned webcam worker processes frames on the device.](docs/images/architecture.png)
+![Electron serves the React window and local assets. The webcam worker processes frames on the device.](docs/images/architecture.png)
 
-[Desktop components and build pipeline](docs/ARCHITECTURE.md) · [Screen and feature inventory](IMPLEMENTATION_PLAN.md#4-implement-every-stitch-screen)
+[Desktop components and build pipeline](docs/ARCHITECTURE.md) · [Screen and feature inventory](IMPLEMENTATION_PLAN.md#desktop-screens)
 
 ## Model results
 
-![A/B/C benchmark on 289 cropped stills. Original defaults scored 75.1%. The updated runtime scored 99.3% with either set of weights.](docs/images/results.png)
+The bundled model got **1,723 of 1,933 held-out photos correct (89.14%)** across all 26 trained labels. The app offers webcam practice for 24 of them. J and Z require motion and are excluded from camera practice. Classroom webcam accuracy on independent signers remains unverified. [Training guide](model-training/README.md) · [Alphabet evaluation](model-training/artifacts/fsl-az-v1.json) · [Earlier A/B/C benchmark](docs/images/results.png)
 
-The starter bundles the original A/B/C model. Padding the input and adjusting hand detection yielded **287/289 correct** on the reused Kaggle test split. Live webcam accuracy on independent signers remains unverified. [Runtime settings and training](model-training/README.md) · [Evaluation results](model-training/artifacts/fsl-abc-v2.json) · [Dataset sources](MODEL_RESEARCH.md)
+![Held-out photo accuracy by letter for the A–Z model.](docs/images/alphabet-results.png)
 
 ## Credits
 
-The A/B/C model was trained using [John Gabriel Porton’s FSL alphabet dataset](https://www.kaggle.com/datasets/japorton/fsl-dataset), listed as CC0. See [third-party credits](docs/THIRD_PARTY.md) for the model components and dependencies.
+The model was trained on John Gabriel Porton’s FSL alphabet dataset, listed as CC0. [Kaggle dataset](https://www.kaggle.com/datasets/japorton/fsl-dataset) · [Third-party credits](docs/THIRD_PARTY.md)
