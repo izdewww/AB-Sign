@@ -1,0 +1,907 @@
+[
+  {
+    "id": "vocabulary-1",
+    "category": "numbers",
+    "title": "Numbers 1\u20135",
+    "terms": [
+      {
+        "id": "20",
+        "term": "1",
+        "camera": true,
+        "source": "videos/clips/20/19.MOV"
+      },
+      {
+        "id": "21",
+        "term": "2",
+        "camera": false,
+        "source": "videos/clips/21/12.MOV"
+      },
+      {
+        "id": "22",
+        "term": "3",
+        "camera": true,
+        "source": "videos/clips/22/0.MOV"
+      },
+      {
+        "id": "23",
+        "term": "4",
+        "camera": false,
+        "source": "videos/clips/23/0.MOV"
+      },
+      {
+        "id": "24",
+        "term": "5",
+        "camera": true,
+        "source": "videos/clips/24/18.MOV"
+      }
+    ]
+  },
+  {
+    "id": "vocabulary-2",
+    "category": "numbers",
+    "title": "Numbers 6\u201310",
+    "terms": [
+      {
+        "id": "25",
+        "term": "6",
+        "camera": false,
+        "source": "videos/clips/25/10.MOV"
+      },
+      {
+        "id": "26",
+        "term": "7",
+        "camera": false,
+        "source": "videos/clips/26/15.MOV"
+      },
+      {
+        "id": "27",
+        "term": "8",
+        "camera": false,
+        "source": "videos/clips/27/20.MOV"
+      },
+      {
+        "id": "28",
+        "term": "9",
+        "camera": true,
+        "source": "videos/clips/28/12.MOV"
+      },
+      {
+        "id": "29",
+        "term": "10",
+        "camera": true,
+        "source": "videos/clips/29/3.MOV"
+      }
+    ]
+  },
+  {
+    "id": "vocabulary-3",
+    "category": "greetings",
+    "title": "Hello and thank you",
+    "terms": [
+      {
+        "id": "3",
+        "term": "Hello",
+        "camera": true,
+        "source": "videos/clips/3/17.MOV"
+      },
+      {
+        "id": "7",
+        "term": "Thank You",
+        "camera": true,
+        "source": "videos/clips/7/19.MOV"
+      },
+      {
+        "id": "8",
+        "term": "You're Welcome",
+        "camera": false,
+        "source": "videos/clips/8/15.MOV"
+      },
+      {
+        "id": "0",
+        "term": "Good Morning",
+        "camera": false,
+        "source": "videos/clips/0/0.MOV"
+      }
+    ]
+  },
+  {
+    "id": "vocabulary-4",
+    "category": "family",
+    "title": "My family",
+    "terms": [
+      {
+        "id": "52",
+        "term": "Father",
+        "camera": true,
+        "source": "videos/clips/52/19.MOV"
+      },
+      {
+        "id": "53",
+        "term": "Mother",
+        "camera": false,
+        "source": "videos/clips/53/19.MOV"
+      },
+      {
+        "id": "54",
+        "term": "Son",
+        "camera": false,
+        "source": "videos/clips/54/6.MOV"
+      },
+      {
+        "id": "55",
+        "term": "Daughter",
+        "camera": false,
+        "source": "videos/clips/55/0.MOV"
+      }
+    ]
+  },
+  {
+    "id": "vocabulary-5",
+    "category": "food",
+    "title": "Food and colors",
+    "terms": [
+      {
+        "id": "72",
+        "term": "Blue",
+        "camera": false,
+        "source": "videos/clips/72/16.MOV"
+      },
+      {
+        "id": "74",
+        "term": "Red",
+        "camera": false,
+        "source": "videos/clips/74/6.MOV"
+      },
+      {
+        "id": "78",
+        "term": "Yellow",
+        "camera": false,
+        "source": "videos/clips/78/16.MOV"
+      },
+      {
+        "id": "85",
+        "term": "Bread",
+        "camera": true,
+        "source": "videos/clips/85/17.MOV"
+      },
+      {
+        "id": "86",
+        "term": "Egg",
+        "camera": true,
+        "source": "videos/clips/86/11.MOV"
+      },
+      {
+        "id": "91",
+        "term": "Rice",
+        "camera": true,
+        "source": "videos/clips/91/18.MOV"
+      }
+    ]
+  },
+  {
+    "id": "vocabulary-6",
+    "category": "words",
+    "title": "Everyday signs",
+    "terms": [
+      {
+        "id": "14",
+        "term": "No",
+        "camera": true,
+        "source": "videos/clips/14/0.MOV"
+      },
+      {
+        "id": "15",
+        "term": "Yes",
+        "camera": false,
+        "source": "videos/clips/15/9.MOV"
+      },
+      {
+        "id": "16",
+        "term": "Wrong",
+        "camera": false,
+        "source": "videos/clips/16/3.MOV"
+      },
+      {
+        "id": "17",
+        "term": "Correct",
+        "camera": true,
+        "source": "videos/clips/17/7.MOV"
+      },
+      {
+        "id": "18",
+        "term": "Slow",
+        "camera": true,
+        "source": "videos/clips/18/17.MOV"
+      },
+      {
+        "id": "19",
+        "term": "Fast",
+        "camera": false,
+        "source": "videos/clips/19/4.MOV"
+      }
+    ]
+  },
+  {
+    "id": "numbers-11-20",
+    "category": "numbers",
+    "title": "Numbers 11\u201320",
+    "terms": [
+      {
+        "term": "11",
+        "camera": false
+      },
+      {
+        "term": "12",
+        "camera": false
+      },
+      {
+        "term": "13",
+        "camera": false
+      },
+      {
+        "term": "14",
+        "camera": false
+      },
+      {
+        "term": "15",
+        "camera": false
+      },
+      {
+        "term": "16",
+        "camera": false
+      },
+      {
+        "term": "17",
+        "camera": false
+      },
+      {
+        "term": "18",
+        "camera": false
+      },
+      {
+        "term": "19",
+        "camera": false
+      },
+      {
+        "term": "20",
+        "camera": false
+      }
+    ]
+  },
+  {
+    "id": "vocabulary-greetings-1",
+    "title": "More greetings",
+    "category": "greetings",
+    "terms": [
+      {
+        "id": "1",
+        "term": "Good Afternoon",
+        "camera": false,
+        "source": "videos/clips/1/5.MOV"
+      },
+      {
+        "id": "2",
+        "term": "Good Evening",
+        "camera": false,
+        "source": "videos/clips/2/2.MOV"
+      },
+      {
+        "id": "4",
+        "term": "How Are You",
+        "camera": true,
+        "source": "videos/clips/4/16.MOV"
+      },
+      {
+        "id": "5",
+        "term": "I\u2019m Fine",
+        "camera": true,
+        "source": "videos/clips/5/5.MOV"
+      },
+      {
+        "id": "6",
+        "term": "Nice To Meet You",
+        "camera": true,
+        "source": "videos/clips/6/11.MOV"
+      },
+      {
+        "id": "9",
+        "term": "See You Tomorrow",
+        "camera": true,
+        "source": "videos/clips/9/3.MOV"
+      }
+    ]
+  },
+  {
+    "id": "vocabulary-family-1",
+    "title": "More family signs",
+    "category": "family",
+    "terms": [
+      {
+        "id": "56",
+        "term": "Grandfather",
+        "camera": true,
+        "source": "videos/clips/56/15.MOV"
+      },
+      {
+        "id": "57",
+        "term": "Grandmother",
+        "camera": true,
+        "source": "videos/clips/57/18.MOV"
+      },
+      {
+        "id": "58",
+        "term": "Uncle",
+        "camera": true,
+        "source": "videos/clips/58/0.MOV"
+      },
+      {
+        "id": "59",
+        "term": "Auntie",
+        "camera": false,
+        "source": "videos/clips/59/1.MOV"
+      },
+      {
+        "id": "60",
+        "term": "Cousin",
+        "camera": false,
+        "source": "videos/clips/60/18.MOV"
+      },
+      {
+        "id": "61",
+        "term": "Parents",
+        "camera": false,
+        "source": "videos/clips/61/12.MOV"
+      }
+    ]
+  },
+  {
+    "id": "vocabulary-colors-1",
+    "title": "Colors 1",
+    "category": "food",
+    "terms": [
+      {
+        "id": "73",
+        "term": "Green",
+        "camera": true,
+        "source": "videos/clips/73/19.MOV"
+      },
+      {
+        "id": "75",
+        "term": "Brown",
+        "camera": true,
+        "source": "videos/clips/75/17.MOV"
+      },
+      {
+        "id": "76",
+        "term": "Black",
+        "camera": false,
+        "source": "videos/clips/76/9.MOV"
+      },
+      {
+        "id": "77",
+        "term": "White",
+        "camera": true,
+        "source": "videos/clips/77/14.MOV"
+      },
+      {
+        "id": "79",
+        "term": "Orange",
+        "camera": false,
+        "source": "videos/clips/79/15.MOV"
+      }
+    ]
+  },
+  {
+    "id": "vocabulary-colors-2",
+    "title": "Colors 2",
+    "category": "food",
+    "terms": [
+      {
+        "id": "80",
+        "term": "Gray",
+        "camera": true,
+        "source": "videos/clips/80/16.MOV"
+      },
+      {
+        "id": "81",
+        "term": "Pink",
+        "camera": false,
+        "source": "videos/clips/81/6.MOV"
+      },
+      {
+        "id": "82",
+        "term": "Violet",
+        "camera": true,
+        "source": "videos/clips/82/13.MOV"
+      },
+      {
+        "id": "83",
+        "term": "Light",
+        "camera": true,
+        "source": "videos/clips/83/15.MOV"
+      },
+      {
+        "id": "84",
+        "term": "Dark",
+        "camera": true,
+        "source": "videos/clips/84/5.MOV"
+      }
+    ]
+  },
+  {
+    "id": "vocabulary-food-1",
+    "title": "More food signs 1",
+    "category": "food",
+    "terms": [
+      {
+        "id": "87",
+        "term": "Fish",
+        "camera": true,
+        "source": "videos/clips/87/2.MOV"
+      },
+      {
+        "id": "88",
+        "term": "Meat",
+        "camera": true,
+        "source": "videos/clips/88/6.MOV"
+      },
+      {
+        "id": "89",
+        "term": "Chicken",
+        "camera": false,
+        "source": "videos/clips/89/0.MOV"
+      },
+      {
+        "id": "90",
+        "term": "Spaghetti",
+        "camera": true,
+        "source": "videos/clips/90/3.MOV"
+      }
+    ]
+  },
+  {
+    "id": "vocabulary-food-2",
+    "title": "More food signs 2",
+    "category": "food",
+    "terms": [
+      {
+        "id": "92",
+        "term": "Longanisa",
+        "camera": true,
+        "source": "videos/clips/92/6.MOV"
+      },
+      {
+        "id": "93",
+        "term": "Shrimp",
+        "camera": true,
+        "source": "videos/clips/93/15.MOV"
+      },
+      {
+        "id": "94",
+        "term": "Crab",
+        "camera": true,
+        "source": "videos/clips/94/2.MOV"
+      }
+    ]
+  },
+  {
+    "id": "vocabulary-words-1",
+    "title": "More everyday signs",
+    "category": "words",
+    "terms": [
+      {
+        "id": "10",
+        "term": "Understand",
+        "camera": true,
+        "source": "videos/clips/10/0.MOV"
+      },
+      {
+        "id": "11",
+        "term": "Don\u2019T Understand",
+        "camera": false,
+        "source": "videos/clips/11/18.MOV"
+      },
+      {
+        "id": "12",
+        "term": "Know",
+        "camera": false,
+        "source": "videos/clips/12/9.MOV"
+      },
+      {
+        "id": "13",
+        "term": "Don\u2019T Know",
+        "camera": false,
+        "source": "videos/clips/13/10.MOV"
+      }
+    ]
+  },
+  {
+    "id": "vocabulary-days-1",
+    "title": "Days and time 1",
+    "category": "days",
+    "terms": [
+      {
+        "id": "42",
+        "term": "Monday",
+        "camera": false,
+        "source": "videos/clips/42/19.MOV"
+      },
+      {
+        "id": "43",
+        "term": "Tuesday",
+        "camera": true,
+        "source": "videos/clips/43/0.MOV"
+      },
+      {
+        "id": "44",
+        "term": "Wednesday",
+        "camera": false,
+        "source": "videos/clips/44/7.MOV"
+      },
+      {
+        "id": "45",
+        "term": "Thursday",
+        "camera": false,
+        "source": "videos/clips/45/3.MOV"
+      },
+      {
+        "id": "46",
+        "term": "Friday",
+        "camera": true,
+        "source": "videos/clips/46/4.MOV"
+      }
+    ]
+  },
+  {
+    "id": "vocabulary-days-2",
+    "title": "Days and time 2",
+    "category": "days",
+    "terms": [
+      {
+        "id": "47",
+        "term": "Saturday",
+        "camera": false,
+        "source": "videos/clips/47/19.MOV"
+      },
+      {
+        "id": "48",
+        "term": "Sunday",
+        "camera": false,
+        "source": "videos/clips/48/16.MOV"
+      },
+      {
+        "id": "49",
+        "term": "Today",
+        "camera": true,
+        "source": "videos/clips/49/0.MOV"
+      },
+      {
+        "id": "50",
+        "term": "Tomorrow",
+        "camera": false,
+        "source": "videos/clips/50/4.MOV"
+      },
+      {
+        "id": "51",
+        "term": "Yesterday",
+        "camera": false,
+        "source": "videos/clips/51/9.MOV"
+      }
+    ]
+  },
+  {
+    "id": "vocabulary-months-1",
+    "title": "Months of the year 1",
+    "category": "months",
+    "terms": [
+      {
+        "id": "30",
+        "term": "January",
+        "camera": false,
+        "source": "videos/clips/30/1.MOV"
+      },
+      {
+        "id": "31",
+        "term": "February",
+        "camera": false,
+        "source": "videos/clips/31/4.MOV"
+      },
+      {
+        "id": "32",
+        "term": "March",
+        "camera": false,
+        "source": "videos/clips/32/1.MOV"
+      },
+      {
+        "id": "33",
+        "term": "April",
+        "camera": false,
+        "source": "videos/clips/33/17.MOV"
+      },
+      {
+        "id": "34",
+        "term": "May",
+        "camera": false,
+        "source": "videos/clips/34/3.MOV"
+      },
+      {
+        "id": "35",
+        "term": "June",
+        "camera": false,
+        "source": "videos/clips/35/4.MOV"
+      }
+    ]
+  },
+  {
+    "id": "vocabulary-months-2",
+    "title": "Months of the year 2",
+    "category": "months",
+    "terms": [
+      {
+        "id": "36",
+        "term": "July",
+        "camera": false,
+        "source": "videos/clips/36/1.MOV"
+      },
+      {
+        "id": "37",
+        "term": "August",
+        "camera": false,
+        "source": "videos/clips/37/13.MOV"
+      },
+      {
+        "id": "38",
+        "term": "September",
+        "camera": false,
+        "source": "videos/clips/38/15.MOV"
+      },
+      {
+        "id": "39",
+        "term": "October",
+        "camera": false,
+        "source": "videos/clips/39/4.MOV"
+      },
+      {
+        "id": "40",
+        "term": "November",
+        "camera": false,
+        "source": "videos/clips/40/6.MOV"
+      },
+      {
+        "id": "41",
+        "term": "December",
+        "camera": false,
+        "source": "videos/clips/41/20.MOV"
+      }
+    ]
+  },
+  {
+    "id": "vocabulary-people-1",
+    "title": "People 1",
+    "category": "people",
+    "terms": [
+      {
+        "id": "62",
+        "term": "Boy",
+        "camera": false,
+        "source": "videos/clips/62/20.MOV"
+      },
+      {
+        "id": "63",
+        "term": "Girl",
+        "camera": true,
+        "source": "videos/clips/63/17.MOV"
+      },
+      {
+        "id": "64",
+        "term": "Man",
+        "camera": true,
+        "source": "videos/clips/64/0.MOV"
+      },
+      {
+        "id": "65",
+        "term": "Woman",
+        "camera": true,
+        "source": "videos/clips/65/15.MOV"
+      },
+      {
+        "id": "66",
+        "term": "Deaf",
+        "camera": false,
+        "source": "videos/clips/66/4.MOV"
+      }
+    ]
+  },
+  {
+    "id": "vocabulary-people-2",
+    "title": "People 2",
+    "category": "people",
+    "terms": [
+      {
+        "id": "67",
+        "term": "Hard Of Hearing",
+        "camera": false,
+        "source": "videos/clips/67/9.MOV"
+      },
+      {
+        "id": "68",
+        "term": "Wheelchair Person",
+        "camera": true,
+        "source": "videos/clips/68/17.MOV"
+      },
+      {
+        "id": "69",
+        "term": "Blind",
+        "camera": false,
+        "source": "videos/clips/69/10.MOV"
+      },
+      {
+        "id": "70",
+        "term": "Deafblind",
+        "camera": true,
+        "source": "videos/clips/70/0.MOV"
+      },
+      {
+        "id": "71",
+        "term": "Married",
+        "camera": true,
+        "source": "videos/clips/71/8.MOV"
+      }
+    ]
+  },
+  {
+    "id": "vocabulary-drinks-1",
+    "title": "Drinks and flavors 1",
+    "category": "drinks",
+    "terms": [
+      {
+        "id": "95",
+        "term": "Hot",
+        "camera": false,
+        "source": "videos/clips/95/4.MOV"
+      },
+      {
+        "id": "96",
+        "term": "Cold",
+        "camera": false,
+        "source": "videos/clips/96/2.MOV"
+      },
+      {
+        "id": "97",
+        "term": "Juice",
+        "camera": false,
+        "source": "videos/clips/97/10.MOV"
+      },
+      {
+        "id": "98",
+        "term": "Milk",
+        "camera": true,
+        "source": "videos/clips/98/0.MOV"
+      },
+      {
+        "id": "99",
+        "term": "Coffee",
+        "camera": false,
+        "source": "videos/clips/99/12.MOV"
+      }
+    ]
+  },
+  {
+    "id": "vocabulary-drinks-2",
+    "title": "Drinks and flavors 2",
+    "category": "drinks",
+    "terms": [
+      {
+        "id": "100",
+        "term": "Tea",
+        "camera": true,
+        "source": "videos/clips/100/2.MOV"
+      },
+      {
+        "id": "101",
+        "term": "Beer",
+        "camera": false,
+        "source": "videos/clips/101/0.MOV"
+      },
+      {
+        "id": "102",
+        "term": "Wine",
+        "camera": false,
+        "source": "videos/clips/102/4.MOV"
+      },
+      {
+        "id": "103",
+        "term": "Sugar",
+        "camera": true,
+        "source": "videos/clips/103/0.MOV"
+      },
+      {
+        "id": "104",
+        "term": "No Sugar",
+        "camera": true,
+        "source": "videos/clips/104/9.MOV"
+      }
+    ]
+  },
+  {
+    "id": "vocabulary-errands-help",
+    "title": "Asking for help",
+    "category": "errands",
+    "terms": [
+      {
+        "id": "txn-again",
+        "term": "Again",
+        "camera": true
+      },
+      {
+        "id": "txn-please",
+        "term": "Please",
+        "camera": true
+      },
+      {
+        "id": "txn-problem",
+        "term": "Problem",
+        "camera": true
+      },
+      {
+        "id": "txn-wait",
+        "term": "Wait",
+        "camera": true
+      }
+    ]
+  },
+  {
+    "id": "vocabulary-errands-pay",
+    "title": "Paying at a shop",
+    "category": "errands",
+    "terms": [
+      {
+        "id": "txn-card",
+        "term": "Card",
+        "camera": true
+      },
+      {
+        "id": "txn-cash",
+        "term": "Cash",
+        "camera": false
+      },
+      {
+        "id": "txn-coin",
+        "term": "Coin",
+        "camera": false
+      },
+      {
+        "id": "txn-receipt",
+        "term": "Receipt",
+        "camera": true
+      }
+    ]
+  },
+  {
+    "id": "vocabulary-errands-shop",
+    "title": "More at the shop",
+    "category": "errands",
+    "terms": [
+      {
+        "id": "txn-how-many",
+        "term": "How Many",
+        "camera": false
+      },
+      {
+        "id": "txn-how-much",
+        "term": "How Much",
+        "camera": false
+      },
+      {
+        "id": "txn-discount",
+        "term": "Discount",
+        "camera": false
+      },
+      {
+        "id": "txn-welcome",
+        "term": "Welcome",
+        "camera": true
+      }
+    ]
+  }
+]

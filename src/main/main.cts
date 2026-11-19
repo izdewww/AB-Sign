@@ -2,7 +2,7 @@ import { app, BrowserWindow, ipcMain, nativeImage, net, protocol, session } from
 import { resolve, sep } from 'node:path';
 import { mkdtempSync, rmSync, rmdirSync } from 'node:fs';
 import { pathToFileURL } from 'node:url';
-import { verifyDesktop } from './smoke.cjs';
+import { seedLessonUpgrade, verifyDesktop } from './smoke.cjs';
 import { localAccounts } from './accounts.cjs';
 
 const page = 'app://local/';
@@ -84,6 +84,10 @@ app.whenReady().then(async () => {
   });
   window.webContents.setWindowOpenHandler(() => ({ action: 'deny' }));
   window.webContents.on('will-navigate', (event) => event.preventDefault());
+  if (smoke) {
+    await window.loadURL(page + 'ab-sign.ico');
+    await seedLessonUpgrade(window);
+  }
   await window.loadURL(page);
 
   if (smoke) {

@@ -1,0 +1,233 @@
+{
+  "dataset": "10.17632/48y2y99mb9.2",
+  "pose_sha256": "59929e1d1ee95287735ddd833b19cf4ac46d29bc7afddbbf6753c459690d574a",
+  "hands_sha256": "49c26eb5b27fcb7e3f006d549ed18382802d203ae54dd8dfe8e314f0b4507d01",
+  "archive_sha256": "c048c0820be1621101dfedeabb76a9fbfca76ed2868eebe23b4cb90d5c748463",
+  "model_sha256": "2786178101dae2a2fce8a4103389c2091593cc154eb2c1f21fcd00a1ac1d625c",
+  "train_clips": 272,
+  "validation_clips": 63,
+  "test_clips": 121,
+  "per_sign": {
+    "20": {
+      "correct": 4,
+      "clips": 4,
+      "precision": 1.0,
+      "camera": true
+    },
+    "21": {
+      "correct": 4,
+      "clips": 4,
+      "precision": 0.8,
+      "camera": false
+    },
+    "22": {
+      "correct": 4,
+      "clips": 4,
+      "precision": 1.0,
+      "camera": true
+    },
+    "23": {
+      "correct": 3,
+      "clips": 4,
+      "precision": 0.6,
+      "camera": false
+    },
+    "24": {
+      "correct": 4,
+      "clips": 4,
+      "precision": 1.0,
+      "camera": true
+    },
+    "25": {
+      "correct": 3,
+      "clips": 4,
+      "precision": 1.0,
+      "camera": false
+    },
+    "26": {
+      "correct": 2,
+      "clips": 4,
+      "precision": 1.0,
+      "camera": false
+    },
+    "27": {
+      "correct": 3,
+      "clips": 4,
+      "precision": 1.0,
+      "camera": false
+    },
+    "28": {
+      "correct": 4,
+      "clips": 4,
+      "precision": 1.0,
+      "camera": true
+    },
+    "29": {
+      "correct": 4,
+      "clips": 4,
+      "precision": 1.0,
+      "camera": true
+    },
+    "3": {
+      "correct": 2,
+      "clips": 4,
+      "precision": 1.0,
+      "camera": false
+    },
+    "7": {
+      "correct": 2,
+      "clips": 4,
+      "precision": 1.0,
+      "camera": false
+    },
+    "8": {
+      "correct": 3,
+      "clips": 4,
+      "precision": 1.0,
+      "camera": false
+    },
+    "0": {
+      "correct": 3,
+      "clips": 4,
+      "precision": 1.0,
+      "camera": false
+    },
+    "52": {
+      "correct": 3,
+      "clips": 4,
+      "precision": 1.0,
+      "camera": false
+    },
+    "53": {
+      "correct": 1,
+      "clips": 4,
+      "precision": 1.0,
+      "camera": false
+    },
+    "54": {
+      "correct": 0,
+      "clips": 4,
+      "precision": 0.0,
+      "camera": false
+    },
+    "55": {
+      "correct": 2,
+      "clips": 4,
+      "precision": 0.3333333333333333,
+      "camera": false
+    },
+    "72": {
+      "correct": 3,
+      "clips": 4,
+      "precision": 1.0,
+      "camera": false
+    },
+    "74": {
+      "correct": 1,
+      "clips": 4,
+      "precision": 1.0,
+      "camera": false
+    },
+    "78": {
+      "correct": 1,
+      "clips": 4,
+      "precision": 0.5,
+      "camera": false
+    },
+    "85": {
+      "correct": 4,
+      "clips": 4,
+      "precision": 1.0,
+      "camera": true
+    },
+    "86": {
+      "correct": 4,
+      "clips": 4,
+      "precision": 1.0,
+      "camera": true
+    },
+    "91": {
+      "correct": 4,
+      "clips": 4,
+      "precision": 1.0,
+      "camera": true
+    },
+    "14": {
+      "correct": 1,
+      "clips": 4,
+      "precision": 1.0,
+      "camera": false
+    },
+    "15": {
+      "correct": 3,
+      "clips": 4,
+      "precision": 1.0,
+      "camera": false
+    },
+    "16": {
+      "correct": 4,
+      "clips": 4,
+      "precision": 1.0,
+      "camera": true
+    },
+    "17": {
+      "correct": 3,
+      "clips": 5,
+      "precision": 0.75,
+      "camera": false
+    },
+    "18": {
+      "correct": 3,
+      "clips": 4,
+      "precision": 1.0,
+      "camera": false
+    },
+    "19": {
+      "correct": 2,
+      "clips": 4,
+      "precision": 1.0,
+      "camera": false
+    }
+  },
+  "number_train_clips": 396,
+  "number_validation_clips": 90,
+  "camera": [
+    {
+      "id": "20",
+      "label": "One"
+    },
+    {
+      "id": "22",
+      "label": "Three"
+    },
+    {
+      "id": "24",
+      "label": "Five"
+    },
+    {
+      "id": "28",
+      "label": "Nine"
+    },
+    {
+      "id": "29",
+      "label": "Ten"
+    },
+    {
+      "id": "85",
+      "label": "Bread"
+    },
+    {
+      "id": "86",
+      "label": "Egg"
+    },
+    {
+      "id": "91",
+      "label": "Rice"
+    },
+    {
+      "id": "16",
+      "label": "Wrong"
+    }
+  ],
+  "evaluation": "Publisher-provided test split. Signer identities and non-sign clips were unavailable."
+}

@@ -2,8 +2,9 @@ import { useEffect, useRef, useState, type ReactNode } from 'react';
 import { letters } from './letters';
 import type { Label } from './classroom';
 import type { CameraReport } from './recognize.worker';
+import type { WordCameraReport } from './vocabulary.worker';
 import { Icon } from './icons';
-import { SignPhoto } from './lesson-media';
+import { LessonMedia, SignPhoto } from './lesson-media';
 
 type Run = { stream?: MediaStream; worker?: Worker; loop?: number; startup?: number };
 
@@ -15,7 +16,10 @@ function release(run: Run | undefined) {
   run.stream?.getTracks().forEach((track) => track.stop());
 }
 
-export function Camera({ target, match, guided = false, fallback, image }: { target?: Label; match?: () => void; guided?: boolean; fallback?: ReactNode; image?: File }) {
+export function Camera({ target, term, match, guided = false, fallback, image }: {
+  target?: Label; term?: { id: string; name: string; demo?: string; video?: File };
+  match?: () => void; guided?: boolean; fallback?: ReactNode; image?: File;
+}) {
   const video = useRef<HTMLVideoElement>(null);
   const current = useRef<Run>(undefined);
   const [state, setState] = useState<'off' | 'starting' | 'on' | 'error'>('off');
@@ -24,6 +28,7 @@ export function Camera({ target, match, guided = false, fallback, image }: { tar
   const [stable, setStable] = useState(false);
   const [hint, showHint] = useState(guided);
   const letter = letters.find(({ label }) => label === target);
+  const targetName = term?.name ?? target;
 
   const reset = () => {
     release(current.current);
@@ -61,20 +66,23 @@ export function Camera({ target, match, guided = false, fallback, image }: { tar
       screen.srcObject = stream;
       await screen.play();
       if (current.current !== run) return;
-      if (!target) {
+      if (!targetName) {
         setState('on');
         setStatus('Camera ready. Keep your whole hand in view.');
         return;
       }
 
-      const worker = new Worker(new URL('./recognize.worker.ts', import.meta.url), { type: 'module' });
+      const worker = term
+        ? new Worker(new URL('./vocabulary.worker.ts', import.meta.url), { type: 'module' })
+        : new Worker(new URL('./recognize.worker.ts', import.meta.url), { type: 'module' });
       run.worker = worker;
       let busy = false;
       let lastVideoTime = -1;
       let hold = 0;
       let frameCount = 0;
+      let matched = false;
       run.startup = window.setTimeout(() => fail('Camera practice took too long to start. Try again or use pictures.'), 20000);
-      worker.onmessage = ({ data }: MessageEvent<CameraReport>) => {
+      worker.onmessage = ({ data }: MessageEvent<CameraReport | WordCameraReport>) => {
         if (current.current !== run) return;
         if (data.kind === 'error') {
           console.warn('Camera practice error:', data.message);
@@ -82,9 +90,9 @@ export function Camera({ target, match, guided = false, fallback, image }: { tar
         } else if (data.kind === 'ready') {
           clearTimeout(run.startup);
           setState('on');
-          setStatus(`Show the sign for ${target}.`);
+          setStatus(`Show the sign for ${targetName}.`);
           run.loop = window.setInterval(async () => {
-            if (busy || screen.readyState < 2 || screen.currentTime === lastVideoTime) return;
+            if (matched || busy || screen.readyState < 2 || screen.currentTime === lastVideoTime) return;
             busy = true;
             lastVideoTime = screen.currentTime;
             try {
@@ -94,7 +102,15 @@ export function Camera({ target, match, guided = false, fallback, image }: { tar
             } catch {
               fail('The camera stopped sending pictures. Try again or use pictures.');
             }
-          }, 90);
+          }, 'fps' in data ? 1000 / data.fps : 90);
+        } else if (data.kind === 'progress') {
+          busy = false;
+          setStatus(`Show the sign for ${targetName} · ${data.elapsed} sec`);
+        } else if (data.kind === 'word') {
+          busy = false;
+          matched = Boolean(data.id && data.id === term?.id);
+          setStable(matched);
+          setStatus(matched ? `That looks like ${targetName}!` : data.hands ? 'Try the sign once more.' : 'Keep your hands and shoulders in view.');
         } else {
           busy = false;
           const now = performance.now();
@@ -111,8 +127,11 @@ export function Camera({ target, match, guided = false, fallback, image }: { tar
           }
         }
       };
-      worker.onerror = () => fail('Camera practice is unavailable. You can try again or use pictures.');
-      worker.postMessage({ kind: 'start' });
+      worker.onerror = (error) => {
+        console.warn('Camera practice error:', error.message);
+        fail('Camera practice is unavailable. You can try again or use pictures.');
+      };
+      worker.postMessage({ kind: 'start', term: term?.id });
     } catch (error) {
       fail(error instanceof DOMException && error.name === 'NotAllowedError'
         ? 'Camera access is off. Check Windows camera settings or use pictures.'
@@ -121,7 +140,7 @@ export function Camera({ target, match, guided = false, fallback, image }: { tar
   }
 
   return (
-    <div className={`camera-grid${target ? ' camera-lesson' : ''}${guided ? ' camera-guided' : ''}`}>
+    <div className={`camera-grid${targetName ? ' camera-lesson' : ''}${guided ? ' camera-guided' : ''}`}>
       <div className="camera-view" data-camera={state} data-match={stable || undefined}>
         <video ref={video} muted playsInline aria-label="Your camera preview" className={flipped ? 'mirrored' : ''} />
         {state === 'on' && <div className="camera-frame" aria-hidden="true" />}
@@ -129,8 +148,9 @@ export function Camera({ target, match, guided = false, fallback, image }: { tar
         {state === 'on' && <span className="camera-indicator">Camera on</span>}
       </div>
       <div className="camera-controls paper">
-        {letter && <div className="camera-hint">{hint && <SignPhoto letter={letter} image={image} />}<h2>Sign {target}</h2></div>}
-        {letter && <button className="button secondary hint-toggle" aria-expanded={hint} onClick={() => showHint(!hint)}>{hint ? 'Hide hint' : 'Show hint'}</button>}
+        {targetName && <div className="camera-hint">{hint && (letter ? <SignPhoto letter={letter} image={image} /> :
+          <LessonMedia name={targetName} file={term?.video} image={image} bundledVideo={term?.demo} />)}<h2>Sign {targetName}</h2></div>}
+        {targetName && <button className="button secondary hint-toggle" aria-expanded={hint} onClick={() => showHint(!hint)}>{hint ? 'Hide hint' : 'Show hint'}</button>}
         <p role="status" className="camera-status" data-feedback={stable ? 'right' : undefined}>{stable && <Icon name="check" />}{status}</p>
         <div className="actions">
           {state === 'on' || state === 'starting'

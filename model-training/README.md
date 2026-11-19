@@ -1,4 +1,50 @@
-# Train the FSL alphabet model
+# Train the FSL models
+
+## Numbers and words
+
+The vocabulary trainer uses the publisher’s FSL-105 v2 split for 30 signs. It downloads or extracts 608 source clips and keeps 121 test clips out of training, including any clips with missed hand detections. The word model uses hand and pose movement across 16 frames. The number model uses hand shapes across the same frames and uses word clips as examples of other signs. [FSL-105 v2](https://data.mendeley.com/datasets/48y2y99mb9/2) · [Per-sign results](artifacts/fsl-vocabulary-v1-benchmark.json)
+
+Prepare the Windows Python environment below. Save `train.csv`, `test.csv`, `labels.csv`, and `clips.zip` from FSL-105 v2 to `model-training/.work/fsl105/`. Download the official Pose Landmarker Lite model as `pose_landmarker_lite.task` in the same folder. [Pose Landmarker Lite model](https://storage.googleapis.com/mediapipe-models/pose_landmarker/pose_landmarker_lite/float16/1/pose_landmarker_lite.task)
+
+```powershell
+$trainingPython = './model-training/.work/venv/Scripts/python.exe'
+uv pip install --python $trainingPython 'imageio-ffmpeg==0.6.0'
+& $trainingPython -B -u './model-training/train_vocabulary.py'
+```
+
+For a smaller download, put the version’s Mendeley file manifest in `.work/fsl105/files.json` and run `download_fsl105_subset.py` with the same Python environment in place of downloading `clips.zip`. It validates the selected ZIP entries against the original checksums. The trainer writes local models and a report under `artifacts/`, then exports the demo clips and lesson catalog under `src/renderer/`.
+
+Camera availability requires at least 90% precision and recall and at least three examples for the sign in the publisher’s test set. These numbers and words have four or five test recordings each. The same test split was reviewed during development. It lacks signer identities and examples of resting hands. Run a separate classroom webcam evaluation to measure performance with new signers.
+
+### Full vocabulary retraining
+
+Save the complete FSL-105 v2 video archive in `.work/fsl105/fsl105-complete.zip` alongside the CSV files and pose model. Save the [Transactional FSL v2 ZIP](https://data.mendeley.com/datasets/jdyrr7cm4z/2) as `.work/fsl105/transactional-complete.zip` to include the second number training run.
+
+```powershell
+& './model-training/.work/venv/Scripts/python.exe' -B -u './model-training/train_vocabulary_full.py'
+```
+
+The script saves candidate weights and scores under `model-training/.work/fsl105/`. It selects the models using validation clips from FSL-105. It then scores the candidates and the desktop’s existing model on the same 426 publisher test clips. The number scores count other FSL-105 signs that the camera could incorrectly accept as numbers. The Transactional FSL clips are used only during training.
+
+The selected candidate cleared the cutoff for **54 words and phrases** and **four numbers (1, 2, 5, and 9)**. Adding 426 number examples and 681 other signs from Transactional FSL reduced the number of passing signs from six to four on validation and from four to three on the test. The candidate training and the desktop bundle use separate model files. [Full per-sign comparison](artifacts/fsl-vocabulary-v2-benchmark.json)
+
+### Expanded word model
+
+With both datasets and the full vocabulary run above available, run:
+
+```powershell
+& './model-training/.work/venv/Scripts/python.exe' -B -u './model-training/train_words_expanded.py'
+```
+
+The expanded model trains on **107 words and phrases** plus 10 numbers as examples of signs outside word lessons. It keeps the dataset labels `WELCOME` and `YOURE WELCOME` separate. The trainer aligns hand and pose landmarks from the two sources, compares versions with and without depth on validation, and exports `fsl-words-v3.json` to `.work/fsl105/`.
+
+The report scores the two test sets separately and together. FSL-105 uses its publisher split. Transactional FSL keeps matching hand sequences together and splits files by filename order. The datasets lack signer IDs and the source IDs of all augmented clips, so these are recording-level results. [FSL-105 v2](https://data.mendeley.com/datasets/48y2y99mb9/2) · [Transactional FSL v2](https://data.mendeley.com/datasets/jdyrr7cm4z/2)
+
+The expanded model used 2,150 training recordings. It met the cutoff for 50 words and phrases on 603 test recordings, including seven of the added labels. On the same 426 FSL-105 test recordings, 42 words cleared the cutoff, down from 54 for the FSL-105-only model. [Expanded word benchmark](artifacts/fsl-words-v3-benchmark.json)
+
+To update the desktop assets after a new run, copy the validated `.work/fsl105/fsl-words-v3-benchmark.json` to `artifacts/` and run `export_word_lessons.py` with the same Python environment. It checks the model against the report, updates the lesson catalog, and generates any missing FSL-105 videos. The app loads the expanded word weights separately from the existing number weights.
+
+## Alphabet
 
 The desktop build uses the v3 landmark classifier for the 24 camera letters and the MediaPipe hand detector from the v2 task. The earlier v2 classifier can be reproduced from the repository root after preparing the Windows environment below.
 

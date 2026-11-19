@@ -3,7 +3,8 @@ import { LessonStep, stepTitle } from './course';
 import { Icon } from './icons';
 import { cameraSupports, findLetter, isLabel, labels } from './letters';
 import { LessonMedia } from './lesson-media';
-import { categories, categoryFor, lessonTerms, quizFor, type Category, type Lesson, type Step, type TeacherLesson, type TeacherLibrary } from './lessons';
+import { categories, categoryFor, hasTermMedia, lessonTerms, quizCamera, quizFor, type Category, type Lesson, type Step, type TeacherLesson, type TeacherLibrary } from './lessons';
+import { vocabularyVideo } from './vocabulary';
 import type { Prompt } from './quiz';
 
 const stepNames: Record<Step['kind'], string> = {
@@ -146,7 +147,7 @@ function Editor({ library, entry, category }: { library: TeacherLibrary; entry?:
     if (!draft.steps.length) return 'Add at least one step.';
     if (draft.steps.some((step) => 'letter' in step && !isLabel(step.letter))) return 'Choose a letter for every sign step.';
     if (draft.steps.some((step) => step.kind === 'spell' && !/^[A-Z]{2,12}$/.test(step.word))) return 'Spelling steps need 2 to 12 letters.';
-    if (draft.steps.some((step) => step.kind === 'media' && (!step.term.trim() || (!step.image && !step.video)))) return 'Name each sign and add a picture or video.';
+    if (draft.steps.some((step) => step.kind === 'media' && (!step.term.trim() || !hasTermMedia(step)))) return 'Name each sign and add a picture or video.';
     if (draft.quiz && !quizFor(draft)) return 'Add at least two different signs and choose quiz questions, or turn off the quiz.';
     return '';
   }
@@ -210,7 +211,7 @@ function Editor({ library, entry, category }: { library: TeacherLibrary; entry?:
             </div></div>
             <div className="editor-fields">
               {step.kind === 'media' ? <label>{currentCategory === 'numbers' ? 'Number' : 'Word or phrase'}
-                <input value={step.term} maxLength={40} disabled={busy} onChange={(event) => updateStep(index, { ...step, term: event.target.value })} />
+                <input value={step.term} maxLength={40} disabled={busy} onChange={(event) => updateStep(index, { ...step, term: event.target.value, example: undefined })} />
               </label> : <><label>What will learners do?<select disabled={busy} value={step.kind} onChange={(event) => {
                 const kind = event.target.value as Step['kind'];
                 updateStep(index, 'letter' in step && kind !== 'spell' && kind !== 'media'
@@ -228,7 +229,7 @@ function Editor({ library, entry, category }: { library: TeacherLibrary; entry?:
                   event.preventDefault();
                   if (event.dataTransfer.files.length !== 1) { setError('Choose one file for this step.'); return; }
                   void loadMedia(step, field, event.dataTransfer.files[0]);
-                }}>{field === 'image' ? 'Picture' : 'Video (optional)'} <span className="small-copy">{step[field]?.name ?? (field === 'image' ? ('letter' in step && step.letter ? 'Dataset photo' : 'No picture selected') : 'No video added')}</span>
+                }}>{field === 'image' ? 'Picture' : 'Video (optional)'} <span className="small-copy">{step[field]?.name ?? (field === 'image' ? ('letter' in step && step.letter ? 'Dataset photo' : 'No picture selected') : step.kind === 'media' && vocabularyVideo(step.example) ? 'Bundled demo' : 'No video added')}</span>
                   <input type="file" data-media={field} accept={field === 'image' ? '.png,.jpg,.jpeg,.webp' : '.mp4,.webm'} disabled={busy} onChange={(event) => {
                     const file = event.target.files?.[0]; event.target.value = ''; void loadMedia(step, field, file);
                   }} />
@@ -242,9 +243,10 @@ function Editor({ library, entry, category }: { library: TeacherLibrary; entry?:
         <aside className="learner-preview paper">
           <h2>Learner preview</h2>
           {step ? <><p>{stepTitle(step)}</p>{step.kind === 'spell' ? <span className="preview-letters">{step.word}</span> :
-            (step.kind === 'media' ? Boolean(step.image || step.video) : isLabel(step.letter)) &&
+            (step.kind === 'media' ? hasTermMedia(step) : isLabel(step.letter)) &&
               <LessonMedia key={step.id + (step.video?.name ?? '')} name={step.kind === 'media' ? step.term : undefined}
-                letter={'letter' in step && isLabel(step.letter) ? findLetter(step.letter) : undefined} file={step.video} image={step.image} />}</> : <p>Add a step to see it here.</p>}
+                letter={'letter' in step && isLabel(step.letter) ? findLetter(step.letter) : undefined} file={step.video} image={step.image}
+                bundledVideo={step.kind === 'media' && !step.image ? vocabularyVideo(step.example) : undefined} />}</> : <p>Add a step to see it here.</p>}
           <button className="button secondary" disabled={busy || !draft.steps.length} onClick={() => { const issue = validate(); setError(issue); if (!issue) setPreview(0); }}>Preview</button>
         </aside>
       </div>
@@ -254,7 +256,7 @@ function Editor({ library, entry, category }: { library: TeacherLibrary; entry?:
         </div>
         {draft.quiz && (lessonTerms(draft).length < 2 ? <p className="notice">Add two different signs to start a quiz.</p> : <>
           <div className="quiz-variables">{lessonTerms(draft).map((letter) => <fieldset key={letter}>
-            <legend>{alphabet ? 'Letter ' : ''}{letter}</legend>{(['match', 'camera'] as const).filter((kind) => kind === 'match' || (alphabet && cameraSupports(letter))).map((kind) => <label key={kind}>
+            <legend>{alphabet ? 'Letter ' : ''}{letter}</legend>{(['match', 'camera'] as const).filter((kind) => kind === 'match' || quizCamera(draft, letter)).map((kind) => <label key={kind}>
               <input type="checkbox" disabled={busy} checked={Boolean(draft.quiz?.prompts.some((item) => item.kind === kind && item.letter === letter))} onChange={() => togglePrompt({ letter, kind })} /> {kind === 'match' ? (alphabet ? 'Picture match' : 'Match the sign') : 'Camera'}
             </label>)}
           </fieldset>)}</div>

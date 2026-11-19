@@ -3,8 +3,25 @@ import { writeFile } from 'node:fs/promises';
 import { join } from 'node:path';
 import type { BrowserWindow } from 'electron';
 
+export async function seedLessonUpgrade(window: BrowserWindow) {
+  await window.webContents.executeJavaScript(`new Promise((resolve, reject) => {
+    const request = indexedDB.open('ab-sign-lessons', 3);
+    request.onupgradeneeded = () => {
+      const store = request.result.createObjectStore('lessons', { keyPath: 'id' });
+      const lesson = { id: 'vocabulary-3', title: 'Our classroom greetings', category: 'greetings', revision: 3,
+        steps: [{ id: 'vocabulary-3-0', kind: 'media', term: 'Hello', example: '3' }] };
+      store.add({ id: lesson.id, draft: lesson, published: lesson });
+    };
+    request.onerror = () => reject(request.error);
+    request.onsuccess = () => { request.result.close(); resolve(true); };
+  })`);
+}
+
 export async function verifyDesktop(window: BrowserWindow) {
   const runner = window.webContents;
+  runner.on('console-message', ({ message }) => {
+    if (message.startsWith('Camera practice error:')) console.error(message);
+  });
   const motion = (value: 'no-preference' | 'reduce') => runner.debugger.sendCommand('Emulation.setEmulatedMedia', {
     features: [{ name: 'prefers-reduced-motion', value }],
   });
@@ -77,6 +94,8 @@ export async function verifyDesktop(window: BrowserWindow) {
   await waitFor(`document.querySelector('.account-entry h1') && document.querySelector('.brand img')?.naturalWidth > 0`);
   const asset = await runner.executeJavaScript(`fetch('/vision/fsl-geometry-v3.json').then(r => r.ok && r.json()).then(model => model?.labels?.length === 24)`);
   if (!asset) throw new Error('The local model could not be read.');
+  const wordAsset = await runner.executeJavaScript(`fetch('/vision/fsl-words-v3.json').then(r => r.ok && r.json()).then(model => model?.labels?.length === 117 && model.layout === 'xy')`);
+  if (!wordAsset) throw new Error('The expanded word model could not be read.');
   await waitFor(`document.querySelector('#student-name') && Array.from(document.querySelectorAll('button, a')).some(node => node.textContent.trim() === 'Teacher sign-in')`);
   await capture('local-accounts');
   await field('#student-name', 'Maya');
@@ -89,11 +108,73 @@ export async function verifyDesktop(window: BrowserWindow) {
   if (!denied) throw new Error('A student could open teacher progress.');
   await navigate('path');
   await heading('Learning path');
-  await waitFor(`document.querySelectorAll('[data-category]').length === 6`);
+  await waitFor(`document.querySelectorAll('[data-category]').length === 11 && document.querySelector('[data-category=days]')`);
   await capture('category-path');
+  await navigate('category/greetings');
+  await heading('Everyday Greetings');
+  await waitFor(`document.querySelector('main').innerText.includes('Our classroom greetings') && document.querySelector('main').innerText.includes('More greetings')`);
+  await navigate('category/days');
+  await heading('Days & Time');
+  await waitFor(`document.querySelectorAll('.library-card').length === 2`);
+  await capture('days-lessons');
+  await navigate('lesson/vocabulary-days-1/demo/1');
+  await heading('Tuesday');
+  await waitFor(`document.querySelector('.study-stage video')?.readyState >= 2 && Array.from(document.querySelectorAll('button')).some(button => button.textContent === 'Try this sign')`);
+  await navigate('lesson/vocabulary-6/demo/2');
+  await heading('Wrong');
+  await waitFor(`document.querySelector('.study-stage video')?.readyState >= 2 && !Array.from(document.querySelectorAll('button')).some(button => button.textContent === 'Try this sign')`);
   await navigate('category/numbers');
   await heading('Numbers');
-  await waitFor(`document.querySelector('main').innerText.includes('No lessons here yet') && !document.querySelector('main a[href^="#builder"]')`);
+  await waitFor(`document.querySelector('main').innerText.includes('Numbers 1–5') && document.querySelector('main').innerText.includes('Numbers 6–10') && !document.querySelector('main').innerText.includes('Numbers 11–20') && !document.querySelector('main a[href^="#builder"]')`);
+  await capture('number-lessons');
+  await navigate('lesson/vocabulary-1/demo/0');
+  await heading('1');
+  await waitFor(`document.querySelector('.study-stage video')?.readyState >= 2`);
+  await capture('number-demonstration');
+  await navigate('lesson/vocabulary-1/quiz');
+  await heading('Numbers 1–5 quiz');
+  for (let index = 0; index < 3; index++) {
+    await waitFor(`document.querySelector('.question-count')?.textContent === '${index + 1} of 3' && document.querySelector('.sign-stage video')?.readyState >= 2`);
+    const answer = await runner.executeJavaScript(`String(Number(document.querySelector('.sign-stage video').src.match(/fsl-(\\d+)/)[1]) - 19)`);
+    const choice = `Array.from(document.querySelectorAll('.answer-cards button')).find(option => option.textContent.trim() === ${JSON.stringify(answer)})`;
+    await waitFor(choice);
+    await runner.executeJavaScript(`(${choice}).click()`);
+    await button('Check answer');
+    await button(index === 2 ? 'See my result' : 'Next question');
+  }
+  await heading('Round finished!');
+  await waitFor(`document.querySelector('.score')?.textContent === '3 of 3 correct'`);
+  await navigate('lesson/vocabulary-1/demo/3');
+  await heading('4');
+  await waitFor(`document.querySelector('.study-stage video')?.readyState >= 2 && !Array.from(document.querySelectorAll('button')).some(button => button.textContent === 'Try this sign')`);
+  for (const [route, term, clip] of [['vocabulary-5/demo/3', 'Bread', '85'], ['vocabulary-1/demo/0', '1', '20']]) {
+    await navigate('lesson/' + route);
+    await heading(term);
+    await button('Try this sign');
+    await runner.executeJavaScript(`(() => {
+    const source = document.createElement('video');
+    source.src = '/vocabulary/fsl-${clip}.webm'; source.muted = true; source.loop = true; source.preload = 'auto';
+    const canvas = document.createElement('canvas'); canvas.width = 480; canvas.height = 272;
+    const context = canvas.getContext('2d');
+    const original = navigator.mediaDevices.getUserMedia;
+    navigator.mediaDevices.getUserMedia = async () => canvas.captureStream(20);
+    const timer = setInterval(() => {
+      if (source.readyState >= 2 && !source.paused) context.drawImage(source, 0, 0, canvas.width, canvas.height);
+      else context.clearRect(0, 0, canvas.width, canvas.height);
+    }, 50);
+    window.playVocabularySmokeClip = () => source.play();
+    window.restoreVocabularySmokeCamera = () => {
+      source.pause(); clearInterval(timer); navigator.mediaDevices.getUserMedia = original;
+    };
+  })()`);
+    await button('Start camera');
+    await waitFor(`document.querySelector('.camera-status')?.textContent.includes('Keep your hands and shoulders in view.')`, 35000);
+    await runner.executeJavaScript(`window.playVocabularySmokeClip()`);
+    await waitFor(`document.querySelector('.camera-view[data-match]')`, 25000);
+    await button('Save match');
+    await runner.executeJavaScript(`window.restoreVocabularySmokeCamera()`);
+    await waitFor(`document.querySelector('.study-stage video')?.readyState >= 2`);
+  }
   await navigate('category/alphabet');
   await heading('Alphabet & Letters');
   await waitFor(`JSON.stringify(Array.from(document.querySelectorAll('.library-cover'), node => node.textContent)) === JSON.stringify(['ABC','DEF','GHI','JKL','MNO','PQR','STU','VWX','YZ'])`);
@@ -239,7 +320,7 @@ export async function verifyDesktop(window: BrowserWindow) {
   await heading('Hi, Leo! Ready to sign?');
   await navigate('progress');
   await heading('Your progress');
-  await waitFor(`document.querySelector('main').innerText.includes('0 of 10 finished') && !document.querySelector('main').innerText.includes('Practice with me')`);
+  await waitFor(`document.querySelector('main').innerText.includes('0 of 31 finished') && !document.querySelector('main').innerText.includes('Practice with me')`);
   await button('Switch account');
   await heading('Who is learning today?');
   await teacherLogin();
@@ -285,6 +366,37 @@ export async function verifyDesktop(window: BrowserWindow) {
   await navigate(editHash);
   await heading('Edit lesson');
   await waitFor(`document.documentElement.scrollWidth <= window.innerWidth`);
+  await navigate('builder/numbers-11-20');
+  await heading('Edit lesson');
+  await waitFor(`document.querySelector(${JSON.stringify(title)})?.value === 'Numbers 11–20' && document.querySelectorAll('.builder-steps li').length === 10`);
+  await button('Use on this device');
+  await waitFor(`document.querySelector('[role=alert]')?.textContent.includes('add a picture or video')`);
+  await navigate('builder/vocabulary-errands-help');
+  await heading('Edit lesson');
+  await waitFor(`document.querySelector(${JSON.stringify(title)})?.value === 'Asking for help' && document.querySelectorAll('.builder-steps li').length === 4 && !document.querySelector('.learner-preview video')`);
+  await button('Use on this device');
+  await waitFor(`document.querySelector('[role=alert]')?.textContent.includes('add a picture or video')`);
+  for (const step of [4, 3]) {
+    await click(`.builder-steps li:nth-child(${step}) button`);
+    await click(`button[aria-label="Remove step ${step}"]`);
+  }
+  await picture();
+  await waitFor(`document.querySelector('.learner-preview img')?.naturalWidth === 80`);
+  await click('.builder-steps li:nth-child(2) button');
+  await picture(96);
+  await waitFor(`document.querySelector('.learner-preview img')?.naturalWidth === 96`);
+  await button('Add quiz');
+  await waitFor(`document.querySelectorAll('.quiz-variables input').length === 4`);
+  await click('.quiz-variables fieldset:first-child input');
+  await button('Use on this device');
+  await waitFor(`document.querySelector('.builder-footer [role=status]')?.textContent === 'Lesson ready on this device.'`);
+  await navigate('builder/vocabulary-1');
+  await heading('Edit lesson');
+  await waitFor(`document.querySelector('.learner-preview video')?.readyState >= 2`);
+  await picture(96);
+  await waitFor(`document.querySelector('.learner-preview img')?.naturalWidth === 96`);
+  await button('Use on this device');
+  await waitFor(`document.querySelector('.builder-footer [role=status]')?.textContent === 'Lesson ready on this device.'`);
   await navigate('builder/new/numbers');
   await heading('Create a lesson');
   await waitFor(`document.querySelector('.builder-editor select').value === 'numbers'`);
@@ -313,15 +425,32 @@ export async function verifyDesktop(window: BrowserWindow) {
   await waitFor(`document.querySelector('.learner-preview img')?.naturalWidth === 80`);
   await button('Use on this device');
   await heading('Everyday words');
+  const wordHash = await runner.executeJavaScript('location.hash');
   await button('Sign out');
   await selectStudent('Maya S');
+  await navigate('lesson/vocabulary-errands-help/demo/0');
+  await heading('Again');
+  await waitFor(`document.querySelector('.study-stage img')?.naturalWidth === 80 && Array.from(document.querySelectorAll('button')).some(button => button.textContent === 'Try this sign')`);
+  await navigate('lesson/vocabulary-errands-help/quiz');
+  await heading('Asking for help quiz');
+  await waitFor(`document.querySelector('.sign-stage img')?.naturalWidth === 80 && document.querySelector('[data-question-kind=match]')`);
   await navigate('category/words');
   await heading('Words');
-  await click('.library-card');
+  await click(`.library-card[href="${wordHash}"]`);
   await heading('Everyday words');
   await click('a.button[href$="/demo/0"]');
   await heading('Hello');
   await waitFor(`document.querySelector('.study-stage img')?.naturalWidth === 80 && !document.querySelector('.camera-controls')`);
+  for (const lessonId of ['vocabulary-1', 'vocabulary-2']) {
+    await navigate('lesson/' + lessonId + '/demo/0');
+    if (lessonId === 'vocabulary-1') await waitFor(`document.querySelector('.study-stage img')?.naturalWidth === 96`);
+    for (let step = 0; step < 4; step++) {
+      await waitFor(`document.querySelector('.question-count')?.textContent === '${step + 1} of 5'`);
+      await button('Next step');
+    }
+    await button('Finish lesson');
+    await heading('Lesson finished!');
+  }
   await navigate(numberHash + '/demo/0');
   await heading('1');
   await waitFor(`document.querySelector('.study-stage img')?.naturalWidth === 80`);
@@ -382,7 +511,7 @@ export async function verifyDesktop(window: BrowserWindow) {
   }
 
   await runner.executeJavaScript(`new Promise((resolve, reject) => {
-    const request = indexedDB.open('ab-sign-lessons', 2);
+    const request = indexedDB.open('ab-sign-lessons', 4);
     request.onerror = () => reject(request.error);
     request.onsuccess = () => {
       const database = request.result;

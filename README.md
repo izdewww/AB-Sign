@@ -18,6 +18,8 @@ A Windows desktop app for teaching children Filipino Sign Language (FSL) through
 
 **Learn** includes nine editable alphabet lessons with one dataset photo per letter. Lessons group three letters at a time, with Y and Z in the last lesson. Learners can open any lesson and take its optional quiz.
 
+The app also includes **21 editable video lessons** covering numbers 1–10 and 95 words and phrases. Learners can watch a sign, replay it slowly, and try a shuffled matching quiz.
+
 ![The learning path shows nine pastel lesson cards covering A through Z.](docs/images/lesson-library.png)
 
 ## Local accounts
@@ -29,14 +31,26 @@ A Windows desktop app for teaching children Filipino Sign Language (FSL) through
 
 ## For teachers
 
-1. Open **Lessons** and create a blank lesson or edit an alphabet lesson. Use **Hide alphabet lessons** to hide the bundled examples.
+1. Open **Lessons** and create a blank lesson or edit a bundled lesson. Use **Hide alphabet lessons** to hide the letter lessons.
 2. Add signs, replace pictures, and upload optional MP4 or WebM videos. The alphabet lessons start with empty video slots. Add a fingerspelling step to reveal a word one sign at a time.
-3. Add a quiz if you want one. Choose the signs, question types, and number of questions. Each round shuffles the questions and answer choices using letters from that lesson.
+3. Add a quiz if you want one. Choose the signs, question types, and number of questions. Each round shuffles the questions and answer choices using signs from that lesson.
 4. Preview your work and select **Use on this device** when it is ready for learners.
 
 Picture matching covers A–Z. Webcam practice covers 24 letters. J and Z are available in lessons and picture quizzes, and teachers can upload videos to show the movement.
 
-Numbers, Greetings, Family Members, Food & Colors, and Words start empty. Teachers add their own pictures or videos and can build matching quizzes from them. Webcam recognition for numbers and words is planned.
+### Numbers and words
+
+| Activity | What’s available |
+| --- | --- |
+| Video demonstrations and matching | Numbers 1–10, Greetings, Family, Food & Colors, Words, Days & Time, Calendar, People, and Drinks & Flavors |
+| Webcam practice | Numbers 1, 3, 5, 9, and 10, plus 43 words in published video lessons |
+| Teacher drafts | Numbers 11–20 and 12 Everyday Errands signs. Add pictures or videos and publish when ready. Seven of the errands signs also support camera practice once published. |
+
+Bundled quizzes start with matching. Teachers can add camera questions for supported signs. To check an individual sign, look for **Try this sign** on its lesson step. For a full list, see the [lesson catalog](src/renderer/vocabulary.json).
+
+![The Numbers category shows two starter lessons covering 1–10.](docs/images/number-lessons.png)
+
+![The Days & Time category shows two lessons with short sign videos.](docs/images/days-lessons.png)
 
 ## Quick start
 
@@ -69,6 +83,8 @@ The bundled **v3 model** got **1,679 of 1,770 held-out photos correct (94.86%)**
 
 ![Held-out photo accuracy for each of the 24 letters available in camera practice.](docs/images/alphabet-results.png)
 
+The bundled **word model** was trained on 107 words and phrases. Fifty met the 90% precision and recall cutoff on 603 test recordings, including seven Everyday Errands signs. On the 426 FSL-105 test clips alone, 42 words met the cutoff, down from 54 for the earlier FSL-105-only candidate. The **number model** uses a separate set of weights and supports the same five numbers. The splits have no signer IDs, so classroom webcam accuracy with new signers remains unverified. [Word benchmark](model-training/artifacts/fsl-words-v3-benchmark.json) · [Number benchmark](model-training/artifacts/fsl-vocabulary-v1-benchmark.json) · [Training guide](model-training/README.md)
+
 ## Credits
 
-The model was trained on John Gabriel Porton’s FSL alphabet dataset, listed as CC0. [Kaggle dataset](https://www.kaggle.com/datasets/japorton/fsl-dataset) · [Third-party credits](docs/THIRD_PARTY.md)
+The alphabet uses John Gabriel Porton’s FSL alphabet dataset. The lesson videos use Isaiah Jassen Tupal’s FSL-105 dataset. The word model also uses Transactional FSL landmarks by Franz Columna and Angela Cardano. [Alphabet dataset](https://www.kaggle.com/datasets/japorton/fsl-dataset) · [FSL-105](https://data.mendeley.com/datasets/48y2y99mb9/2) · [Transactional FSL](https://data.mendeley.com/datasets/jdyrr7cm4z/2) · [Third-party credits](docs/THIRD_PARTY.md)

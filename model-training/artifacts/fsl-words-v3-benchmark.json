@@ -1,0 +1,3176 @@
+{
+  "model_sha256": "3bb1c387a32e3386380b605989c4c5160e67a3da7d79ba9da85247f20279e373",
+  "datasets": {
+    "fsl105": "10.17632/48y2y99mb9.2",
+    "transactional": "10.17632/jdyrr7cm4z.2"
+  },
+  "layout": "xy",
+  "words": 107,
+  "number_distractors": 10,
+  "new_labels": [
+    "txn-again",
+    "txn-card",
+    "txn-cash",
+    "txn-coin",
+    "txn-discount",
+    "txn-how-many",
+    "txn-how-much",
+    "txn-please",
+    "txn-problem",
+    "txn-receipt",
+    "txn-wait",
+    "txn-welcome"
+  ],
+  "labels": {
+    "txn-again": "Again",
+    "txn-card": "Card",
+    "txn-cash": "Cash",
+    "txn-coin": "Coin",
+    "txn-discount": "Discount",
+    "txn-how-many": "How Many",
+    "txn-how-much": "How Much",
+    "txn-please": "Please",
+    "txn-problem": "Problem",
+    "txn-receipt": "Receipt",
+    "txn-wait": "Wait",
+    "txn-welcome": "Welcome",
+    "0": "Good Morning",
+    "1": "Good Afternoon",
+    "2": "Good Evening",
+    "3": "Hello",
+    "4": "How Are You",
+    "5": "Im Fine",
+    "6": "Nice To Meet You",
+    "7": "Thank You",
+    "8": "Youre Welcome",
+    "9": "See You Tomorrow",
+    "10": "Understand",
+    "11": "Don\u2019T Understand",
+    "12": "Know",
+    "13": "Don\u2019T Know",
+    "14": "No",
+    "15": "Yes",
+    "16": "Wrong",
+    "17": "Correct",
+    "18": "Slow",
+    "19": "Fast",
+    "20": "One",
+    "21": "Two",
+    "22": "Three",
+    "23": "Four",
+    "24": "Five",
+    "25": "Six",
+    "26": "Seven",
+    "27": "Eight",
+    "28": "Nine",
+    "29": "Ten",
+    "30": "January",
+    "31": "February",
+    "32": "March",
+    "33": "April",
+    "34": "May",
+    "35": "June",
+    "36": "July",
+    "37": "August",
+    "38": "September",
+    "39": "October",
+    "40": "November",
+    "41": "December",
+    "42": "Monday",
+    "43": "Tuesday",
+    "44": "Wednesday",
+    "45": "Thursday",
+    "46": "Friday",
+    "47": "Saturday",
+    "48": "Sunday",
+    "49": "Today",
+    "50": "Tomorrow",
+    "51": "Yesterday",
+    "52": "Father",
+    "53": "Mother",
+    "54": "Son",
+    "55": "Daughter",
+    "56": "Grandfather",
+    "57": "Grandmother",
+    "58": "Uncle",
+    "59": "Auntie",
+    "60": "Cousin",
+    "61": "Parents",
+    "62": "Boy",
+    "63": "Girl",
+    "64": "Man",
+    "65": "Woman",
+    "66": "Deaf",
+    "67": "Hard Of Hearing",
+    "68": "Weelchair Person",
+    "69": "Blind",
+    "70": "Deaf Blind",
+    "71": "Married",
+    "72": "Blue",
+    "73": "Green",
+    "74": "Red",
+    "75": "Brown",
+    "76": "Black",
+    "77": "White",
+    "78": "Yellow",
+    "79": "Orange",
+    "80": "Gray",
+    "81": "Pink",
+    "82": "Violet",
+    "83": "Light",
+    "84": "Dark",
+    "85": "Bread",
+    "86": "Egg",
+    "87": "Fish",
+    "88": "Meat",
+    "89": "Chicken",
+    "90": "Spaghetti",
+    "91": "Rice",
+    "92": "Longanisa",
+    "93": "Shrimp",
+    "94": "Crab",
+    "95": "Hot",
+    "96": "Cold",
+    "97": "Juice",
+    "98": "Milk",
+    "99": "Coffee",
+    "100": "Tea",
+    "101": "Beer",
+    "102": "Wine",
+    "103": "Sugar",
+    "104": "No Sugar"
+  },
+  "fsl105_split": {
+    "validation": 315,
+    "train": 1389,
+    "test": 426
+  },
+  "transactional_split": {
+    "train": 762,
+    "validation": 168,
+    "test": 177
+  },
+  "usable_training": {
+    "fsl105": 1388,
+    "transactional": 762
+  },
+  "fsl105": {
+    "clips": 426,
+    "top1_correct": 358,
+    "per_sign": {
+      "0": {
+        "correct": 3,
+        "clips": 4,
+        "accepted": 3,
+        "precision": 1.0,
+        "recall": 0.75,
+        "camera": false
+      },
+      "1": {
+        "correct": 1,
+        "clips": 4,
+        "accepted": 1,
+        "precision": 1.0,
+        "recall": 0.25,
+        "camera": false
+      },
+      "2": {
+        "correct": 2,
+        "clips": 5,
+        "accepted": 2,
+        "precision": 1.0,
+        "recall": 0.4,
+        "camera": false
+      },
+      "3": {
+        "correct": 4,
+        "clips": 4,
+        "accepted": 5,
+        "precision": 0.8,
+        "recall": 1.0,
+        "camera": false
+      },
+      "4": {
+        "correct": 4,
+        "clips": 4,
+        "accepted": 4,
+        "precision": 1.0,
+        "recall": 1.0,
+        "camera": true
+      },
+      "5": {
+        "correct": 4,
+        "clips": 4,
+        "accepted": 4,
+        "precision": 1.0,
+        "recall": 1.0,
+        "camera": true
+      },
+      "6": {
+        "correct": 5,
+        "clips": 5,
+        "accepted": 5,
+        "precision": 1.0,
+        "recall": 1.0,
+        "camera": true
+      },
+      "7": {
+        "correct": 4,
+        "clips": 4,
+        "accepted": 4,
+        "precision": 1.0,
+        "recall": 1.0,
+        "camera": true
+      },
+      "8": {
+        "correct": 3,
+        "clips": 4,
+        "accepted": 3,
+        "precision": 1.0,
+        "recall": 0.75,
+        "camera": false
+      },
+      "9": {
+        "correct": 4,
+        "clips": 4,
+        "accepted": 4,
+        "precision": 1.0,
+        "recall": 1.0,
+        "camera": true
+      },
+      "10": {
+        "correct": 4,
+        "clips": 4,
+        "accepted": 4,
+        "precision": 1.0,
+        "recall": 1.0,
+        "camera": true
+      },
+      "11": {
+        "correct": 3,
+        "clips": 4,
+        "accepted": 4,
+        "precision": 0.75,
+        "recall": 0.75,
+        "camera": false
+      },
+      "12": {
+        "correct": 4,
+        "clips": 4,
+        "accepted": 5,
+        "precision": 0.8,
+        "recall": 1.0,
+        "camera": false
+      },
+      "13": {
+        "correct": 1,
+        "clips": 4,
+        "accepted": 1,
+        "precision": 1.0,
+        "recall": 0.25,
+        "camera": false
+      },
+      "14": {
+        "correct": 4,
+        "clips": 4,
+        "accepted": 4,
+        "precision": 1.0,
+        "recall": 1.0,
+        "camera": true
+      },
+      "15": {
+        "correct": 4,
+        "clips": 4,
+        "accepted": 5,
+        "precision": 0.8,
+        "recall": 1.0,
+        "camera": false
+      },
+      "16": {
+        "correct": 4,
+        "clips": 4,
+        "accepted": 5,
+        "precision": 0.8,
+        "recall": 1.0,
+        "camera": false
+      },
+      "17": {
+        "correct": 5,
+        "clips": 5,
+        "accepted": 5,
+        "precision": 1.0,
+        "recall": 1.0,
+        "camera": true
+      },
+      "18": {
+        "correct": 4,
+        "clips": 4,
+        "accepted": 4,
+        "precision": 1.0,
+        "recall": 1.0,
+        "camera": true
+      },
+      "19": {
+        "correct": 2,
+        "clips": 4,
+        "accepted": 2,
+        "precision": 1.0,
+        "recall": 0.5,
+        "camera": false
+      },
+      "20": {
+        "correct": 4,
+        "clips": 4,
+        "accepted": 4,
+        "precision": 1.0,
+        "recall": 1.0,
+        "camera": true
+      },
+      "21": {
+        "correct": 3,
+        "clips": 4,
+        "accepted": 3,
+        "precision": 1.0,
+        "recall": 0.75,
+        "camera": false
+      },
+      "22": {
+        "correct": 3,
+        "clips": 4,
+        "accepted": 3,
+        "precision": 1.0,
+        "recall": 0.75,
+        "camera": false
+      },
+      "23": {
+        "correct": 3,
+        "clips": 4,
+        "accepted": 4,
+        "precision": 0.75,
+        "recall": 0.75,
+        "camera": false
+      },
+      "24": {
+        "correct": 3,
+        "clips": 4,
+        "accepted": 3,
+        "precision": 1.0,
+        "recall": 0.75,
+        "camera": false
+      },
+      "25": {
+        "correct": 3,
+        "clips": 4,
+        "accepted": 3,
+        "precision": 1.0,
+        "recall": 0.75,
+        "camera": false
+      },
+      "26": {
+        "correct": 2,
+        "clips": 4,
+        "accepted": 2,
+        "precision": 1.0,
+        "recall": 0.5,
+        "camera": false
+      },
+      "27": {
+        "correct": 3,
+        "clips": 4,
+        "accepted": 3,
+        "precision": 1.0,
+        "recall": 0.75,
+        "camera": false
+      },
+      "28": {
+        "correct": 2,
+        "clips": 4,
+        "accepted": 2,
+        "precision": 1.0,
+        "recall": 0.5,
+        "camera": false
+      },
+      "29": {
+        "correct": 4,
+        "clips": 4,
+        "accepted": 5,
+        "precision": 0.8,
+        "recall": 1.0,
+        "camera": false
+      },
+      "30": {
+        "correct": 2,
+        "clips": 4,
+        "accepted": 3,
+        "precision": 0.6666666666666666,
+        "recall": 0.5,
+        "camera": false
+      },
+      "31": {
+        "correct": 3,
+        "clips": 4,
+        "accepted": 4,
+        "precision": 0.75,
+        "recall": 0.75,
+        "camera": false
+      },
+      "32": {
+        "correct": 4,
+        "clips": 4,
+        "accepted": 5,
+        "precision": 0.8,
+        "recall": 1.0,
+        "camera": false
+      },
+      "33": {
+        "correct": 1,
+        "clips": 4,
+        "accepted": 2,
+        "precision": 0.5,
+        "recall": 0.25,
+        "camera": false
+      },
+      "34": {
+        "correct": 1,
+        "clips": 4,
+        "accepted": 1,
+        "precision": 1.0,
+        "recall": 0.25,
+        "camera": false
+      },
+      "35": {
+        "correct": 1,
+        "clips": 4,
+        "accepted": 1,
+        "precision": 1.0,
+        "recall": 0.25,
+        "camera": false
+      },
+      "36": {
+        "correct": 2,
+        "clips": 4,
+        "accepted": 4,
+        "precision": 0.5,
+        "recall": 0.5,
+        "camera": false
+      },
+      "37": {
+        "correct": 0,
+        "clips": 5,
+        "accepted": 1,
+        "precision": 0.0,
+        "recall": 0.0,
+        "camera": false
+      },
+      "38": {
+        "correct": 0,
+        "clips": 4,
+        "accepted": 0,
+        "precision": 0.0,
+        "recall": 0.0,
+        "camera": false
+      },
+      "39": {
+        "correct": 1,
+        "clips": 4,
+        "accepted": 3,
+        "precision": 0.3333333333333333,
+        "recall": 0.25,
+        "camera": false
+      },
+      "40": {
+        "correct": 0,
+        "clips": 5,
+        "accepted": 0,
+        "precision": 0.0,
+        "recall": 0.0,
+        "camera": false
+      },
+      "41": {
+        "correct": 1,
+        "clips": 5,
+        "accepted": 1,
+        "precision": 1.0,
+        "recall": 0.2,
+        "camera": false
+      },
+      "42": {
+        "correct": 3,
+        "clips": 4,
+        "accepted": 3,
+        "precision": 1.0,
+        "recall": 0.75,
+        "camera": false
+      },
+      "43": {
+        "correct": 4,
+        "clips": 4,
+        "accepted": 4,
+        "precision": 1.0,
+        "recall": 1.0,
+        "camera": true
+      },
+      "44": {
+        "correct": 2,
+        "clips": 4,
+        "accepted": 2,
+        "precision": 1.0,
+        "recall": 0.5,
+        "camera": false
+      },
+      "45": {
+        "correct": 4,
+        "clips": 4,
+        "accepted": 5,
+        "precision": 0.8,
+        "recall": 1.0,
+        "camera": false
+      },
+      "46": {
+        "correct": 4,
+        "clips": 4,
+        "accepted": 4,
+        "precision": 1.0,
+        "recall": 1.0,
+        "camera": true
+      },
+      "47": {
+        "correct": 4,
+        "clips": 4,
+        "accepted": 5,
+        "precision": 0.8,
+        "recall": 1.0,
+        "camera": false
+      },
+      "48": {
+        "correct": 3,
+        "clips": 4,
+        "accepted": 3,
+        "precision": 1.0,
+        "recall": 0.75,
+        "camera": false
+      },
+      "49": {
+        "correct": 4,
+        "clips": 4,
+        "accepted": 4,
+        "precision": 1.0,
+        "recall": 1.0,
+        "camera": true
+      },
+      "50": {
+        "correct": 3,
+        "clips": 4,
+        "accepted": 3,
+        "precision": 1.0,
+        "recall": 0.75,
+        "camera": false
+      },
+      "51": {
+        "correct": 2,
+        "clips": 4,
+        "accepted": 2,
+        "precision": 1.0,
+        "recall": 0.5,
+        "camera": false
+      },
+      "52": {
+        "correct": 4,
+        "clips": 4,
+        "accepted": 4,
+        "precision": 1.0,
+        "recall": 1.0,
+        "camera": true
+      },
+      "53": {
+        "correct": 2,
+        "clips": 4,
+        "accepted": 2,
+        "precision": 1.0,
+        "recall": 0.5,
+        "camera": false
+      },
+      "54": {
+        "correct": 0,
+        "clips": 4,
+        "accepted": 0,
+        "precision": 0.0,
+        "recall": 0.0,
+        "camera": false
+      },
+      "55": {
+        "correct": 2,
+        "clips": 4,
+        "accepted": 6,
+        "precision": 0.3333333333333333,
+        "recall": 0.5,
+        "camera": false
+      },
+      "56": {
+        "correct": 4,
+        "clips": 4,
+        "accepted": 4,
+        "precision": 1.0,
+        "recall": 1.0,
+        "camera": true
+      },
+      "57": {
+        "correct": 4,
+        "clips": 4,
+        "accepted": 4,
+        "precision": 1.0,
+        "recall": 1.0,
+        "camera": true
+      },
+      "58": {
+        "correct": 4,
+        "clips": 4,
+        "accepted": 4,
+        "precision": 1.0,
+        "recall": 1.0,
+        "camera": true
+      },
+      "59": {
+        "correct": 3,
+        "clips": 4,
+        "accepted": 3,
+        "precision": 1.0,
+        "recall": 0.75,
+        "camera": false
+      },
+      "60": {
+        "correct": 3,
+        "clips": 4,
+        "accepted": 3,
+        "precision": 1.0,
+        "recall": 0.75,
+        "camera": false
+      },
+      "61": {
+        "correct": 3,
+        "clips": 4,
+        "accepted": 5,
+        "precision": 0.6,
+        "recall": 0.75,
+        "camera": false
+      },
+      "62": {
+        "correct": 4,
+        "clips": 4,
+        "accepted": 5,
+        "precision": 0.8,
+        "recall": 1.0,
+        "camera": false
+      },
+      "63": {
+        "correct": 4,
+        "clips": 4,
+        "accepted": 4,
+        "precision": 1.0,
+        "recall": 1.0,
+        "camera": true
+      },
+      "64": {
+        "correct": 4,
+        "clips": 4,
+        "accepted": 4,
+        "precision": 1.0,
+        "recall": 1.0,
+        "camera": true
+      },
+      "65": {
+        "correct": 4,
+        "clips": 4,
+        "accepted": 4,
+        "precision": 1.0,
+        "recall": 1.0,
+        "camera": true
+      },
+      "66": {
+        "correct": 2,
+        "clips": 4,
+        "accepted": 2,
+        "precision": 1.0,
+        "recall": 0.5,
+        "camera": false
+      },
+      "67": {
+        "correct": 3,
+        "clips": 4,
+        "accepted": 3,
+        "precision": 1.0,
+        "recall": 0.75,
+        "camera": false
+      },
+      "68": {
+        "correct": 4,
+        "clips": 4,
+        "accepted": 4,
+        "precision": 1.0,
+        "recall": 1.0,
+        "camera": true
+      },
+      "69": {
+        "correct": 3,
+        "clips": 4,
+        "accepted": 3,
+        "precision": 1.0,
+        "recall": 0.75,
+        "camera": false
+      },
+      "70": {
+        "correct": 4,
+        "clips": 4,
+        "accepted": 4,
+        "precision": 1.0,
+        "recall": 1.0,
+        "camera": true
+      },
+      "71": {
+        "correct": 4,
+        "clips": 4,
+        "accepted": 4,
+        "precision": 1.0,
+        "recall": 1.0,
+        "camera": true
+      },
+      "72": {
+        "correct": 3,
+        "clips": 4,
+        "accepted": 3,
+        "precision": 1.0,
+        "recall": 0.75,
+        "camera": false
+      },
+      "73": {
+        "correct": 4,
+        "clips": 4,
+        "accepted": 4,
+        "precision": 1.0,
+        "recall": 1.0,
+        "camera": true
+      },
+      "74": {
+        "correct": 2,
+        "clips": 4,
+        "accepted": 2,
+        "precision": 1.0,
+        "recall": 0.5,
+        "camera": false
+      },
+      "75": {
+        "correct": 4,
+        "clips": 4,
+        "accepted": 4,
+        "precision": 1.0,
+        "recall": 1.0,
+        "camera": true
+      },
+      "76": {
+        "correct": 2,
+        "clips": 4,
+        "accepted": 2,
+        "precision": 1.0,
+        "recall": 0.5,
+        "camera": false
+      },
+      "77": {
+        "correct": 4,
+        "clips": 4,
+        "accepted": 4,
+        "precision": 1.0,
+        "recall": 1.0,
+        "camera": true
+      },
+      "78": {
+        "correct": 2,
+        "clips": 4,
+        "accepted": 2,
+        "precision": 1.0,
+        "recall": 0.5,
+        "camera": false
+      },
+      "79": {
+        "correct": 3,
+        "clips": 4,
+        "accepted": 3,
+        "precision": 1.0,
+        "recall": 0.75,
+        "camera": false
+      },
+      "80": {
+        "correct": 4,
+        "clips": 4,
+        "accepted": 4,
+        "precision": 1.0,
+        "recall": 1.0,
+        "camera": true
+      },
+      "81": {
+        "correct": 2,
+        "clips": 4,
+        "accepted": 3,
+        "precision": 0.6666666666666666,
+        "recall": 0.5,
+        "camera": false
+      },
+      "82": {
+        "correct": 4,
+        "clips": 4,
+        "accepted": 4,
+        "precision": 1.0,
+        "recall": 1.0,
+        "camera": true
+      },
+      "83": {
+        "correct": 4,
+        "clips": 4,
+        "accepted": 4,
+        "precision": 1.0,
+        "recall": 1.0,
+        "camera": true
+      },
+      "84": {
+        "correct": 4,
+        "clips": 4,
+        "accepted": 4,
+        "precision": 1.0,
+        "recall": 1.0,
+        "camera": true
+      },
+      "85": {
+        "correct": 4,
+        "clips": 4,
+        "accepted": 4,
+        "precision": 1.0,
+        "recall": 1.0,
+        "camera": true
+      },
+      "86": {
+        "correct": 4,
+        "clips": 4,
+        "accepted": 4,
+        "precision": 1.0,
+        "recall": 1.0,
+        "camera": true
+      },
+      "87": {
+        "correct": 4,
+        "clips": 4,
+        "accepted": 4,
+        "precision": 1.0,
+        "recall": 1.0,
+        "camera": true
+      },
+      "88": {
+        "correct": 4,
+        "clips": 4,
+        "accepted": 4,
+        "precision": 1.0,
+        "recall": 1.0,
+        "camera": true
+      },
+      "89": {
+        "correct": 3,
+        "clips": 4,
+        "accepted": 3,
+        "precision": 1.0,
+        "recall": 0.75,
+        "camera": false
+      },
+      "90": {
+        "correct": 4,
+        "clips": 4,
+        "accepted": 4,
+        "precision": 1.0,
+        "recall": 1.0,
+        "camera": true
+      },
+      "91": {
+        "correct": 4,
+        "clips": 4,
+        "accepted": 4,
+        "precision": 1.0,
+        "recall": 1.0,
+        "camera": true
+      },
+      "92": {
+        "correct": 4,
+        "clips": 4,
+        "accepted": 4,
+        "precision": 1.0,
+        "recall": 1.0,
+        "camera": true
+      },
+      "93": {
+        "correct": 4,
+        "clips": 4,
+        "accepted": 4,
+        "precision": 1.0,
+        "recall": 1.0,
+        "camera": true
+      },
+      "94": {
+        "correct": 4,
+        "clips": 4,
+        "accepted": 4,
+        "precision": 1.0,
+        "recall": 1.0,
+        "camera": true
+      },
+      "95": {
+        "correct": 3,
+        "clips": 4,
+        "accepted": 3,
+        "precision": 1.0,
+        "recall": 0.75,
+        "camera": false
+      },
+      "96": {
+        "correct": 3,
+        "clips": 4,
+        "accepted": 3,
+        "precision": 1.0,
+        "recall": 0.75,
+        "camera": false
+      },
+      "97": {
+        "correct": 4,
+        "clips": 4,
+        "accepted": 5,
+        "precision": 0.8,
+        "recall": 1.0,
+        "camera": false
+      },
+      "98": {
+        "correct": 4,
+        "clips": 4,
+        "accepted": 4,
+        "precision": 1.0,
+        "recall": 1.0,
+        "camera": true
+      },
+      "99": {
+        "correct": 2,
+        "clips": 4,
+        "accepted": 2,
+        "precision": 1.0,
+        "recall": 0.5,
+        "camera": false
+      },
+      "100": {
+        "correct": 4,
+        "clips": 4,
+        "accepted": 4,
+        "precision": 1.0,
+        "recall": 1.0,
+        "camera": true
+      },
+      "101": {
+        "correct": 3,
+        "clips": 4,
+        "accepted": 3,
+        "precision": 1.0,
+        "recall": 0.75,
+        "camera": false
+      },
+      "102": {
+        "correct": 3,
+        "clips": 4,
+        "accepted": 3,
+        "precision": 1.0,
+        "recall": 0.75,
+        "camera": false
+      },
+      "103": {
+        "correct": 4,
+        "clips": 4,
+        "accepted": 4,
+        "precision": 1.0,
+        "recall": 1.0,
+        "camera": true
+      },
+      "104": {
+        "correct": 4,
+        "clips": 4,
+        "accepted": 4,
+        "precision": 1.0,
+        "recall": 1.0,
+        "camera": true
+      }
+    },
+    "passing": [
+      "4",
+      "5",
+      "6",
+      "7",
+      "9",
+      "10",
+      "14",
+      "17",
+      "18",
+      "43",
+      "46",
+      "49",
+      "52",
+      "56",
+      "57",
+      "58",
+      "63",
+      "64",
+      "65",
+      "68",
+      "70",
+      "71",
+      "73",
+      "75",
+      "77",
+      "80",
+      "82",
+      "83",
+      "84",
+      "85",
+      "86",
+      "87",
+      "88",
+      "90",
+      "91",
+      "92",
+      "93",
+      "94",
+      "98",
+      "100",
+      "103",
+      "104"
+    ]
+  },
+  "transactional": {
+    "clips": 177,
+    "top1_correct": 169,
+    "per_sign": {
+      "3": {
+        "correct": 7,
+        "clips": 8,
+        "accepted": 7,
+        "precision": 1.0,
+        "recall": 0.875,
+        "camera": false
+      },
+      "7": {
+        "correct": 6,
+        "clips": 7,
+        "accepted": 6,
+        "precision": 1.0,
+        "recall": 0.8571428571428571,
+        "camera": false
+      },
+      "14": {
+        "correct": 6,
+        "clips": 7,
+        "accepted": 6,
+        "precision": 1.0,
+        "recall": 0.8571428571428571,
+        "camera": false
+      },
+      "15": {
+        "correct": 6,
+        "clips": 6,
+        "accepted": 7,
+        "precision": 0.8571428571428571,
+        "recall": 1.0,
+        "camera": false
+      },
+      "20": {
+        "correct": 7,
+        "clips": 7,
+        "accepted": 7,
+        "precision": 1.0,
+        "recall": 1.0,
+        "camera": true
+      },
+      "21": {
+        "correct": 7,
+        "clips": 7,
+        "accepted": 7,
+        "precision": 1.0,
+        "recall": 1.0,
+        "camera": true
+      },
+      "22": {
+        "correct": 6,
+        "clips": 6,
+        "accepted": 6,
+        "precision": 1.0,
+        "recall": 1.0,
+        "camera": true
+      },
+      "23": {
+        "correct": 7,
+        "clips": 7,
+        "accepted": 7,
+        "precision": 1.0,
+        "recall": 1.0,
+        "camera": true
+      },
+      "24": {
+        "correct": 6,
+        "clips": 7,
+        "accepted": 6,
+        "precision": 1.0,
+        "recall": 0.8571428571428571,
+        "camera": false
+      },
+      "25": {
+        "correct": 7,
+        "clips": 7,
+        "accepted": 7,
+        "precision": 1.0,
+        "recall": 1.0,
+        "camera": true
+      },
+      "26": {
+        "correct": 7,
+        "clips": 7,
+        "accepted": 7,
+        "precision": 1.0,
+        "recall": 1.0,
+        "camera": true
+      },
+      "27": {
+        "correct": 7,
+        "clips": 7,
+        "accepted": 7,
+        "precision": 1.0,
+        "recall": 1.0,
+        "camera": true
+      },
+      "28": {
+        "correct": 7,
+        "clips": 7,
+        "accepted": 7,
+        "precision": 1.0,
+        "recall": 1.0,
+        "camera": true
+      },
+      "29": {
+        "correct": 3,
+        "clips": 6,
+        "accepted": 3,
+        "precision": 1.0,
+        "recall": 0.5,
+        "camera": false
+      },
+      "txn-again": {
+        "correct": 7,
+        "clips": 7,
+        "accepted": 7,
+        "precision": 1.0,
+        "recall": 1.0,
+        "camera": true
+      },
+      "txn-card": {
+        "correct": 7,
+        "clips": 7,
+        "accepted": 7,
+        "precision": 1.0,
+        "recall": 1.0,
+        "camera": true
+      },
+      "txn-cash": {
+        "correct": 5,
+        "clips": 6,
+        "accepted": 5,
+        "precision": 1.0,
+        "recall": 0.8333333333333334,
+        "camera": false
+      },
+      "txn-coin": {
+        "correct": 7,
+        "clips": 7,
+        "accepted": 8,
+        "precision": 0.875,
+        "recall": 1.0,
+        "camera": false
+      },
+      "txn-discount": {
+        "correct": 6,
+        "clips": 7,
+        "accepted": 6,
+        "precision": 1.0,
+        "recall": 0.8571428571428571,
+        "camera": false
+      },
+      "txn-how-many": {
+        "correct": 5,
+        "clips": 7,
+        "accepted": 5,
+        "precision": 1.0,
+        "recall": 0.7142857142857143,
+        "camera": false
+      },
+      "txn-how-much": {
+        "correct": 7,
+        "clips": 7,
+        "accepted": 8,
+        "precision": 0.875,
+        "recall": 1.0,
+        "camera": false
+      },
+      "txn-please": {
+        "correct": 7,
+        "clips": 7,
+        "accepted": 7,
+        "precision": 1.0,
+        "recall": 1.0,
+        "camera": true
+      },
+      "txn-problem": {
+        "correct": 7,
+        "clips": 7,
+        "accepted": 7,
+        "precision": 1.0,
+        "recall": 1.0,
+        "camera": true
+      },
+      "txn-receipt": {
+        "correct": 7,
+        "clips": 7,
+        "accepted": 7,
+        "precision": 1.0,
+        "recall": 1.0,
+        "camera": true
+      },
+      "txn-wait": {
+        "correct": 6,
+        "clips": 6,
+        "accepted": 6,
+        "precision": 1.0,
+        "recall": 1.0,
+        "camera": true
+      },
+      "txn-welcome": {
+        "correct": 6,
+        "clips": 6,
+        "accepted": 6,
+        "precision": 1.0,
+        "recall": 1.0,
+        "camera": true
+      }
+    },
+    "passing": [
+      "txn-again",
+      "txn-card",
+      "txn-please",
+      "txn-problem",
+      "txn-receipt",
+      "txn-wait",
+      "txn-welcome"
+    ]
+  },
+  "combined": {
+    "clips": 603,
+    "top1_correct": 527,
+    "per_sign": {
+      "0": {
+        "correct": 3,
+        "clips": 4,
+        "accepted": 3,
+        "precision": 1.0,
+        "recall": 0.75,
+        "camera": false
+      },
+      "1": {
+        "correct": 1,
+        "clips": 4,
+        "accepted": 1,
+        "precision": 1.0,
+        "recall": 0.25,
+        "camera": false
+      },
+      "2": {
+        "correct": 2,
+        "clips": 5,
+        "accepted": 2,
+        "precision": 1.0,
+        "recall": 0.4,
+        "camera": false
+      },
+      "3": {
+        "correct": 11,
+        "clips": 12,
+        "accepted": 12,
+        "precision": 0.9166666666666666,
+        "recall": 0.9166666666666666,
+        "camera": true
+      },
+      "4": {
+        "correct": 4,
+        "clips": 4,
+        "accepted": 4,
+        "precision": 1.0,
+        "recall": 1.0,
+        "camera": true
+      },
+      "5": {
+        "correct": 4,
+        "clips": 4,
+        "accepted": 4,
+        "precision": 1.0,
+        "recall": 1.0,
+        "camera": true
+      },
+      "6": {
+        "correct": 5,
+        "clips": 5,
+        "accepted": 5,
+        "precision": 1.0,
+        "recall": 1.0,
+        "camera": true
+      },
+      "7": {
+        "correct": 10,
+        "clips": 11,
+        "accepted": 10,
+        "precision": 1.0,
+        "recall": 0.9090909090909091,
+        "camera": true
+      },
+      "8": {
+        "correct": 3,
+        "clips": 4,
+        "accepted": 3,
+        "precision": 1.0,
+        "recall": 0.75,
+        "camera": false
+      },
+      "9": {
+        "correct": 4,
+        "clips": 4,
+        "accepted": 4,
+        "precision": 1.0,
+        "recall": 1.0,
+        "camera": true
+      },
+      "10": {
+        "correct": 4,
+        "clips": 4,
+        "accepted": 4,
+        "precision": 1.0,
+        "recall": 1.0,
+        "camera": true
+      },
+      "11": {
+        "correct": 3,
+        "clips": 4,
+        "accepted": 4,
+        "precision": 0.75,
+        "recall": 0.75,
+        "camera": false
+      },
+      "12": {
+        "correct": 4,
+        "clips": 4,
+        "accepted": 5,
+        "precision": 0.8,
+        "recall": 1.0,
+        "camera": false
+      },
+      "13": {
+        "correct": 1,
+        "clips": 4,
+        "accepted": 1,
+        "precision": 1.0,
+        "recall": 0.25,
+        "camera": false
+      },
+      "14": {
+        "correct": 10,
+        "clips": 11,
+        "accepted": 10,
+        "precision": 1.0,
+        "recall": 0.9090909090909091,
+        "camera": true
+      },
+      "15": {
+        "correct": 10,
+        "clips": 10,
+        "accepted": 12,
+        "precision": 0.8333333333333334,
+        "recall": 1.0,
+        "camera": false
+      },
+      "16": {
+        "correct": 4,
+        "clips": 4,
+        "accepted": 5,
+        "precision": 0.8,
+        "recall": 1.0,
+        "camera": false
+      },
+      "17": {
+        "correct": 5,
+        "clips": 5,
+        "accepted": 5,
+        "precision": 1.0,
+        "recall": 1.0,
+        "camera": true
+      },
+      "18": {
+        "correct": 4,
+        "clips": 4,
+        "accepted": 4,
+        "precision": 1.0,
+        "recall": 1.0,
+        "camera": true
+      },
+      "19": {
+        "correct": 2,
+        "clips": 4,
+        "accepted": 2,
+        "precision": 1.0,
+        "recall": 0.5,
+        "camera": false
+      },
+      "20": {
+        "correct": 11,
+        "clips": 11,
+        "accepted": 11,
+        "precision": 1.0,
+        "recall": 1.0,
+        "camera": true
+      },
+      "21": {
+        "correct": 10,
+        "clips": 11,
+        "accepted": 10,
+        "precision": 1.0,
+        "recall": 0.9090909090909091,
+        "camera": true
+      },
+      "22": {
+        "correct": 9,
+        "clips": 10,
+        "accepted": 9,
+        "precision": 1.0,
+        "recall": 0.9,
+        "camera": true
+      },
+      "23": {
+        "correct": 10,
+        "clips": 11,
+        "accepted": 11,
+        "precision": 0.9090909090909091,
+        "recall": 0.9090909090909091,
+        "camera": true
+      },
+      "24": {
+        "correct": 9,
+        "clips": 11,
+        "accepted": 9,
+        "precision": 1.0,
+        "recall": 0.8181818181818182,
+        "camera": false
+      },
+      "25": {
+        "correct": 10,
+        "clips": 11,
+        "accepted": 10,
+        "precision": 1.0,
+        "recall": 0.9090909090909091,
+        "camera": true
+      },
+      "26": {
+        "correct": 9,
+        "clips": 11,
+        "accepted": 9,
+        "precision": 1.0,
+        "recall": 0.8181818181818182,
+        "camera": false
+      },
+      "27": {
+        "correct": 10,
+        "clips": 11,
+        "accepted": 10,
+        "precision": 1.0,
+        "recall": 0.9090909090909091,
+        "camera": true
+      },
+      "28": {
+        "correct": 9,
+        "clips": 11,
+        "accepted": 9,
+        "precision": 1.0,
+        "recall": 0.8181818181818182,
+        "camera": false
+      },
+      "29": {
+        "correct": 7,
+        "clips": 10,
+        "accepted": 8,
+        "precision": 0.875,
+        "recall": 0.7,
+        "camera": false
+      },
+      "30": {
+        "correct": 2,
+        "clips": 4,
+        "accepted": 3,
+        "precision": 0.6666666666666666,
+        "recall": 0.5,
+        "camera": false
+      },
+      "31": {
+        "correct": 3,
+        "clips": 4,
+        "accepted": 4,
+        "precision": 0.75,
+        "recall": 0.75,
+        "camera": false
+      },
+      "32": {
+        "correct": 4,
+        "clips": 4,
+        "accepted": 5,
+        "precision": 0.8,
+        "recall": 1.0,
+        "camera": false
+      },
+      "33": {
+        "correct": 1,
+        "clips": 4,
+        "accepted": 2,
+        "precision": 0.5,
+        "recall": 0.25,
+        "camera": false
+      },
+      "34": {
+        "correct": 1,
+        "clips": 4,
+        "accepted": 1,
+        "precision": 1.0,
+        "recall": 0.25,
+        "camera": false
+      },
+      "35": {
+        "correct": 1,
+        "clips": 4,
+        "accepted": 1,
+        "precision": 1.0,
+        "recall": 0.25,
+        "camera": false
+      },
+      "36": {
+        "correct": 2,
+        "clips": 4,
+        "accepted": 4,
+        "precision": 0.5,
+        "recall": 0.5,
+        "camera": false
+      },
+      "37": {
+        "correct": 0,
+        "clips": 5,
+        "accepted": 1,
+        "precision": 0.0,
+        "recall": 0.0,
+        "camera": false
+      },
+      "38": {
+        "correct": 0,
+        "clips": 4,
+        "accepted": 0,
+        "precision": 0.0,
+        "recall": 0.0,
+        "camera": false
+      },
+      "39": {
+        "correct": 1,
+        "clips": 4,
+        "accepted": 3,
+        "precision": 0.3333333333333333,
+        "recall": 0.25,
+        "camera": false
+      },
+      "40": {
+        "correct": 0,
+        "clips": 5,
+        "accepted": 0,
+        "precision": 0.0,
+        "recall": 0.0,
+        "camera": false
+      },
+      "41": {
+        "correct": 1,
+        "clips": 5,
+        "accepted": 1,
+        "precision": 1.0,
+        "recall": 0.2,
+        "camera": false
+      },
+      "42": {
+        "correct": 3,
+        "clips": 4,
+        "accepted": 3,
+        "precision": 1.0,
+        "recall": 0.75,
+        "camera": false
+      },
+      "43": {
+        "correct": 4,
+        "clips": 4,
+        "accepted": 4,
+        "precision": 1.0,
+        "recall": 1.0,
+        "camera": true
+      },
+      "44": {
+        "correct": 2,
+        "clips": 4,
+        "accepted": 2,
+        "precision": 1.0,
+        "recall": 0.5,
+        "camera": false
+      },
+      "45": {
+        "correct": 4,
+        "clips": 4,
+        "accepted": 5,
+        "precision": 0.8,
+        "recall": 1.0,
+        "camera": false
+      },
+      "46": {
+        "correct": 4,
+        "clips": 4,
+        "accepted": 4,
+        "precision": 1.0,
+        "recall": 1.0,
+        "camera": true
+      },
+      "47": {
+        "correct": 4,
+        "clips": 4,
+        "accepted": 5,
+        "precision": 0.8,
+        "recall": 1.0,
+        "camera": false
+      },
+      "48": {
+        "correct": 3,
+        "clips": 4,
+        "accepted": 3,
+        "precision": 1.0,
+        "recall": 0.75,
+        "camera": false
+      },
+      "49": {
+        "correct": 4,
+        "clips": 4,
+        "accepted": 4,
+        "precision": 1.0,
+        "recall": 1.0,
+        "camera": true
+      },
+      "50": {
+        "correct": 3,
+        "clips": 4,
+        "accepted": 3,
+        "precision": 1.0,
+        "recall": 0.75,
+        "camera": false
+      },
+      "51": {
+        "correct": 2,
+        "clips": 4,
+        "accepted": 2,
+        "precision": 1.0,
+        "recall": 0.5,
+        "camera": false
+      },
+      "52": {
+        "correct": 4,
+        "clips": 4,
+        "accepted": 4,
+        "precision": 1.0,
+        "recall": 1.0,
+        "camera": true
+      },
+      "53": {
+        "correct": 2,
+        "clips": 4,
+        "accepted": 2,
+        "precision": 1.0,
+        "recall": 0.5,
+        "camera": false
+      },
+      "54": {
+        "correct": 0,
+        "clips": 4,
+        "accepted": 0,
+        "precision": 0.0,
+        "recall": 0.0,
+        "camera": false
+      },
+      "55": {
+        "correct": 2,
+        "clips": 4,
+        "accepted": 6,
+        "precision": 0.3333333333333333,
+        "recall": 0.5,
+        "camera": false
+      },
+      "56": {
+        "correct": 4,
+        "clips": 4,
+        "accepted": 4,
+        "precision": 1.0,
+        "recall": 1.0,
+        "camera": true
+      },
+      "57": {
+        "correct": 4,
+        "clips": 4,
+        "accepted": 4,
+        "precision": 1.0,
+        "recall": 1.0,
+        "camera": true
+      },
+      "58": {
+        "correct": 4,
+        "clips": 4,
+        "accepted": 4,
+        "precision": 1.0,
+        "recall": 1.0,
+        "camera": true
+      },
+      "59": {
+        "correct": 3,
+        "clips": 4,
+        "accepted": 3,
+        "precision": 1.0,
+        "recall": 0.75,
+        "camera": false
+      },
+      "60": {
+        "correct": 3,
+        "clips": 4,
+        "accepted": 3,
+        "precision": 1.0,
+        "recall": 0.75,
+        "camera": false
+      },
+      "61": {
+        "correct": 3,
+        "clips": 4,
+        "accepted": 5,
+        "precision": 0.6,
+        "recall": 0.75,
+        "camera": false
+      },
+      "62": {
+        "correct": 4,
+        "clips": 4,
+        "accepted": 5,
+        "precision": 0.8,
+        "recall": 1.0,
+        "camera": false
+      },
+      "63": {
+        "correct": 4,
+        "clips": 4,
+        "accepted": 4,
+        "precision": 1.0,
+        "recall": 1.0,
+        "camera": true
+      },
+      "64": {
+        "correct": 4,
+        "clips": 4,
+        "accepted": 4,
+        "precision": 1.0,
+        "recall": 1.0,
+        "camera": true
+      },
+      "65": {
+        "correct": 4,
+        "clips": 4,
+        "accepted": 4,
+        "precision": 1.0,
+        "recall": 1.0,
+        "camera": true
+      },
+      "66": {
+        "correct": 2,
+        "clips": 4,
+        "accepted": 2,
+        "precision": 1.0,
+        "recall": 0.5,
+        "camera": false
+      },
+      "67": {
+        "correct": 3,
+        "clips": 4,
+        "accepted": 3,
+        "precision": 1.0,
+        "recall": 0.75,
+        "camera": false
+      },
+      "68": {
+        "correct": 4,
+        "clips": 4,
+        "accepted": 4,
+        "precision": 1.0,
+        "recall": 1.0,
+        "camera": true
+      },
+      "69": {
+        "correct": 3,
+        "clips": 4,
+        "accepted": 3,
+        "precision": 1.0,
+        "recall": 0.75,
+        "camera": false
+      },
+      "70": {
+        "correct": 4,
+        "clips": 4,
+        "accepted": 4,
+        "precision": 1.0,
+        "recall": 1.0,
+        "camera": true
+      },
+      "71": {
+        "correct": 4,
+        "clips": 4,
+        "accepted": 4,
+        "precision": 1.0,
+        "recall": 1.0,
+        "camera": true
+      },
+      "72": {
+        "correct": 3,
+        "clips": 4,
+        "accepted": 3,
+        "precision": 1.0,
+        "recall": 0.75,
+        "camera": false
+      },
+      "73": {
+        "correct": 4,
+        "clips": 4,
+        "accepted": 4,
+        "precision": 1.0,
+        "recall": 1.0,
+        "camera": true
+      },
+      "74": {
+        "correct": 2,
+        "clips": 4,
+        "accepted": 2,
+        "precision": 1.0,
+        "recall": 0.5,
+        "camera": false
+      },
+      "75": {
+        "correct": 4,
+        "clips": 4,
+        "accepted": 4,
+        "precision": 1.0,
+        "recall": 1.0,
+        "camera": true
+      },
+      "76": {
+        "correct": 2,
+        "clips": 4,
+        "accepted": 2,
+        "precision": 1.0,
+        "recall": 0.5,
+        "camera": false
+      },
+      "77": {
+        "correct": 4,
+        "clips": 4,
+        "accepted": 4,
+        "precision": 1.0,
+        "recall": 1.0,
+        "camera": true
+      },
+      "78": {
+        "correct": 2,
+        "clips": 4,
+        "accepted": 2,
+        "precision": 1.0,
+        "recall": 0.5,
+        "camera": false
+      },
+      "79": {
+        "correct": 3,
+        "clips": 4,
+        "accepted": 3,
+        "precision": 1.0,
+        "recall": 0.75,
+        "camera": false
+      },
+      "80": {
+        "correct": 4,
+        "clips": 4,
+        "accepted": 4,
+        "precision": 1.0,
+        "recall": 1.0,
+        "camera": true
+      },
+      "81": {
+        "correct": 2,
+        "clips": 4,
+        "accepted": 3,
+        "precision": 0.6666666666666666,
+        "recall": 0.5,
+        "camera": false
+      },
+      "82": {
+        "correct": 4,
+        "clips": 4,
+        "accepted": 4,
+        "precision": 1.0,
+        "recall": 1.0,
+        "camera": true
+      },
+      "83": {
+        "correct": 4,
+        "clips": 4,
+        "accepted": 4,
+        "precision": 1.0,
+        "recall": 1.0,
+        "camera": true
+      },
+      "84": {
+        "correct": 4,
+        "clips": 4,
+        "accepted": 4,
+        "precision": 1.0,
+        "recall": 1.0,
+        "camera": true
+      },
+      "85": {
+        "correct": 4,
+        "clips": 4,
+        "accepted": 4,
+        "precision": 1.0,
+        "recall": 1.0,
+        "camera": true
+      },
+      "86": {
+        "correct": 4,
+        "clips": 4,
+        "accepted": 4,
+        "precision": 1.0,
+        "recall": 1.0,
+        "camera": true
+      },
+      "87": {
+        "correct": 4,
+        "clips": 4,
+        "accepted": 4,
+        "precision": 1.0,
+        "recall": 1.0,
+        "camera": true
+      },
+      "88": {
+        "correct": 4,
+        "clips": 4,
+        "accepted": 4,
+        "precision": 1.0,
+        "recall": 1.0,
+        "camera": true
+      },
+      "89": {
+        "correct": 3,
+        "clips": 4,
+        "accepted": 3,
+        "precision": 1.0,
+        "recall": 0.75,
+        "camera": false
+      },
+      "90": {
+        "correct": 4,
+        "clips": 4,
+        "accepted": 4,
+        "precision": 1.0,
+        "recall": 1.0,
+        "camera": true
+      },
+      "91": {
+        "correct": 4,
+        "clips": 4,
+        "accepted": 4,
+        "precision": 1.0,
+        "recall": 1.0,
+        "camera": true
+      },
+      "92": {
+        "correct": 4,
+        "clips": 4,
+        "accepted": 4,
+        "precision": 1.0,
+        "recall": 1.0,
+        "camera": true
+      },
+      "93": {
+        "correct": 4,
+        "clips": 4,
+        "accepted": 4,
+        "precision": 1.0,
+        "recall": 1.0,
+        "camera": true
+      },
+      "94": {
+        "correct": 4,
+        "clips": 4,
+        "accepted": 4,
+        "precision": 1.0,
+        "recall": 1.0,
+        "camera": true
+      },
+      "95": {
+        "correct": 3,
+        "clips": 4,
+        "accepted": 3,
+        "precision": 1.0,
+        "recall": 0.75,
+        "camera": false
+      },
+      "96": {
+        "correct": 3,
+        "clips": 4,
+        "accepted": 3,
+        "precision": 1.0,
+        "recall": 0.75,
+        "camera": false
+      },
+      "97": {
+        "correct": 4,
+        "clips": 4,
+        "accepted": 5,
+        "precision": 0.8,
+        "recall": 1.0,
+        "camera": false
+      },
+      "98": {
+        "correct": 4,
+        "clips": 4,
+        "accepted": 4,
+        "precision": 1.0,
+        "recall": 1.0,
+        "camera": true
+      },
+      "99": {
+        "correct": 2,
+        "clips": 4,
+        "accepted": 2,
+        "precision": 1.0,
+        "recall": 0.5,
+        "camera": false
+      },
+      "100": {
+        "correct": 4,
+        "clips": 4,
+        "accepted": 4,
+        "precision": 1.0,
+        "recall": 1.0,
+        "camera": true
+      },
+      "101": {
+        "correct": 3,
+        "clips": 4,
+        "accepted": 3,
+        "precision": 1.0,
+        "recall": 0.75,
+        "camera": false
+      },
+      "102": {
+        "correct": 3,
+        "clips": 4,
+        "accepted": 3,
+        "precision": 1.0,
+        "recall": 0.75,
+        "camera": false
+      },
+      "103": {
+        "correct": 4,
+        "clips": 4,
+        "accepted": 4,
+        "precision": 1.0,
+        "recall": 1.0,
+        "camera": true
+      },
+      "104": {
+        "correct": 4,
+        "clips": 4,
+        "accepted": 4,
+        "precision": 1.0,
+        "recall": 1.0,
+        "camera": true
+      },
+      "txn-again": {
+        "correct": 7,
+        "clips": 7,
+        "accepted": 7,
+        "precision": 1.0,
+        "recall": 1.0,
+        "camera": true
+      },
+      "txn-card": {
+        "correct": 7,
+        "clips": 7,
+        "accepted": 7,
+        "precision": 1.0,
+        "recall": 1.0,
+        "camera": true
+      },
+      "txn-cash": {
+        "correct": 5,
+        "clips": 6,
+        "accepted": 5,
+        "precision": 1.0,
+        "recall": 0.8333333333333334,
+        "camera": false
+      },
+      "txn-coin": {
+        "correct": 7,
+        "clips": 7,
+        "accepted": 8,
+        "precision": 0.875,
+        "recall": 1.0,
+        "camera": false
+      },
+      "txn-discount": {
+        "correct": 6,
+        "clips": 7,
+        "accepted": 6,
+        "precision": 1.0,
+        "recall": 0.8571428571428571,
+        "camera": false
+      },
+      "txn-how-many": {
+        "correct": 5,
+        "clips": 7,
+        "accepted": 5,
+        "precision": 1.0,
+        "recall": 0.7142857142857143,
+        "camera": false
+      },
+      "txn-how-much": {
+        "correct": 7,
+        "clips": 7,
+        "accepted": 9,
+        "precision": 0.7777777777777778,
+        "recall": 1.0,
+        "camera": false
+      },
+      "txn-please": {
+        "correct": 7,
+        "clips": 7,
+        "accepted": 7,
+        "precision": 1.0,
+        "recall": 1.0,
+        "camera": true
+      },
+      "txn-problem": {
+        "correct": 7,
+        "clips": 7,
+        "accepted": 7,
+        "precision": 1.0,
+        "recall": 1.0,
+        "camera": true
+      },
+      "txn-receipt": {
+        "correct": 7,
+        "clips": 7,
+        "accepted": 7,
+        "precision": 1.0,
+        "recall": 1.0,
+        "camera": true
+      },
+      "txn-wait": {
+        "correct": 6,
+        "clips": 6,
+        "accepted": 6,
+        "precision": 1.0,
+        "recall": 1.0,
+        "camera": true
+      },
+      "txn-welcome": {
+        "correct": 6,
+        "clips": 6,
+        "accepted": 6,
+        "precision": 1.0,
+        "recall": 1.0,
+        "camera": true
+      }
+    },
+    "passing": [
+      "3",
+      "4",
+      "5",
+      "6",
+      "7",
+      "9",
+      "10",
+      "14",
+      "17",
+      "18",
+      "43",
+      "46",
+      "49",
+      "52",
+      "56",
+      "57",
+      "58",
+      "63",
+      "64",
+      "65",
+      "68",
+      "70",
+      "71",
+      "73",
+      "75",
+      "77",
+      "80",
+      "82",
+      "83",
+      "84",
+      "85",
+      "86",
+      "87",
+      "88",
+      "90",
+      "91",
+      "92",
+      "93",
+      "94",
+      "98",
+      "100",
+      "103",
+      "104",
+      "txn-again",
+      "txn-card",
+      "txn-please",
+      "txn-problem",
+      "txn-receipt",
+      "txn-wait",
+      "txn-welcome"
+    ]
+  },
+  "fsl105_v2_word_head": {
+    "clips": 426,
+    "top1_correct": 366,
+    "per_sign": {
+      "0": {
+        "correct": 4,
+        "clips": 4,
+        "accepted": 4,
+        "precision": 1.0,
+        "recall": 1.0,
+        "camera": true
+      },
+      "1": {
+        "correct": 0,
+        "clips": 4,
+        "accepted": 0,
+        "precision": 0.0,
+        "recall": 0.0,
+        "camera": false
+      },
+      "2": {
+        "correct": 5,
+        "clips": 5,
+        "accepted": 6,
+        "precision": 0.8333333333333334,
+        "recall": 1.0,
+        "camera": false
+      },
+      "3": {
+        "correct": 2,
+        "clips": 4,
+        "accepted": 2,
+        "precision": 1.0,
+        "recall": 0.5,
+        "camera": false
+      },
+      "4": {
+        "correct": 4,
+        "clips": 4,
+        "accepted": 4,
+        "precision": 1.0,
+        "recall": 1.0,
+        "camera": true
+      },
+      "5": {
+        "correct": 4,
+        "clips": 4,
+        "accepted": 4,
+        "precision": 1.0,
+        "recall": 1.0,
+        "camera": true
+      },
+      "6": {
+        "correct": 5,
+        "clips": 5,
+        "accepted": 5,
+        "precision": 1.0,
+        "recall": 1.0,
+        "camera": true
+      },
+      "7": {
+        "correct": 4,
+        "clips": 4,
+        "accepted": 4,
+        "precision": 1.0,
+        "recall": 1.0,
+        "camera": true
+      },
+      "8": {
+        "correct": 3,
+        "clips": 4,
+        "accepted": 3,
+        "precision": 1.0,
+        "recall": 0.75,
+        "camera": false
+      },
+      "9": {
+        "correct": 4,
+        "clips": 4,
+        "accepted": 4,
+        "precision": 1.0,
+        "recall": 1.0,
+        "camera": true
+      },
+      "10": {
+        "correct": 3,
+        "clips": 4,
+        "accepted": 3,
+        "precision": 1.0,
+        "recall": 0.75,
+        "camera": false
+      },
+      "11": {
+        "correct": 4,
+        "clips": 4,
+        "accepted": 6,
+        "precision": 0.6666666666666666,
+        "recall": 1.0,
+        "camera": false
+      },
+      "12": {
+        "correct": 4,
+        "clips": 4,
+        "accepted": 4,
+        "precision": 1.0,
+        "recall": 1.0,
+        "camera": true
+      },
+      "13": {
+        "correct": 4,
+        "clips": 4,
+        "accepted": 5,
+        "precision": 0.8,
+        "recall": 1.0,
+        "camera": false
+      },
+      "14": {
+        "correct": 3,
+        "clips": 4,
+        "accepted": 3,
+        "precision": 1.0,
+        "recall": 0.75,
+        "camera": false
+      },
+      "15": {
+        "correct": 4,
+        "clips": 4,
+        "accepted": 4,
+        "precision": 1.0,
+        "recall": 1.0,
+        "camera": true
+      },
+      "16": {
+        "correct": 4,
+        "clips": 4,
+        "accepted": 4,
+        "precision": 1.0,
+        "recall": 1.0,
+        "camera": true
+      },
+      "17": {
+        "correct": 5,
+        "clips": 5,
+        "accepted": 6,
+        "precision": 0.8333333333333334,
+        "recall": 1.0,
+        "camera": false
+      },
+      "18": {
+        "correct": 4,
+        "clips": 4,
+        "accepted": 4,
+        "precision": 1.0,
+        "recall": 1.0,
+        "camera": true
+      },
+      "19": {
+        "correct": 4,
+        "clips": 4,
+        "accepted": 4,
+        "precision": 1.0,
+        "recall": 1.0,
+        "camera": true
+      },
+      "20": {
+        "correct": 4,
+        "clips": 4,
+        "accepted": 5,
+        "precision": 0.8,
+        "recall": 1.0,
+        "camera": false
+      },
+      "21": {
+        "correct": 3,
+        "clips": 4,
+        "accepted": 3,
+        "precision": 1.0,
+        "recall": 0.75,
+        "camera": false
+      },
+      "22": {
+        "correct": 4,
+        "clips": 4,
+        "accepted": 4,
+        "precision": 1.0,
+        "recall": 1.0,
+        "camera": true
+      },
+      "23": {
+        "correct": 3,
+        "clips": 4,
+        "accepted": 4,
+        "precision": 0.75,
+        "recall": 0.75,
+        "camera": false
+      },
+      "24": {
+        "correct": 3,
+        "clips": 4,
+        "accepted": 3,
+        "precision": 1.0,
+        "recall": 0.75,
+        "camera": false
+      },
+      "25": {
+        "correct": 3,
+        "clips": 4,
+        "accepted": 4,
+        "precision": 0.75,
+        "recall": 0.75,
+        "camera": false
+      },
+      "26": {
+        "correct": 0,
+        "clips": 4,
+        "accepted": 1,
+        "precision": 0.0,
+        "recall": 0.0,
+        "camera": false
+      },
+      "27": {
+        "correct": 3,
+        "clips": 4,
+        "accepted": 3,
+        "precision": 1.0,
+        "recall": 0.75,
+        "camera": false
+      },
+      "28": {
+        "correct": 3,
+        "clips": 4,
+        "accepted": 3,
+        "precision": 1.0,
+        "recall": 0.75,
+        "camera": false
+      },
+      "29": {
+        "correct": 4,
+        "clips": 4,
+        "accepted": 4,
+        "precision": 1.0,
+        "recall": 1.0,
+        "camera": true
+      },
+      "30": {
+        "correct": 3,
+        "clips": 4,
+        "accepted": 3,
+        "precision": 1.0,
+        "recall": 0.75,
+        "camera": false
+      },
+      "31": {
+        "correct": 2,
+        "clips": 4,
+        "accepted": 3,
+        "precision": 0.6666666666666666,
+        "recall": 0.5,
+        "camera": false
+      },
+      "32": {
+        "correct": 2,
+        "clips": 4,
+        "accepted": 2,
+        "precision": 1.0,
+        "recall": 0.5,
+        "camera": false
+      },
+      "33": {
+        "correct": 2,
+        "clips": 4,
+        "accepted": 6,
+        "precision": 0.3333333333333333,
+        "recall": 0.5,
+        "camera": false
+      },
+      "34": {
+        "correct": 2,
+        "clips": 4,
+        "accepted": 4,
+        "precision": 0.5,
+        "recall": 0.5,
+        "camera": false
+      },
+      "35": {
+        "correct": 1,
+        "clips": 4,
+        "accepted": 2,
+        "precision": 0.5,
+        "recall": 0.25,
+        "camera": false
+      },
+      "36": {
+        "correct": 2,
+        "clips": 4,
+        "accepted": 2,
+        "precision": 1.0,
+        "recall": 0.5,
+        "camera": false
+      },
+      "37": {
+        "correct": 0,
+        "clips": 5,
+        "accepted": 1,
+        "precision": 0.0,
+        "recall": 0.0,
+        "camera": false
+      },
+      "38": {
+        "correct": 1,
+        "clips": 4,
+        "accepted": 1,
+        "precision": 1.0,
+        "recall": 0.25,
+        "camera": false
+      },
+      "39": {
+        "correct": 2,
+        "clips": 4,
+        "accepted": 2,
+        "precision": 1.0,
+        "recall": 0.5,
+        "camera": false
+      },
+      "40": {
+        "correct": 1,
+        "clips": 5,
+        "accepted": 1,
+        "precision": 1.0,
+        "recall": 0.2,
+        "camera": false
+      },
+      "41": {
+        "correct": 1,
+        "clips": 5,
+        "accepted": 2,
+        "precision": 0.5,
+        "recall": 0.2,
+        "camera": false
+      },
+      "42": {
+        "correct": 2,
+        "clips": 4,
+        "accepted": 2,
+        "precision": 1.0,
+        "recall": 0.5,
+        "camera": false
+      },
+      "43": {
+        "correct": 4,
+        "clips": 4,
+        "accepted": 4,
+        "precision": 1.0,
+        "recall": 1.0,
+        "camera": true
+      },
+      "44": {
+        "correct": 4,
+        "clips": 4,
+        "accepted": 4,
+        "precision": 1.0,
+        "recall": 1.0,
+        "camera": true
+      },
+      "45": {
+        "correct": 4,
+        "clips": 4,
+        "accepted": 4,
+        "precision": 1.0,
+        "recall": 1.0,
+        "camera": true
+      },
+      "46": {
+        "correct": 4,
+        "clips": 4,
+        "accepted": 4,
+        "precision": 1.0,
+        "recall": 1.0,
+        "camera": true
+      },
+      "47": {
+        "correct": 4,
+        "clips": 4,
+        "accepted": 4,
+        "precision": 1.0,
+        "recall": 1.0,
+        "camera": true
+      },
+      "48": {
+        "correct": 4,
+        "clips": 4,
+        "accepted": 4,
+        "precision": 1.0,
+        "recall": 1.0,
+        "camera": true
+      },
+      "49": {
+        "correct": 4,
+        "clips": 4,
+        "accepted": 4,
+        "precision": 1.0,
+        "recall": 1.0,
+        "camera": true
+      },
+      "50": {
+        "correct": 4,
+        "clips": 4,
+        "accepted": 4,
+        "precision": 1.0,
+        "recall": 1.0,
+        "camera": true
+      },
+      "51": {
+        "correct": 3,
+        "clips": 4,
+        "accepted": 3,
+        "precision": 1.0,
+        "recall": 0.75,
+        "camera": false
+      },
+      "52": {
+        "correct": 4,
+        "clips": 4,
+        "accepted": 4,
+        "precision": 1.0,
+        "recall": 1.0,
+        "camera": true
+      },
+      "53": {
+        "correct": 2,
+        "clips": 4,
+        "accepted": 3,
+        "precision": 0.6666666666666666,
+        "recall": 0.5,
+        "camera": false
+      },
+      "54": {
+        "correct": 1,
+        "clips": 4,
+        "accepted": 1,
+        "precision": 1.0,
+        "recall": 0.25,
+        "camera": false
+      },
+      "55": {
+        "correct": 3,
+        "clips": 4,
+        "accepted": 5,
+        "precision": 0.6,
+        "recall": 0.75,
+        "camera": false
+      },
+      "56": {
+        "correct": 4,
+        "clips": 4,
+        "accepted": 4,
+        "precision": 1.0,
+        "recall": 1.0,
+        "camera": true
+      },
+      "57": {
+        "correct": 4,
+        "clips": 4,
+        "accepted": 4,
+        "precision": 1.0,
+        "recall": 1.0,
+        "camera": true
+      },
+      "58": {
+        "correct": 4,
+        "clips": 4,
+        "accepted": 4,
+        "precision": 1.0,
+        "recall": 1.0,
+        "camera": true
+      },
+      "59": {
+        "correct": 3,
+        "clips": 4,
+        "accepted": 3,
+        "precision": 1.0,
+        "recall": 0.75,
+        "camera": false
+      },
+      "60": {
+        "correct": 4,
+        "clips": 4,
+        "accepted": 4,
+        "precision": 1.0,
+        "recall": 1.0,
+        "camera": true
+      },
+      "61": {
+        "correct": 2,
+        "clips": 4,
+        "accepted": 4,
+        "precision": 0.5,
+        "recall": 0.5,
+        "camera": false
+      },
+      "62": {
+        "correct": 3,
+        "clips": 4,
+        "accepted": 4,
+        "precision": 0.75,
+        "recall": 0.75,
+        "camera": false
+      },
+      "63": {
+        "correct": 4,
+        "clips": 4,
+        "accepted": 4,
+        "precision": 1.0,
+        "recall": 1.0,
+        "camera": true
+      },
+      "64": {
+        "correct": 4,
+        "clips": 4,
+        "accepted": 4,
+        "precision": 1.0,
+        "recall": 1.0,
+        "camera": true
+      },
+      "65": {
+        "correct": 4,
+        "clips": 4,
+        "accepted": 4,
+        "precision": 1.0,
+        "recall": 1.0,
+        "camera": true
+      },
+      "66": {
+        "correct": 4,
+        "clips": 4,
+        "accepted": 4,
+        "precision": 1.0,
+        "recall": 1.0,
+        "camera": true
+      },
+      "67": {
+        "correct": 2,
+        "clips": 4,
+        "accepted": 2,
+        "precision": 1.0,
+        "recall": 0.5,
+        "camera": false
+      },
+      "68": {
+        "correct": 4,
+        "clips": 4,
+        "accepted": 4,
+        "precision": 1.0,
+        "recall": 1.0,
+        "camera": true
+      },
+      "69": {
+        "correct": 4,
+        "clips": 4,
+        "accepted": 5,
+        "precision": 0.8,
+        "recall": 1.0,
+        "camera": false
+      },
+      "70": {
+        "correct": 4,
+        "clips": 4,
+        "accepted": 4,
+        "precision": 1.0,
+        "recall": 1.0,
+        "camera": true
+      },
+      "71": {
+        "correct": 4,
+        "clips": 4,
+        "accepted": 4,
+        "precision": 1.0,
+        "recall": 1.0,
+        "camera": true
+      },
+      "72": {
+        "correct": 4,
+        "clips": 4,
+        "accepted": 4,
+        "precision": 1.0,
+        "recall": 1.0,
+        "camera": true
+      },
+      "73": {
+        "correct": 4,
+        "clips": 4,
+        "accepted": 5,
+        "precision": 0.8,
+        "recall": 1.0,
+        "camera": false
+      },
+      "74": {
+        "correct": 2,
+        "clips": 4,
+        "accepted": 2,
+        "precision": 1.0,
+        "recall": 0.5,
+        "camera": false
+      },
+      "75": {
+        "correct": 4,
+        "clips": 4,
+        "accepted": 4,
+        "precision": 1.0,
+        "recall": 1.0,
+        "camera": true
+      },
+      "76": {
+        "correct": 2,
+        "clips": 4,
+        "accepted": 2,
+        "precision": 1.0,
+        "recall": 0.5,
+        "camera": false
+      },
+      "77": {
+        "correct": 4,
+        "clips": 4,
+        "accepted": 4,
+        "precision": 1.0,
+        "recall": 1.0,
+        "camera": true
+      },
+      "78": {
+        "correct": 4,
+        "clips": 4,
+        "accepted": 4,
+        "precision": 1.0,
+        "recall": 1.0,
+        "camera": true
+      },
+      "79": {
+        "correct": 3,
+        "clips": 4,
+        "accepted": 3,
+        "precision": 1.0,
+        "recall": 0.75,
+        "camera": false
+      },
+      "80": {
+        "correct": 4,
+        "clips": 4,
+        "accepted": 4,
+        "precision": 1.0,
+        "recall": 1.0,
+        "camera": true
+      },
+      "81": {
+        "correct": 2,
+        "clips": 4,
+        "accepted": 3,
+        "precision": 0.6666666666666666,
+        "recall": 0.5,
+        "camera": false
+      },
+      "82": {
+        "correct": 4,
+        "clips": 4,
+        "accepted": 4,
+        "precision": 1.0,
+        "recall": 1.0,
+        "camera": true
+      },
+      "83": {
+        "correct": 4,
+        "clips": 4,
+        "accepted": 4,
+        "precision": 1.0,
+        "recall": 1.0,
+        "camera": true
+      },
+      "84": {
+        "correct": 4,
+        "clips": 4,
+        "accepted": 5,
+        "precision": 0.8,
+        "recall": 1.0,
+        "camera": false
+      },
+      "85": {
+        "correct": 4,
+        "clips": 4,
+        "accepted": 4,
+        "precision": 1.0,
+        "recall": 1.0,
+        "camera": true
+      },
+      "86": {
+        "correct": 3,
+        "clips": 4,
+        "accepted": 3,
+        "precision": 1.0,
+        "recall": 0.75,
+        "camera": false
+      },
+      "87": {
+        "correct": 4,
+        "clips": 4,
+        "accepted": 4,
+        "precision": 1.0,
+        "recall": 1.0,
+        "camera": true
+      },
+      "88": {
+        "correct": 4,
+        "clips": 4,
+        "accepted": 4,
+        "precision": 1.0,
+        "recall": 1.0,
+        "camera": true
+      },
+      "89": {
+        "correct": 3,
+        "clips": 4,
+        "accepted": 3,
+        "precision": 1.0,
+        "recall": 0.75,
+        "camera": false
+      },
+      "90": {
+        "correct": 4,
+        "clips": 4,
+        "accepted": 4,
+        "precision": 1.0,
+        "recall": 1.0,
+        "camera": true
+      },
+      "91": {
+        "correct": 4,
+        "clips": 4,
+        "accepted": 4,
+        "precision": 1.0,
+        "recall": 1.0,
+        "camera": true
+      },
+      "92": {
+        "correct": 3,
+        "clips": 4,
+        "accepted": 4,
+        "precision": 0.75,
+        "recall": 0.75,
+        "camera": false
+      },
+      "93": {
+        "correct": 4,
+        "clips": 4,
+        "accepted": 4,
+        "precision": 1.0,
+        "recall": 1.0,
+        "camera": true
+      },
+      "94": {
+        "correct": 4,
+        "clips": 4,
+        "accepted": 4,
+        "precision": 1.0,
+        "recall": 1.0,
+        "camera": true
+      },
+      "95": {
+        "correct": 4,
+        "clips": 4,
+        "accepted": 4,
+        "precision": 1.0,
+        "recall": 1.0,
+        "camera": true
+      },
+      "96": {
+        "correct": 4,
+        "clips": 4,
+        "accepted": 4,
+        "precision": 1.0,
+        "recall": 1.0,
+        "camera": true
+      },
+      "97": {
+        "correct": 4,
+        "clips": 4,
+        "accepted": 4,
+        "precision": 1.0,
+        "recall": 1.0,
+        "camera": true
+      },
+      "98": {
+        "correct": 4,
+        "clips": 4,
+        "accepted": 4,
+        "precision": 1.0,
+        "recall": 1.0,
+        "camera": true
+      },
+      "99": {
+        "correct": 4,
+        "clips": 4,
+        "accepted": 4,
+        "precision": 1.0,
+        "recall": 1.0,
+        "camera": true
+      },
+      "100": {
+        "correct": 4,
+        "clips": 4,
+        "accepted": 4,
+        "precision": 1.0,
+        "recall": 1.0,
+        "camera": true
+      },
+      "101": {
+        "correct": 3,
+        "clips": 4,
+        "accepted": 3,
+        "precision": 1.0,
+        "recall": 0.75,
+        "camera": false
+      },
+      "102": {
+        "correct": 4,
+        "clips": 4,
+        "accepted": 4,
+        "precision": 1.0,
+        "recall": 1.0,
+        "camera": true
+      },
+      "103": {
+        "correct": 4,
+        "clips": 4,
+        "accepted": 4,
+        "precision": 1.0,
+        "recall": 1.0,
+        "camera": true
+      },
+      "104": {
+        "correct": 4,
+        "clips": 4,
+        "accepted": 4,
+        "precision": 1.0,
+        "recall": 1.0,
+        "camera": true
+      }
+    },
+    "passing": [
+      "0",
+      "4",
+      "5",
+      "6",
+      "7",
+      "9",
+      "12",
+      "15",
+      "16",
+      "18",
+      "19",
+      "43",
+      "44",
+      "45",
+      "46",
+      "47",
+      "48",
+      "49",
+      "50",
+      "52",
+      "56",
+      "57",
+      "58",
+      "60",
+      "63",
+      "64",
+      "65",
+      "66",
+      "68",
+      "70",
+      "71",
+      "72",
+      "75",
+      "77",
+      "78",
+      "80",
+      "82",
+      "83",
+      "85",
+      "87",
+      "88",
+      "90",
+      "91",
+      "93",
+      "94",
+      "95",
+      "96",
+      "97",
+      "98",
+      "99",
+      "100",
+      "102",
+      "103",
+      "104"
+    ]
+  },
+  "new_passing": [
+    "txn-again",
+    "txn-card",
+    "txn-please",
+    "txn-problem",
+    "txn-receipt",
+    "txn-wait",
+    "txn-welcome"
+  ],
+  "evaluation": "FSL-105 publisher split. Transactional FSL grouped by matching hand signatures and split by filename order. Signer IDs and augmentation provenance are unavailable."
+}

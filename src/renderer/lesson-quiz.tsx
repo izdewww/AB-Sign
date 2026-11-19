@@ -4,8 +4,9 @@ import { Icon } from './icons';
 import { AnswerChoices, answerSound, LessonFooter, StepProgress } from './learning-ui';
 import { LessonMedia, SignPhoto } from './lesson-media';
 import { cameraSupports, findLetter, isLabel } from './letters';
-import { categoryFor, lessonTerms, signImage, termMedia, type Lesson } from './lessons';
+import { categoryFor, lessonTerms, signImage, termCamera, termMedia, type Lesson } from './lessons';
 import { makeQuiz, type QuizPlan } from './quiz';
+import { vocabularyVideo } from './vocabulary';
 
 export function LessonQuiz({ lesson, plan, sound, finish }: {
   lesson: Lesson;
@@ -29,11 +30,15 @@ export function LessonQuiz({ lesson, plan, sound, finish }: {
   const media = !alphabet ? termMedia(lesson, question.letter) : undefined;
   const image = sign ? signImage(lesson, sign.label) : media?.image;
   const target = question.kind === 'camera' && !picture && alphabet && cameraSupports(question.letter) ? question.letter : undefined;
+  const wordId = question.kind === 'camera' && !picture ? termCamera(media) : undefined;
+  const demo = image ? undefined : vocabularyVideo(media?.example);
+  const term = wordId && media ? { id: wordId, name: media.term, demo, video: media.video } : undefined;
+  const useCamera = Boolean(target || term);
   const feedback = confirmed === 'right'
     ? `That’s right! This is ${question.letter}.`
     : confirmed === 'retry'
       ? `This sign is ${question.letter}.`
-      : target ? 'Try it on camera, or use pictures.' : alphabet ? 'Choose the matching letter.' : 'Choose what the sign means.';
+      : useCamera ? 'Try it on camera, or play a matching question.' : alphabet ? 'Choose the matching letter.' : 'Choose what the sign means.';
 
   useEffect(() => { if (confirmed) nextButton.current?.focus(); else heading.current?.focus(); }, [index, confirmed]);
   useEffect(() => {
@@ -41,7 +46,7 @@ export function LessonQuiz({ lesson, plan, sound, finish }: {
   }, [choice]);
   useEffect(() => {
     const select = (event: KeyboardEvent) => {
-      if (target || confirmed || event.repeat || event.metaKey || event.ctrlKey || event.altKey || !/^[1-3]$/.test(event.key)) return;
+      if (useCamera || confirmed || event.repeat || event.metaKey || event.ctrlKey || event.altKey || !/^[1-3]$/.test(event.key)) return;
       const value = question.choices[Number(event.key) - 1];
       if (!value) return;
       if (value === choice) nextButton.current?.focus();
@@ -49,7 +54,7 @@ export function LessonQuiz({ lesson, plan, sound, finish }: {
     };
     window.addEventListener('keydown', select);
     return () => window.removeEventListener('keydown', select);
-  }, [choice, confirmed, question, target]);
+  }, [choice, confirmed, question, useCamera]);
 
   const mark = (right: boolean) => {
     setConfirmed(right ? 'right' : 'retry');
@@ -78,12 +83,12 @@ export function LessonQuiz({ lesson, plan, sound, finish }: {
         <div className="lesson-heading-copy"><h1 id="quiz-title" ref={heading} tabIndex={-1}>{lesson.title} quiz</h1><StepProgress value={index} total={questions.length} label="Questions finished" /></div>
         <span className="question-count">{index + 1} of {questions.length}</span>
       </header>
-      {target ? (
-        confirmed ? <div className="study-stage paper"><SignPhoto letter={sign} image={image} /></div> :
-          <Camera key={index} target={target} image={image} match={() => mark(true)} fallback={<button className="button secondary" onClick={() => setPicture(true)}>Use pictures</button>} />
+      {useCamera ? (
+        confirmed ? <div className="study-stage paper"><LessonMedia letter={sign} name={media?.term} image={image} file={media?.video} bundledVideo={demo} /></div> :
+          <Camera key={index} target={target} term={term} image={image} match={() => mark(true)} fallback={<button className="button secondary" onClick={() => setPicture(true)}>{alphabet ? 'Use pictures' : 'Use matching'}</button>} />
       ) : (
         <div className="practice-grid match-grid">
-          <div className="practice-photo sign-stage" key={index}>{image || sign ? <SignPhoto letter={sign} image={image} prompt /> : <LessonMedia file={media?.video} prompt />}</div>
+          <div className="practice-photo sign-stage" key={index}>{image || sign ? <SignPhoto letter={sign} image={image} prompt /> : <LessonMedia file={media?.video} bundledVideo={demo} prompt />}</div>
           <div className="practice-controls answer-side"><h2>{alphabet ? 'Which letter is this?' : 'What does this sign mean?'}</h2>
             <AnswerChoices options={question.choices} value={choice} correct={question.letter} checked={Boolean(confirmed)} choose={setChoice} group={alphabet ? undefined : 'Choose what the sign means'} />
             <p className="small-copy">Select a card, then check your answer.</p>
@@ -92,7 +97,7 @@ export function LessonQuiz({ lesson, plan, sound, finish }: {
       )}
       <LessonFooter state={confirmed} message={feedback} action={
         confirmed ? <button ref={nextButton} className="button primary" onClick={next}>{index + 1 === questions.length ? 'See my result' : 'Next question'} <Icon name="arrow" /></button>
-          : target ? <button className="button secondary" onClick={() => mark(false)}>Skip question</button>
+          : useCamera ? <button className="button secondary" onClick={() => mark(false)}>Skip question</button>
           : <button ref={nextButton} className="button primary" disabled={!choice} onClick={() => mark(choice === question.letter)}>Check answer <Icon name="check" /></button>
       } />
     </section>

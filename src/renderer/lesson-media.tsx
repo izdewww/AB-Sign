@@ -14,7 +14,9 @@ export function SignPhoto({ letter, image, prompt = false, name }: { letter?: Le
   return <img src={url} alt={prompt ? 'Picture of a hand sign' : letter?.description ?? 'Sign for ' + name} width="300" height="300" />;
 }
 
-export function LessonMedia({ letter, file, image, name, prompt }: { letter?: Letter; file?: File; image?: File; name?: string; prompt?: boolean }) {
+export function LessonMedia({ letter, file, image, name, prompt, bundledVideo }: {
+  letter?: Letter; file?: File; image?: File; name?: string; prompt?: boolean; bundledVideo?: string;
+}) {
   const [source, setSource] = useState('');
   const [error, setError] = useState(false);
   const [slow, setSlow] = useState(false);
@@ -27,10 +29,11 @@ export function LessonMedia({ letter, file, image, name, prompt }: { letter?: Le
     return () => URL.revokeObjectURL(url);
   }, [file]);
 
-  if (!file || error) return <div className="practice-photo">{error && <p role="status">This video can’t play on this device.</p>}<SignPhoto letter={letter} image={image} name={name} prompt={prompt} /></div>;
+  const videoSource = file ? source : bundledVideo;
+  if ((!file && !bundledVideo) || error) return <div className="practice-photo">{error && <p role="status">This video can’t play on this device.</p>}<SignPhoto letter={letter} image={image} name={name} prompt={prompt} /></div>;
   return (
     <div className="lesson-video">
-      <video ref={player} src={source || undefined} controls preload="metadata" muted playsInline
+      <video ref={player} src={videoSource || undefined} controls preload="metadata" muted playsInline
         aria-label={prompt ? 'Video of a hand sign' : letter ? `Video for letter ${letter.label}` : 'Video for ' + name} onError={() => setError(true)} />
       <div className="actions">
         <button className="button secondary" aria-pressed={slow} onClick={() => {
