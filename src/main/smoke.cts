@@ -75,7 +75,7 @@ export async function verifyDesktop(window: BrowserWindow) {
   };
 
   await waitFor(`document.querySelector('.account-entry h1') && document.querySelector('.brand img')?.naturalWidth > 0`);
-  const asset = await runner.executeJavaScript(`fetch('/vision/fsl-az-v2.task').then(r => r.ok && r.arrayBuffer()).then(b => b.byteLength > 0)`);
+  const asset = await runner.executeJavaScript(`fetch('/vision/fsl-geometry-v3.json').then(r => r.ok && r.json()).then(model => model?.labels?.length === 24)`);
   if (!asset) throw new Error('The local model could not be read.');
   await waitFor(`document.querySelector('#student-name') && Array.from(document.querySelectorAll('button, a')).some(node => node.textContent.trim() === 'Teacher sign-in')`);
   await capture('local-accounts');

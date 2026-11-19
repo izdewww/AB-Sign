@@ -6,6 +6,7 @@ import importlib.metadata
 import json
 import os
 import random
+import re
 import string
 import tempfile
 import zipfile
@@ -23,7 +24,7 @@ SCORE_THRESHOLD = 0.5
 CAMERA_LABELS = tuple(letter for letter in LABELS if letter not in {"J", "Z"})
 
 
-def prepare(destination, *, holdout_fraction=None):
+def prepare(destination, *, holdout_fraction=None, recover_variants=False):
     if sha256(ARCHIVE) != ARCHIVE_HASH:
         raise ValueError("Expected the verified Kaggle v1 archive")
 
@@ -35,6 +36,7 @@ def prepare(destination, *, holdout_fraction=None):
     total = 0
     ungrouped = 0
     duplicates = 0
+    variants = []
     with zipfile.ZipFile(ARCHIVE) as archive:
         for name in sorted(archive.namelist()):
             path = PurePosixPath(name)
@@ -44,6 +46,14 @@ def prepare(destination, *, holdout_fraction=None):
             group = sample_group(path)
             if not group:
                 ungrouped += 1
+                if recover_variants:
+                    stem = re.sub(r"_jpg\.rf\.[a-f0-9]+$", "", path.stem, flags=re.I)
+                    stem = re.sub(r"(?: ?- ?Copy| \(\d+\))+$", "", stem, flags=re.I)
+                    normalized = re.fullmatch(rf"{path.parent.name}(\d+)", stem, flags=re.I)
+                    if normalized:
+                        variants.append(("validation", path.parent.name.lower() + "_" + normalized[1], path, archive.read(name)))
+                    elif stem.isdigit():
+                        variants.append(("train", stem, path, archive.read(name)))
                 continue
             split, source_id = group
             data = archive.read(name)
@@ -81,6 +91,24 @@ def prepare(destination, *, holdout_fraction=None):
             raw["validation"][letter] = [row for row in records if row[0] in kept]
             raw["train"][letter].extend(row for row in records if row[0] not in kept)
 
+    original_training_counts = {letter: len(raw["train"][letter]) for letter in LABELS}
+    reserved = {
+        letter: {entry[0] for split in ("validation", "test") for entry in raw[split][letter]}
+        for letter in LABELS
+    }
+    known_training = {letter: {entry[0] for entry in raw["train"][letter]} for letter in LABELS}
+    recovered = 0
+    for family, source_id, path, data in variants:
+        letter = path.parent.name
+        if source_id in reserved[letter] or (family == "validation" and letter in test_fallback and source_id not in known_training[letter]):
+            continue
+        digest = hashlib.sha256(data).digest()
+        if digest in exact:
+            continue
+        exact.add(digest)
+        raw["train"][letter].append((source_id, str(path), data))
+        recovered += 1
+
     counts = {}
     for split, by_letter in raw.items():
         counts[split] = {}
@@ -98,7 +126,8 @@ def prepare(destination, *, holdout_fraction=None):
 
     return dict(archive_images=total, ungrouped_excluded=ungrouped, exact_duplicates_skipped=duplicates,
                 image_counts=counts, test_from_validation_family=test_fallback,
-                test_samples_sha256=comparison_hash.hexdigest(), validation_family_holdout_fraction=holdout_fraction)
+                test_samples_sha256=comparison_hash.hexdigest(), validation_family_holdout_fraction=holdout_fraction,
+                original_training_counts=original_training_counts, recovered_training_variants=recovered)
 
 
 def evaluate(recognizer, source):

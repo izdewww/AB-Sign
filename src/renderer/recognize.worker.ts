@@ -1,10 +1,12 @@
 import { FilesetResolver, GestureRecognizer } from '@mediapipe/tasks-vision';
 import { cameraSupports, type Label } from './letters';
+import { classifyHand, handFeatures, type GeometryModel } from './geometry';
 
 export type FrameResult = { kind: 'frame'; hand: boolean; letter?: Label };
 export type CameraReport = FrameResult | { kind: 'ready' } | { kind: 'error'; message: string };
 
 let recognizer: GestureRecognizer | undefined;
+let geometry: GeometryModel | undefined;
 const padded = new OffscreenCanvas(1, 1);
 const crop = new OffscreenCanvas(1, 1);
 const sample = crop.getContext('2d', { willReadFrequently: true })!;
@@ -44,6 +46,9 @@ function withMargin(frame: ImageBitmap) {
 self.onmessage = async ({ data }: MessageEvent<{ kind: 'start' } | { kind: 'frame'; image: ImageBitmap; time: number }>) => {
   try {
     if (data.kind === 'start') {
+      const response = await fetch(new URL('/vision/fsl-geometry-v3.json', self.location.href));
+      if (!response.ok) throw new Error('The letter model could not be read.');
+      geometry = await response.json() as GeometryModel;
       const assets = new URL('/vision/wasm', self.location.href).href;
       recognizer = await GestureRecognizer.createFromOptions(await FilesetResolver.forVisionTasks(assets, true), {
         baseOptions: { modelAssetPath: new URL('/vision/fsl-az-v2.task', self.location.href).href },
@@ -52,9 +57,14 @@ self.onmessage = async ({ data }: MessageEvent<{ kind: 'start' } | { kind: 'fram
       self.postMessage({ kind: 'ready' } satisfies CameraReport);
       return;
     }
-    const result = recognizer?.recognizeForVideo(withMargin(data.image), data.time);
-    const prediction = result?.gestures[0]?.[0];
-    const label = prediction && prediction.score >= .5 ? prediction.categoryName : undefined;
+    const frame = withMargin(data.image);
+    const result = recognizer?.recognizeForVideo(frame, data.time);
+    const handedness = result?.handedness[0]?.[0]?.categoryName;
+    const screen = result?.landmarks[0];
+    const world = result?.worldLandmarks[0];
+    const features = screen && world && handedness
+      ? handFeatures(screen, world, handedness === 'Left', frame.width / frame.height) : undefined;
+    const label = geometry && features ? classifyHand(geometry, features) : undefined;
     const letter = cameraSupports(label) ? label : undefined;
     self.postMessage({ kind: 'frame', hand: Boolean(result?.landmarks.length), letter } satisfies CameraReport);
   } catch (error) {

@@ -88,12 +88,12 @@ for index, (label, result, color) in enumerate(rows):
 draw.text((48, 330), "Live webcam accuracy on independent signers remains unverified.", font=font(18), fill=SUBTLE)
 image.save(OUT / "results.png")
 
-report = json.loads((ROOT / "model-training/artifacts/fsl-az-v2.json").read_text(encoding="utf-8"))
-camera_rows = [(letter, row) for letter, row in report["test"]["per_letter"].items() if letter not in {"J", "Z"}]
+report = json.loads((ROOT / "model-training/artifacts/fsl-geometry-v3-benchmark.json").read_text(encoding="utf-8"))
+camera_rows = list(report["per_letter"].items())
 correct = sum(row["correct"] for _, row in camera_rows)
 images = sum(row["support"] for _, row in camera_rows)
 image, draw = canvas(
-    560, "Camera letter results · v2",
+    560, "Camera letter results · v3",
     f"{correct:,} of {images:,} held-out photos correct ({correct / images:.2%}) across 24 letters",
 )
 for index, (letter, result) in enumerate(camera_rows):

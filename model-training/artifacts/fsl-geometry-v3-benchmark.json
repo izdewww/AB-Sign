@@ -1,0 +1,167 @@
+{
+  "training_images": 7339,
+  "recovered_training_files": 286,
+  "recovered_usable": 283,
+  "test_samples_sha256": "86ffc99ede3d0fdf43d383e234d885f80f69a8b2da18fb3d101ff6d977f6a2d2",
+  "per_letter": {
+    "A": {
+      "correct": 58,
+      "support": 58,
+      "recall": 1.0
+    },
+    "B": {
+      "correct": 74,
+      "support": 78,
+      "recall": 0.9487179487179487
+    },
+    "C": {
+      "correct": 81,
+      "support": 81,
+      "recall": 1.0
+    },
+    "D": {
+      "correct": 74,
+      "support": 80,
+      "recall": 0.925
+    },
+    "E": {
+      "correct": 68,
+      "support": 68,
+      "recall": 1.0
+    },
+    "F": {
+      "correct": 91,
+      "support": 91,
+      "recall": 1.0
+    },
+    "G": {
+      "correct": 65,
+      "support": 65,
+      "recall": 1.0
+    },
+    "H": {
+      "correct": 89,
+      "support": 89,
+      "recall": 1.0
+    },
+    "I": {
+      "correct": 91,
+      "support": 91,
+      "recall": 1.0
+    },
+    "K": {
+      "correct": 47,
+      "support": 47,
+      "recall": 1.0
+    },
+    "L": {
+      "correct": 69,
+      "support": 69,
+      "recall": 1.0
+    },
+    "M": {
+      "correct": 70,
+      "support": 85,
+      "recall": 0.8235294117647058
+    },
+    "N": {
+      "correct": 68,
+      "support": 84,
+      "recall": 0.8095238095238095
+    },
+    "O": {
+      "correct": 72,
+      "support": 73,
+      "recall": 0.9863013698630136
+    },
+    "P": {
+      "correct": 70,
+      "support": 70,
+      "recall": 1.0
+    },
+    "Q": {
+      "correct": 73,
+      "support": 77,
+      "recall": 0.948051948051948
+    },
+    "R": {
+      "correct": 41,
+      "support": 56,
+      "recall": 0.7321428571428571
+    },
+    "S": {
+      "correct": 67,
+      "support": 70,
+      "recall": 0.9571428571428572
+    },
+    "T": {
+      "correct": 70,
+      "support": 70,
+      "recall": 1.0
+    },
+    "U": {
+      "correct": 56,
+      "support": 66,
+      "recall": 0.8484848484848485
+    },
+    "V": {
+      "correct": 31,
+      "support": 32,
+      "recall": 0.96875
+    },
+    "W": {
+      "correct": 93,
+      "support": 94,
+      "recall": 0.9893617021276596
+    },
+    "X": {
+      "correct": 78,
+      "support": 81,
+      "recall": 0.9629629629629629
+    },
+    "Y": {
+      "correct": 83,
+      "support": 95,
+      "recall": 0.8736842105263158
+    }
+  },
+  "images": 1770,
+  "correct": 1679,
+  "below_90": {
+    "M": 0.8235294117647058,
+    "N": 0.8095238095238095,
+    "R": 0.7321428571428571,
+    "U": 0.8484848484848485,
+    "Y": 0.8736842105263158
+  },
+  "model": "fsl-geometry-v3.json",
+  "model_sha256": "143025cea9bd50cc3c52ebe3b2f8d452aab04a73c3a30b328d0b2ac875da16c7",
+  "detector": "fsl-az-v2.task",
+  "detector_sha256": "420e0bd3064e16a1b5e1a41187e04fbf45df6d66ab9f80fb0ccaf05ee619798c",
+  "labels": [
+    "A",
+    "B",
+    "C",
+    "D",
+    "E",
+    "F",
+    "G",
+    "H",
+    "I",
+    "K",
+    "L",
+    "M",
+    "N",
+    "O",
+    "P",
+    "Q",
+    "R",
+    "S",
+    "T",
+    "U",
+    "V",
+    "W",
+    "X",
+    "Y"
+  ]
+}

@@ -1,6 +1,6 @@
 # Train the FSL alphabet model
 
-The desktop build uses v2 of the A–Z MediaPipe task trained on John Gabriel Porton’s Kaggle photos. From the repository root, run this command after preparing the Windows environment below.
+The desktop build uses the v3 landmark classifier for the 24 camera letters and the MediaPipe hand detector from the v2 task. The earlier v2 classifier can be reproduced from the repository root after preparing the Windows environment below.
 
 ```powershell
 & './model-training/.work/venv/Scripts/python.exe' -B -u './model-training/train_alphabet.py' --candidate
@@ -13,6 +13,20 @@ The score includes missed hand detections and uncertain answers. Signer identiti
 ### Per-letter camera benchmark
 
 The app offers camera practice for 24 letters. v2 got **1,613/1,770 (91.13%)** correct on those letters, compared with **1,632/1,770 (92.20%)** for v1. Both models reached 90% recall on 18 letters. v2 improved D and Q, while M, N, R, S, U, and Y fell below 90%. MediaPipe admitted 7,892 training photos and 578 validation photos when training v2. [Per-letter benchmark chart](../docs/images/alphabet-results.png) · [Earlier v1 results](artifacts/fsl-az-v1.json)
+
+### Raw landmarks and hand crops
+
+```powershell
+& './model-training/.work/venv/Scripts/python.exe' -B -u './model-training/train_hand_models.py'
+```
+
+This experiment compares raw hand landmarks, a cropped-hand image classifier, and their average. It uses the original 1,770 test photos for the 24 camera letters and selects a candidate by the lowest per-letter validation score. The training log, saved classifiers, and `alphabet-retrain.json` report stay in `.work/`. Use `--reuse-geometry` to retry the image model with an existing geometry classifier.
+
+The archive has 11,700 photos, with 450 per letter. For the 24 camera letters, 7,139 photos were assigned to training and 7,056 yielded usable landmarks. Validation had 824 photos and the fixed test had 1,770. Those test photos were kept out of training.
+
+The first landmark classifier got **1,667/1,770 (94.18%)** correct and reached 90% on 19 of 24 letters. B, M, N, U, and Y fell below 90%.
+
+After the feature cache is built, run `train_recovered.py` with the same Python environment to recover filename variants for training. It added 283 usable training photos while preserving the original held-out test. Run `export_geometry.py` to export the resulting classifier for Electron. It got **1,679/1,770 (94.86%)** correct and reached 90% on 19 of 24 letters. M, N, R, U, and Y remained below target. [Bundled v3 results](artifacts/fsl-geometry-v3-benchmark.json)
 
 ## Earlier A/B/C pilot
 
