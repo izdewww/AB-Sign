@@ -215,7 +215,7 @@ function Classroom({ account, act }: { account: AccountState; act: AccountAction
         {['path', 'learn', 'sign-check'].includes(page) && <LearningPath library={library} store={store} />}
         {page === 'category' && <CategoryView key={id} id={id} library={library} store={store} teacher={Boolean(teacher)} />}
         {page === 'lesson' && <LessonView key={routeKey} id={id} action={action} position={position} store={store} library={library} />}
-        {page === 'result' && <Results id={id} store={store} library={library} />}
+        {page === 'result' && <Results id={id} completion={action} store={store} library={library} />}
         {['activities', 'match'].includes(page) && <PracticeHub library={library} mode={page === 'match' ? 'guess' : id} />}
         {page === 'camera' && <CameraPractice id={id} store={store} />}
         {page === 'camera-setup' && <CameraSetup />}

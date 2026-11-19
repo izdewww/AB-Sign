@@ -18,7 +18,7 @@ A Windows desktop app for teaching children Filipino Sign Language (FSL) through
 
 **Learn** includes nine editable alphabet lessons with one dataset photo per letter. Lessons group three letters at a time, with Y and Z in the last lesson. Learners can open any lesson and take its optional quiz.
 
-The app also includes **21 editable video lessons** covering numbers 1–10 and 95 words and phrases. Learners can watch a sign, replay it slowly, and try a shuffled matching quiz.
+The app also includes **21 editable video lessons** covering numbers 1–10 and 95 words and phrases. Learners watch the demonstrations, then practice each sign in a shuffled round.
 
 ![The learning path shows nine pastel lesson cards covering A through Z.](docs/images/lesson-library.png)
 
@@ -46,7 +46,7 @@ Picture matching covers A–Z. Webcam practice covers 24 letters. J and Z are av
 | Webcam practice | Numbers 1, 3, 5, 9, and 10, plus 43 words in published video lessons |
 | Teacher drafts | Numbers 11–20 and 12 Everyday Errands signs. Add pictures or videos and publish when ready. Seven of the errands signs also support camera practice once published. |
 
-Bundled quizzes start with matching. Teachers can add camera questions for supported signs. To check an individual sign, look for **Try this sign** on its lesson step. For a full list, see the [lesson catalog](src/renderer/vocabulary.json).
+Bundled lessons show the demonstrations first, then shuffle one question per sign. When a round contains supported signs, it mixes camera and matching questions. Camera questions offer matching as a fallback. Learners can also select **Try on camera** on any supported sign’s demonstration. Teachers can choose their own quiz questions in the lesson editor. [Lesson catalog](src/renderer/vocabulary.json)
 
 ![The Numbers category shows two starter lessons covering 1–10.](docs/images/number-lessons.png)
 

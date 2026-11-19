@@ -26,13 +26,15 @@ export const categoryFor = (id?: string) => categories.find((category) => catego
 export type Lesson = { id: string; title: string; steps: Step[]; revision: number; category?: Category; quiz?: QuizPlan<string> };
 export type TeacherLesson = { id: string; draft: Lesson; published?: Lesson; starter?: boolean; hidden?: boolean };
 
+const automaticPractice: QuizPlan<string> = { count: 0, prompts: [], perSign: true };
+
 function vocabularyLessons(): TeacherLesson[] {
   return vocabulary.map(({ id, title, category, terms }) => {
     const ready = terms.every((term) => Boolean(term.source));
     const lesson: Lesson = {
       id, title, category, revision: 1,
       steps: terms.map((term, index) => ({ id: id + '-' + index, kind: 'media', term: term.term, example: term.id })),
-      quiz: ready ? { count: Math.min(3, terms.length), prompts: terms.map((term) => ({ letter: term.term, kind: 'match' })) } : undefined,
+      quiz: automaticPractice,
     };
     return { id, draft: lesson, published: ready ? lesson : undefined };
   });
@@ -41,13 +43,10 @@ function vocabularyLessons(): TeacherLesson[] {
 function starterLessons(): TeacherLesson[] {
   return Array.from({ length: Math.ceil(labels.length / 3) }, (_, index) => {
     const group = labels.slice(index * 3, index * 3 + 3);
-    const prompts = group.flatMap<Prompt>((letter) => cameraSupports(letter)
-      ? [{ letter, kind: 'match' as const }, { letter, kind: 'camera' as const }]
-      : [{ letter, kind: 'match' as const }]);
     const lesson: Lesson = {
       id: `alphabet-${index + 1}`, title: `Letters ${group.join(', ')}`, revision: 1,
       steps: group.map((letter) => ({ id: `sign-${letter.toLowerCase()}`, kind: 'look', letter })),
-      quiz: { count: Math.min(3, prompts.length), prompts },
+      quiz: automaticPractice,
     };
     return { id: lesson.id, draft: lesson, published: lesson, starter: true };
   });
@@ -88,6 +87,7 @@ export function quizFor(lesson: Lesson): QuizPlan<string> | undefined {
   const plan = lesson.quiz;
   const terms: string[] = lessonTerms(lesson);
   if (!plan || terms.length < 2) return;
+  if (plan.perSign) return { ...plan, count: terms.length, prompts: practicePrompts(lesson, terms) };
   const unique = new Map<string, Prompt<string>>();
   for (const { letter, kind } of plan.prompts) {
     if (!terms.includes(letter)) continue;
@@ -99,15 +99,42 @@ export function quizFor(lesson: Lesson): QuizPlan<string> | undefined {
   if (count > 0) return { count, prompts };
 }
 
+function practicePrompts(lesson: Lesson, terms: string[]): Prompt<string>[] {
+  return terms.flatMap((letter) => {
+    const match: Prompt<string> = { letter, kind: 'match' };
+    return quizCamera(lesson, letter) ? [match, { letter, kind: 'camera' }] : [match];
+  });
+}
+
+function upgradeDefaultPractice(existing: TeacherLesson, bundled: TeacherLesson) {
+  const legacyTerms = lessonTerms(bundled.draft);
+  const legacyPrompts: Prompt<string>[] = bundled.starter ? practicePrompts(bundled.draft, legacyTerms)
+    : legacyTerms.map((letter) => ({ letter, kind: 'match' }));
+  const upgrade = (lesson: Lesson): Lesson => {
+    const plan = lesson.quiz;
+    if (!bundled.published && !existing.published && !plan) return { ...lesson, quiz: automaticPractice };
+    if (!plan || plan.perSign || plan.count !== Math.min(3, legacyPrompts.length) || plan.prompts.length !== legacyPrompts.length) return lesson;
+    if (!plan.prompts.every(({ letter, kind }, index) => letter === legacyPrompts[index].letter && kind === legacyPrompts[index].kind)) return lesson;
+    return { ...lesson, quiz: automaticPractice };
+  };
+  const draft = upgrade(existing.draft);
+  const published = existing.published && upgrade(existing.published);
+  return draft !== existing.draft || published !== existing.published ? { ...existing, draft, published } : existing;
+}
+
 function openLessons() {
   return new Promise<IDBDatabase>((resolve, reject) => {
-    const request = indexedDB.open('ab-sign-lessons', 4);
+    const request = indexedDB.open('ab-sign-lessons', 5);
     let blocked = false;
     request.onupgradeneeded = (event) => {
       const store = event.oldVersion === 0 ? request.result.createObjectStore('lessons', { keyPath: 'id' }) : request.transaction!.objectStore('lessons');
       for (const item of [...starterLessons(), ...vocabularyLessons()]) {
-        const existing = store.getKey(item.id);
-        existing.onsuccess = () => { if (existing.result === undefined) store.add(item); };
+        const existing = store.get(item.id);
+        existing.onsuccess = () => {
+          if (!existing.result) { store.add(item); return; }
+          const updated = upgradeDefaultPractice(existing.result, item);
+          if (updated !== existing.result) store.put(updated);
+        };
       }
     };
     request.onsuccess = () => { if (blocked) request.result.close(); else resolve(request.result); };

@@ -82,9 +82,18 @@ export function LessonView({ id, action, position, library, store }: LibraryView
   if (library.status === 'loading') return <p role="status">Opening lesson…</p>;
   if (!lesson) return <div className="paper empty"><h1>Lesson unavailable</h1><a className="button secondary" href="#path">See lessons</a></div>;
 
+  const completeLesson = () => {
+    const categoryDone = library.visible.filter((value) => categoryFor(value.category).id === category.id)
+      .every((value) => value.id === lesson.id || store.data.completed.includes(value.id));
+    const categoryEarned = categoryDone && !store.data.badges.includes(category.id);
+    store.complete(lesson.id, categoryEarned ? category.id : undefined);
+    return categoryEarned;
+  };
+
   if (action === 'quiz' && quiz) return <LessonQuiz lesson={lesson} plan={quiz} sound={store.data.sound} finish={(score, total, missed) => {
     const result = store.record({ activity: 'quiz', title: lesson.title, score, total, missed, lesson: lesson.id });
-    location.hash = 'result/' + result;
+    const completion = position === 'finish' && quiz.perSign ? '/' + (completeLesson() ? 'category' : 'lesson') : '';
+    location.hash = 'result/' + result + completion;
   }} />;
 
   if (step) return <section className="learning-screen">
@@ -93,15 +102,10 @@ export function LessonView({ id, action, position, library, store }: LibraryView
       <span className="question-count">{index + 1} of {lesson.steps.length}</span>
     </header>
     <LessonStep key={step.id} step={step} lesson={lesson} previous={index > 0 ? '#lesson/' + lesson.id + '/demo/' + (index - 1) : undefined}
-      action={index + 1 === lesson.steps.length ? 'Finish lesson' : 'Next step'} next={() => {
+      action={index + 1 === lesson.steps.length ? quiz?.perSign ? 'Start practice' : 'Finish lesson' : 'Next step'} next={() => {
         if (index + 1 < lesson.steps.length) location.hash = 'lesson/' + lesson.id + '/demo/' + (index + 1);
-        else {
-          const categoryDone = library.visible.filter((value) => categoryFor(value.category).id === category.id)
-            .every((value) => value.id === lesson.id || store.data.completed.includes(value.id));
-          const categoryEarned = categoryDone && !store.data.badges.includes(category.id);
-          store.complete(lesson.id, categoryEarned ? category.id : undefined);
-          location.hash = 'lesson/' + lesson.id + (categoryEarned ? '/finished/category' : '/finished');
-        }
+        else if (quiz?.perSign) location.hash = 'lesson/' + lesson.id + '/quiz/finish';
+        else location.hash = 'lesson/' + lesson.id + (completeLesson() ? '/finished/category' : '/finished');
       }} />
   </section>;
 
@@ -115,7 +119,7 @@ export function LessonView({ id, action, position, library, store }: LibraryView
       <div className="actions">
         {celebrated ? <a className="button primary" href={'#category/' + category.id}>Choose a lesson</a> :
           <a className="button primary" href={'#lesson/' + lesson.id + '/demo/0'}>Start lesson <Icon name="arrow" /></a>}
-        {quiz && <a className="button secondary" href={'#lesson/' + lesson.id + '/quiz'}>Take quiz</a>}
+        {quiz && <a className="button secondary" href={'#lesson/' + lesson.id + '/quiz'}>{quiz.perSign ? 'Practice signs' : 'Take quiz'}</a>}
       </div>
     </div>
     {!celebrated && <><h2 className="section-actions">In this lesson</h2><ul className="lesson-list paper section-actions">{lesson.steps.map((item, stepIndex) => <li key={item.id}>
@@ -148,7 +152,7 @@ export function LessonStep({ step, lesson, next, previous, action = 'Next step' 
       fallback={<button className="button secondary" onClick={() => setPractice(false)}>Back to demonstration</button>} /> :
       <div className="study-stage paper sky"><LessonMedia name={step.term} image={step.image} file={step.video} bundledVideo={demo} /></div>}
     <div className="actions section-actions">{previous && <a className="button secondary" href={previous}>Previous step</a>}
-      {id && !practice && <button className="button secondary" onClick={() => setPractice(true)}>Try this sign</button>}
+      {id && !practice && <button className="button secondary" onClick={() => setPractice(true)}>Try on camera</button>}
       <button className="button primary" onClick={next}>{action} <Icon name="arrow" /></button></div></div>;
   }
   const sign = 'letter' in step && isLabel(step.letter) ? findLetter(step.letter) : undefined;
@@ -163,20 +167,25 @@ export function LessonStep({ step, lesson, next, previous, action = 'Next step' 
       </div>)}
     <div className="actions section-actions">
       {previous && <a className="button secondary" href={previous}>Previous step</a>}
-      {sign && !camera && cameraSupports(sign.label) && <button className="button secondary" onClick={() => setPractice(true)}>Try this sign</button>}
+      {sign && !camera && cameraSupports(sign.label) && <button className="button secondary" onClick={() => setPractice(true)}>Try on camera</button>}
       <button className="button primary" onClick={next}>{action} <Icon name="arrow" /></button>
     </div>
   </div>;
 }
 
-export function Results({ id, store, library }: LibraryView & { id?: string }) {
+export function Results({ id, completion, store, library }: LibraryView & { id?: string; completion?: string }) {
   const result = store.data.attempts.find((attempt) => attempt.id === id);
   const lesson = library.visible.find((item) => item.id === result?.lesson && quizFor(item));
-  return <section className="paper result">
+  const category = categoryFor(lesson?.category);
+  const celebrated = Boolean(lesson && (completion === 'lesson' || completion === 'category') && store.data.completed.includes(lesson.id));
+  return <section className={'paper result' + (celebrated ? ' celebrate-card' : '')}>
+    {celebrated && <Confetti />}
     <div className="activity-mark"><Icon name="trophy" /></div>
-    <h1>{result ? 'Round finished!' : 'Result unavailable'}</h1>
+    <h1>{celebrated ? 'Lesson finished!' : result ? 'Round finished!' : 'Result unavailable'}</h1>
     {result && <><p className="score">{result.score} of {result.total} correct</p>
       {result.missed.length > 0 && <p>Practice again: {[...new Set(result.missed)].join(', ')}</p>}</>}
+    {celebrated && <div className="badge-list centered"><span><Icon name="trophy" /> Lesson badge</span>
+      {completion === 'category' && store.data.badges.includes(category.id) && <span><Icon name="trophy" /> {category.title} badge</span>}</div>}
     <div className="actions centered">
       <a className="button primary" href={lesson ? '#lesson/' + lesson.id : '#path'}>{lesson ? 'Back to lesson' : 'See lessons'}</a>
       {lesson && <a className="button secondary" href={'#lesson/' + lesson.id + '/quiz'}>Play again</a>}

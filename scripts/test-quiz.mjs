@@ -45,3 +45,24 @@ test('a two-letter lesson keeps both choices without adding an outside sign', ()
   const [question] = makeQuiz({ count: 1, prompts: [{ letter: 'Y', kind: 'match' }] }, ['Y', 'Z'], seeded(5));
   assert.deepEqual(question.choices.toSorted(), ['Y', 'Z']);
 });
+
+test('bundled practice covers every sign once and shuffles only eligible camera questions', () => {
+  const signs = ['1', '2', '3', '4', '5'];
+  const supported = ['1', '3', '5'];
+  const prompts = signs.map(letter => ({ letter, kind: 'match' }));
+  for (const letter of supported) prompts.push({ letter, kind: 'camera' });
+  const cameraSigns = new Set();
+  const orders = new Set();
+  for (let seed = 1; seed <= 40; seed++) {
+    const round = makeQuiz({ count: signs.length, prompts, perSign: true }, signs, seeded(seed));
+    assert.deepEqual(round.map(({ letter }) => letter).sort(), signs);
+    assert.equal(new Set(round.map(({ kind }) => kind)).size, 2);
+    for (const { letter, kind } of round) if (kind === 'camera') {
+      assert.ok(supported.includes(letter));
+      cameraSigns.add(letter);
+    }
+    orders.add(round.map(({ letter }) => letter).join(''));
+  }
+  assert.deepEqual([...cameraSigns].sort(), supported);
+  assert.ok(orders.size > 6);
+});

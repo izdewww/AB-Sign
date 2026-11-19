@@ -5,12 +5,17 @@ import type { BrowserWindow } from 'electron';
 
 export async function seedLessonUpgrade(window: BrowserWindow) {
   await window.webContents.executeJavaScript(`new Promise((resolve, reject) => {
-    const request = indexedDB.open('ab-sign-lessons', 3);
+    const request = indexedDB.open('ab-sign-lessons', 4);
     request.onupgradeneeded = () => {
       const store = request.result.createObjectStore('lessons', { keyPath: 'id' });
       const lesson = { id: 'vocabulary-3', title: 'Our classroom greetings', category: 'greetings', revision: 3,
         steps: [{ id: 'vocabulary-3-0', kind: 'media', term: 'Hello', example: '3' }] };
       store.add({ id: lesson.id, draft: lesson, published: lesson });
+      const terms = ['1','2','3','4','5'];
+      const numbers = { id: 'vocabulary-1', category: 'numbers', title: 'Numbers 1–5', revision: 1,
+        steps: terms.map((term, index) => ({ id: 'vocabulary-1-' + index, kind: 'media', term, example: String(20 + index) })),
+        quiz: { count: 3, prompts: terms.map(letter => ({ letter, kind: 'match' })) } };
+      store.add({ id: numbers.id, draft: numbers, published: numbers });
     };
     request.onerror = () => reject(request.error);
     request.onsuccess = () => { request.result.close(); resolve(true); };
@@ -90,6 +95,35 @@ export async function verifyDesktop(window: BrowserWindow) {
     await button(name);
     await heading('Hi, ' + name + '! Ready to sign?');
   };
+  const cameraOffer = `Array.from(document.querySelectorAll('button')).some(button => button.textContent === 'Try on camera')`;
+  const numberAnswers = Object.fromEntries(Array.from({ length: 10 }, (_, index) => [String(20 + index), String(index + 1)]));
+  const playMixedRound = async (title: string, total: number, answer: string, fallback = 'Use matching') => {
+    await heading(title + ' quiz');
+    const visited = new Set<string>();
+    let cameraCount = 0;
+    for (let index = 0; index < total; index++) {
+      await waitFor(`document.querySelector('.question-count')?.textContent === '${index + 1} of ${total}'`);
+      const kind = await runner.executeJavaScript(`document.querySelector('[data-question-kind]').dataset.questionKind`);
+      if (kind === 'camera') {
+        cameraCount++;
+        await waitFor(`document.querySelector('.camera-view[data-camera=off]')`);
+        await button(fallback);
+      }
+      await waitFor(`(document.querySelector('.sign-stage video')?.readyState >= 2 || document.querySelector('.sign-stage img')?.naturalWidth) && document.querySelector('.answer-cards button')`);
+      const value = await runner.executeJavaScript(answer);
+      if (!value || visited.has(value)) throw new Error('The bundled round repeated a sign or omitted its demonstration.');
+      visited.add(value);
+      await button(value);
+      await button('Check answer');
+      await button(index + 1 === total ? 'See my result' : 'Next question');
+    }
+    if (cameraCount < 1 || cameraCount === total) throw new Error('The bundled round needs both camera and matching questions.');
+    await waitFor(`document.querySelector('.score')?.textContent === '${total} of ${total} correct'`);
+  };
+  const numberAnswer = `(() => {
+    const clip = document.querySelector('.sign-stage video')?.src.match(/fsl-(\\d+)/)?.[1];
+    return clip ? ${JSON.stringify(numberAnswers)}[clip] : '1';
+  })()`;
 
   await waitFor(`document.querySelector('.account-entry h1') && document.querySelector('.brand img')?.naturalWidth > 0`);
   const asset = await runner.executeJavaScript(`fetch('/vision/fsl-geometry-v3.json').then(r => r.ok && r.json()).then(model => model?.labels?.length === 24)`);
@@ -119,10 +153,15 @@ export async function verifyDesktop(window: BrowserWindow) {
   await capture('days-lessons');
   await navigate('lesson/vocabulary-days-1/demo/1');
   await heading('Tuesday');
-  await waitFor(`document.querySelector('.study-stage video')?.readyState >= 2 && Array.from(document.querySelectorAll('button')).some(button => button.textContent === 'Try this sign')`);
+  await waitFor(`document.querySelector('.study-stage video')?.readyState >= 2 && ${cameraOffer}`);
+  await navigate('lesson/vocabulary-greetings-1/quiz');
+  await playMixedRound('More greetings', 6, `(() => {
+    const clip = document.querySelector('.sign-stage video').src.match(/fsl-(\\d+)/)?.[1];
+    return ({1:'Good Afternoon', 2:'Good Evening', 4:'How Are You', 5:'I’m Fine', 6:'Nice To Meet You', 9:'See You Tomorrow'})[clip];
+  })()`);
   await navigate('lesson/vocabulary-6/demo/2');
   await heading('Wrong');
-  await waitFor(`document.querySelector('.study-stage video')?.readyState >= 2 && !Array.from(document.querySelectorAll('button')).some(button => button.textContent === 'Try this sign')`);
+  await waitFor(`document.querySelector('.study-stage video')?.readyState >= 2 && !${cameraOffer}`);
   await navigate('category/numbers');
   await heading('Numbers');
   await waitFor(`document.querySelector('main').innerText.includes('Numbers 1–5') && document.querySelector('main').innerText.includes('Numbers 6–10') && !document.querySelector('main').innerText.includes('Numbers 11–20') && !document.querySelector('main a[href^="#builder"]')`);
@@ -132,25 +171,15 @@ export async function verifyDesktop(window: BrowserWindow) {
   await waitFor(`document.querySelector('.study-stage video')?.readyState >= 2`);
   await capture('number-demonstration');
   await navigate('lesson/vocabulary-1/quiz');
-  await heading('Numbers 1–5 quiz');
-  for (let index = 0; index < 3; index++) {
-    await waitFor(`document.querySelector('.question-count')?.textContent === '${index + 1} of 3' && document.querySelector('.sign-stage video')?.readyState >= 2`);
-    const answer = await runner.executeJavaScript(`String(Number(document.querySelector('.sign-stage video').src.match(/fsl-(\\d+)/)[1]) - 19)`);
-    const choice = `Array.from(document.querySelectorAll('.answer-cards button')).find(option => option.textContent.trim() === ${JSON.stringify(answer)})`;
-    await waitFor(choice);
-    await runner.executeJavaScript(`(${choice}).click()`);
-    await button('Check answer');
-    await button(index === 2 ? 'See my result' : 'Next question');
-  }
+  await playMixedRound('Numbers 1–5', 5, numberAnswer);
   await heading('Round finished!');
-  await waitFor(`document.querySelector('.score')?.textContent === '3 of 3 correct'`);
   await navigate('lesson/vocabulary-1/demo/3');
   await heading('4');
-  await waitFor(`document.querySelector('.study-stage video')?.readyState >= 2 && !Array.from(document.querySelectorAll('button')).some(button => button.textContent === 'Try this sign')`);
+  await waitFor(`document.querySelector('.study-stage video')?.readyState >= 2 && !${cameraOffer}`);
   for (const [route, term, clip] of [['vocabulary-5/demo/3', 'Bread', '85'], ['vocabulary-1/demo/0', '1', '20']]) {
     await navigate('lesson/' + route);
     await heading(term);
-    await button('Try this sign');
+    await button('Try on camera');
     await runner.executeJavaScript(`(() => {
     const source = document.createElement('video');
     source.src = '/vocabulary/fsl-${clip}.webm'; source.muted = true; source.loop = true; source.preload = 'auto';
@@ -179,6 +208,12 @@ export async function verifyDesktop(window: BrowserWindow) {
   await heading('Alphabet & Letters');
   await waitFor(`JSON.stringify(Array.from(document.querySelectorAll('.library-cover'), node => node.textContent)) === JSON.stringify(['ABC','DEF','GHI','JKL','MNO','PQR','STU','VWX','YZ'])`);
   await capture('lesson-library');
+  await navigate('lesson/alphabet-1/demo/2');
+  await heading('Look at C');
+  await button('Start practice');
+  await playMixedRound('Letters A, B, C', 3, `document.querySelector('.sign-stage img').src.match(/sign-([abc])-/)[1].toUpperCase()`, 'Use pictures');
+  await heading('Lesson finished!');
+  await waitFor(`document.querySelector('.badge-list').textContent.includes('Lesson badge') && document.querySelector('.confetti')`);
   await navigate('lesson/alphabet-4/demo/0');
   await heading('Look at J');
   await waitFor(`document.querySelector('.study-stage p').textContent.includes('moving sign') && document.querySelector('.study-stage img').naturalWidth > 0`);
@@ -385,9 +420,7 @@ export async function verifyDesktop(window: BrowserWindow) {
   await click('.builder-steps li:nth-child(2) button');
   await picture(96);
   await waitFor(`document.querySelector('.learner-preview img')?.naturalWidth === 96`);
-  await button('Add quiz');
-  await waitFor(`document.querySelectorAll('.quiz-variables input').length === 4`);
-  await click('.quiz-variables fieldset:first-child input');
+  await waitFor(`document.querySelector('.builder-quiz').textContent.includes('mixes matching and camera practice')`);
   await button('Use on this device');
   await waitFor(`document.querySelector('.builder-footer [role=status]')?.textContent === 'Lesson ready on this device.'`);
   await navigate('builder/vocabulary-1');
@@ -430,10 +463,9 @@ export async function verifyDesktop(window: BrowserWindow) {
   await selectStudent('Maya S');
   await navigate('lesson/vocabulary-errands-help/demo/0');
   await heading('Again');
-  await waitFor(`document.querySelector('.study-stage img')?.naturalWidth === 80 && Array.from(document.querySelectorAll('button')).some(button => button.textContent === 'Try this sign')`);
+  await waitFor(`document.querySelector('.study-stage img')?.naturalWidth === 80 && ${cameraOffer}`);
   await navigate('lesson/vocabulary-errands-help/quiz');
-  await heading('Asking for help quiz');
-  await waitFor(`document.querySelector('.sign-stage img')?.naturalWidth === 80 && document.querySelector('[data-question-kind=match]')`);
+  await playMixedRound('Asking for help', 2, `document.querySelector('.sign-stage img').naturalWidth === 80 ? 'Again' : 'Please'`);
   await navigate('category/words');
   await heading('Words');
   await click(`.library-card[href="${wordHash}"]`);
@@ -448,7 +480,8 @@ export async function verifyDesktop(window: BrowserWindow) {
       await waitFor(`document.querySelector('.question-count')?.textContent === '${step + 1} of 5'`);
       await button('Next step');
     }
-    await button('Finish lesson');
+    await button('Start practice');
+    await playMixedRound(lessonId === 'vocabulary-1' ? 'Numbers 1–5' : 'Numbers 6–10', 5, numberAnswer);
     await heading('Lesson finished!');
   }
   await navigate(numberHash + '/demo/0');
@@ -511,7 +544,7 @@ export async function verifyDesktop(window: BrowserWindow) {
   }
 
   await runner.executeJavaScript(`new Promise((resolve, reject) => {
-    const request = indexedDB.open('ab-sign-lessons', 4);
+    const request = indexedDB.open('ab-sign-lessons', 5);
     request.onerror = () => reject(request.error);
     request.onsuccess = () => {
       const database = request.result;

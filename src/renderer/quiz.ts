@@ -1,7 +1,7 @@
 import type { Label } from './letters';
 
 export type Prompt<T extends string = Label> = { letter: T; kind: 'match' | 'camera' };
-export type QuizPlan<T extends string = Label> = { count: number; prompts: Prompt<T>[] };
+export type QuizPlan<T extends string = Label> = { count: number; prompts: Prompt<T>[]; perSign?: true };
 export type Question<T extends string> = Prompt<T> & { choices: T[] };
 
 export function shuffle<T>(values: readonly T[], random = Math.random): T[] {
@@ -15,11 +15,16 @@ export function shuffle<T>(values: readonly T[], random = Math.random): T[] {
 
 export function makeQuiz<T extends string>(plan: QuizPlan<T>, letters: readonly T[], random = Math.random): Question<T>[] {
   const order = shuffle(plan.prompts, random);
-  const chosen = order.slice(0, plan.count);
+  const chosen = plan.perSign
+    ? [...new Map(order.map((prompt) => [prompt.letter, prompt])).values()]
+    : order.slice(0, plan.count);
   // Keep both formats in a mixed round whenever there is room for both.
   if (chosen.length > 1 && chosen.every(({ kind }) => kind === chosen[0].kind)) {
     const alternate = order.find(({ kind }) => kind !== chosen[0].kind);
-    if (alternate) chosen[chosen.length - 1] = alternate;
+    if (alternate) {
+      const index = plan.perSign ? chosen.findIndex(({ letter }) => letter === alternate.letter) : chosen.length - 1;
+      if (index >= 0) chosen[index] = alternate;
+    }
   }
   return shuffle(chosen, random).map((prompt) => ({
     ...prompt,

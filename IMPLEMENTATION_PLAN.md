@@ -10,7 +10,7 @@ A-B Sign! helps children practice Filipino Sign Language with an instructor or s
 - Start new teacher lessons with an empty title and no steps or quiz. Teachers choose signs, reorder steps, and upload their own pictures and videos. The picture is available when there is no playable video.
 - Store drafts and learner versions separately. Keep existing teacher lessons when updating the library. Allow teachers to hide and restore the bundled alphabet lessons.
 - A teacher can add one optional quiz per lesson. The teacher picks the sign and format for each prompt and the number of questions in a round. Draw without repeating a sign-and-format pair. Shuffle the round and the answer choices independently, using only lesson signs as choices. Include both formats when the teacher chooses both and the round has room.
-- Show a score and the signs to practice after the quiz. Finishing the lesson is independent of the quiz.
+- Bundled lessons lead from demonstrations to shuffled practice, with one question per sign. Mix matching and camera when the model supports a sign. Offer matching on every camera question. Show the score and award the lesson badge when the round ends. Teacher-authored quizzes can be taken separately.
 
 ## Desktop screens
 

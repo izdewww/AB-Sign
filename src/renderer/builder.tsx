@@ -84,7 +84,7 @@ function Editor({ library, entry, category }: { library: TeacherLibrary; entry?:
     return {
       ...entry.draft,
       steps: entry.draft.steps.map((step) => step.kind === 'camera' && isLabel(step.letter) && !cameraSupports(step.letter) ? { ...step, kind: 'look' } : step),
-      quiz: quizFor(entry.draft) ?? entry.draft.quiz,
+      quiz: entry.draft.quiz?.perSign ? entry.draft.quiz : quizFor(entry.draft) ?? entry.draft.quiz,
     };
   });
   const [preview, setPreview] = useState<number>();
@@ -96,13 +96,14 @@ function Editor({ library, entry, category }: { library: TeacherLibrary; entry?:
   const step = draft.steps[index];
   const currentCategory = categoryFor(draft.category).id;
   const alphabet = currentCategory === 'alphabet';
+  const automaticRound = draft.quiz?.perSign ? quizFor(draft) : undefined;
   const dirty = useRef(false);
   const queue = useRef(Promise.resolve());
   const update = (change: SetStateAction<Lesson>) => {
     dirty.current = true;
     setDraft((previous) => {
       const next = typeof change === 'function' ? change(previous) : change;
-      if (!next.quiz) return next;
+      if (!next.quiz || next.quiz.perSign) return next;
       const current = quizFor(next);
       if (current) return { ...next, quiz: current };
       return { ...next, quiz: { prompts: [], count: 1 } };
@@ -148,7 +149,7 @@ function Editor({ library, entry, category }: { library: TeacherLibrary; entry?:
     if (draft.steps.some((step) => 'letter' in step && !isLabel(step.letter))) return 'Choose a letter for every sign step.';
     if (draft.steps.some((step) => step.kind === 'spell' && !/^[A-Z]{2,12}$/.test(step.word))) return 'Spelling steps need 2 to 12 letters.';
     if (draft.steps.some((step) => step.kind === 'media' && (!step.term.trim() || !hasTermMedia(step)))) return 'Name each sign and add a picture or video.';
-    if (draft.quiz && !quizFor(draft)) return 'Add at least two different signs and choose quiz questions, or turn off the quiz.';
+    if (draft.quiz && !draft.quiz.perSign && !quizFor(draft)) return 'Add at least two different signs and choose quiz questions, or turn off the quiz.';
     return '';
   }
 
@@ -251,10 +252,15 @@ function Editor({ library, entry, category }: { library: TeacherLibrary; entry?:
         </aside>
       </div>
       <section className="builder-quiz paper" aria-labelledby="builder-quiz-title">
-        <div className="section-heading"><div><h2 id="builder-quiz-title">Lesson quiz</h2><p>Choose the signs to practice. The order and choices change each round.</p></div>
+        <div className="section-heading"><div><h2 id="builder-quiz-title">Lesson quiz</h2><p>{draft.quiz?.perSign ? 'Every sign gets a turn. The order changes each round.' : 'Choose the signs to practice. The order and choices change each round.'}</p></div>
           <button className="button secondary" aria-pressed={Boolean(draft.quiz)} disabled={busy} onClick={() => update({ ...draft, quiz: draft.quiz ? undefined : { count: 1, prompts: [] } })}>{draft.quiz ? 'Remove quiz' : 'Add quiz'}</button>
         </div>
-        {draft.quiz && (lessonTerms(draft).length < 2 ? <p className="notice">Add two different signs to start a quiz.</p> : <>
+        {draft.quiz?.perSign ? <div className="actions section-actions">
+          <p>{!automaticRound ? 'Add two signs with demonstrations to start practice.' : automaticRound.prompts.some(({ kind }) => kind === 'camera') ? 'This lesson mixes matching and camera practice.' : 'This lesson shuffles matching questions.'}</p>
+          {automaticRound && <button className="button secondary" disabled={busy} onClick={() => update({ ...draft,
+            quiz: { count: Math.min(10, automaticRound.count), prompts: automaticRound.prompts },
+          })}>Choose questions</button>}
+        </div> : draft.quiz && (lessonTerms(draft).length < 2 ? <p className="notice">Add two different signs to start a quiz.</p> : <>
           <div className="quiz-variables">{lessonTerms(draft).map((letter) => <fieldset key={letter}>
             <legend>{alphabet ? 'Letter ' : ''}{letter}</legend>{(['match', 'camera'] as const).filter((kind) => kind === 'match' || quizCamera(draft, letter)).map((kind) => <label key={kind}>
               <input type="checkbox" disabled={busy} checked={Boolean(draft.quiz?.prompts.some((item) => item.kind === kind && item.letter === letter))} onChange={() => togglePrompt({ letter, kind })} /> {kind === 'match' ? (alphabet ? 'Picture match' : 'Match the sign') : 'Camera'}
