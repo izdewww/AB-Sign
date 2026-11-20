@@ -14,6 +14,7 @@ const paths = {
   trophy: 'M8 3h8v9a4 4 0 0 1-8 0V3Zm0 2H4v3a4 4 0 0 0 4 4m8-7h4v3a4 4 0 0 1-4 4m-4 4v5m-4 0h8',
   flame: 'M13 2c1 7 7 7 7 13a8 8 0 0 1-16 0c0-3 2-6 4-8 0 4 2 4 2 4 2-2 3-5 3-9Z',
   lock: 'M5 11h14v10H5zM8 11V7a4 4 0 0 1 8 0v4m-4 4v2',
+  spark: 'M12 2l2.4 5 5 2.4-5 2.4-2.4 5-2.4-5-5-2.4 5-2.4 2.4-5Z',
 };
 
 export function Icon({ name }: { name: keyof typeof paths }) {

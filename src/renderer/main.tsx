@@ -5,6 +5,10 @@ import '@fontsource/varela-round/latin-400.css';
 import logo from '../../docs/images/logo.jpg';
 import type { AccountState, Progress as StudentData } from '../main/account-types.cjs';
 import { AccountEntry, StudentProgress, Students, TeacherAccount, type AccountAction } from './accounts-ui';
+import { BuddyAvatar } from './avatars';
+import { getLearnerAvatar } from './learner-profile';
+import { WelcomePage } from './welcome-page';
+import { LearnerDashboard } from './dashboard';
 import { Icon } from './icons';
 import { Builder } from './builder';
 import { Camera } from './camera';
@@ -203,6 +207,7 @@ function Classroom({ account, act }: { account: AccountState; act: AccountAction
           {navPages.map(({ key, label, icon }) => <a key={key} href={`#${key}`} aria-current={active === key ? 'page' : undefined}><Icon name={icon} /><span>{label}</span></a>)}
         </nav>}
         <div className="header-tools">
+          {student && <BuddyAvatar id={getLearnerAvatar(student.student.id)} size={38} />}
           {student && <a className="streak-mark" href="#progress" aria-label={`${days} day practice streak`}><Icon name="flame" /> <span>{days} {days === 1 ? 'day' : 'days'}</span></a>}
           {student && <button className="icon-link sound-toggle" aria-label="Answer sounds" aria-pressed={store.data.sound} title={store.data.sound ? 'Sound on' : 'Sound off'} onClick={() => store.update({ sound: !store.data.sound })}><Icon name={store.data.sound ? 'sound' : 'mute'} /></button>}
           {activeAccount && <button className="button secondary account-switch" onClick={() => void act({ action: 'logout' }, 'welcome')}>{teacher ? 'Sign out' : 'Switch account'}</button>}
@@ -210,8 +215,8 @@ function Classroom({ account, act }: { account: AccountState; act: AccountAction
       </header>
       <main className="content" ref={content} id="content" tabIndex={-1}>
         {store.saveFailed && <p className="notice" role="alert">Changes could not be saved on this device.</p>}
-        {firstRun && <AccountEntry key={page} state={account} teacher={page === 'teacher-sign-in'} act={act} />}
-        {['home', 'preferences'].includes(page) && student && <Home store={store} library={library} name={student.student.name} />}
+        {firstRun && (page === 'teacher-sign-in' ? <AccountEntry key={page} state={account} teacher act={act} /> : <WelcomePage key={page} state={account} act={act} />)}
+        {['home', 'preferences'].includes(page) && student && <LearnerDashboard store={store} library={library} student={student.student} />}
         {['path', 'learn', 'sign-check'].includes(page) && <LearningPath library={library} store={store} />}
         {page === 'category' && <CategoryView key={id} id={id} library={library} store={store} teacher={Boolean(teacher)} />}
         {page === 'lesson' && <LessonView key={routeKey} id={id} action={action} position={position} store={store} library={library} />}

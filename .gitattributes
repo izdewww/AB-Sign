@@ -1,0 +1,2 @@
+* text=auto
+model-training/artifacts/* -text

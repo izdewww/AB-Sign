@@ -9,8 +9,19 @@ const model = new URL(modelName, source);
 const geometry = new URL(geometryName, source);
 const profile = new URL('fsl-geometry-v3-benchmark.json', source);
 const benchmark = JSON.parse(await readFile(profile, 'utf8'));
-const checksum = createHash('sha256').update(await readFile(model)).digest('hex');
-const geometryChecksum = createHash('sha256').update(await readFile(geometry)).digest('hex');
+const modelBuf = await readFile(model);
+const checksum = createHash('sha256').update(modelBuf).digest('hex');
+const geometryRaw = await readFile(geometry);
+let geometryBuf = geometryRaw;
+let geometryChecksum = createHash('sha256').update(geometryRaw).digest('hex');
+
+if (geometryChecksum !== benchmark.model_sha256) {
+  const normalized = Buffer.from(geometryRaw.toString('utf8').replace(/\r\n/g, '\n'), 'utf8');
+  if (createHash('sha256').update(normalized).digest('hex') === benchmark.model_sha256) {
+    geometryChecksum = benchmark.model_sha256;
+    geometryBuf = normalized;
+  }
+}
 
 if (benchmark.detector !== modelName || checksum !== benchmark.detector_sha256 ||
   benchmark.model !== geometryName || geometryChecksum !== benchmark.model_sha256 ||
@@ -20,7 +31,8 @@ if (benchmark.detector !== modelName || checksum !== benchmark.detector_sha256 |
 
 await mkdir(target, { recursive: true });
 await copyFile(model, new URL(modelName, target));
-await copyFile(geometry, new URL(geometryName, target));
+const { writeFile } = await import('node:fs/promises');
+await writeFile(new URL(geometryName, target), geometryBuf);
 await copyFile(profile, new URL('benchmark.json', target));
 
 const vocabularyReport = 'fsl-vocabulary-v1-benchmark.json';
@@ -44,10 +56,20 @@ for (const [name, expected] of [
   ['vocabulary-pose.task', vocabularyBenchmark.pose_sha256],
 ]) {
   const asset = new URL(name, source);
-  if (createHash('sha256').update(await readFile(asset)).digest('hex') !== expected) {
+  const rawAsset = await readFile(asset);
+  let assetBuf = rawAsset;
+  let assetChecksum = createHash('sha256').update(rawAsset).digest('hex');
+  if (assetChecksum !== expected && name.endsWith('.json')) {
+    const normalized = Buffer.from(rawAsset.toString('utf8').replace(/\r\n/g, '\n'), 'utf8');
+    if (createHash('sha256').update(normalized).digest('hex') === expected) {
+      assetChecksum = expected;
+      assetBuf = normalized;
+    }
+  }
+  if (assetChecksum !== expected) {
     throw new Error(`The bundled vocabulary asset ${name} differs from its report.`);
   }
-  await copyFile(asset, new URL(name, target));
+  await writeFile(new URL(name, target), assetBuf);
 }
 await copyFile(new URL(vocabularyReport, source), new URL(vocabularyReport, target));
 await copyFile(new URL(wordReport, source), new URL(wordReport, target));
