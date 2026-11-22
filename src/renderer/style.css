@@ -3675,10 +3675,12 @@ a.path-card:hover { box-shadow: 0 5px 16px #52365b2a; }
   box-shadow: 0 4px 16px rgba(0, 0, 0, 0.05);
   display: flex;
   flex-direction: column;
-  gap: 20px;
-  height: 100%;
-  min-height: clamp(520px, 60vh, 660px);
+  gap: 16px;
+  height: clamp(520px, 58vh, 620px);
+  min-height: clamp(520px, 58vh, 620px);
+  max-height: clamp(520px, 58vh, 620px);
   box-sizing: border-box;
+  overflow: hidden;
 }
 
 .target-eyebrow-row {
@@ -3697,24 +3699,28 @@ a.path-card:hover { box-shadow: 0 5px 16px #52365b2a; }
   display: flex;
   flex-direction: column;
   gap: 16px;
-  height: 100%;
-  min-height: clamp(520px, 60vh, 660px);
+  height: clamp(520px, 58vh, 620px);
+  min-height: clamp(520px, 58vh, 620px);
+  max-height: clamp(520px, 58vh, 620px);
   box-sizing: border-box;
+  overflow: hidden;
 }
 
 .sign-demo-card,
 .target-letter-card {
-  height: 100%;
-  min-height: clamp(520px, 60vh, 660px);
+  height: clamp(520px, 58vh, 620px);
+  min-height: clamp(520px, 58vh, 620px);
+  max-height: clamp(520px, 58vh, 620px);
   display: flex;
   flex-direction: column;
   box-sizing: border-box;
+  overflow: hidden;
 }
 
 .sign-demo-card .demo-media-4-3-container,
 .camera-stage-right-col.camera-feed-card .camera-stage-viewport {
   flex: 1;
-  min-height: clamp(340px, 40vh, 460px);
+  min-height: 0;
   height: 100%;
 }
 
@@ -3754,10 +3760,81 @@ a.path-card:hover { box-shadow: 0 5px 16px #52365b2a; }
 }
 
 .collapsible-hint-box {
-  padding: 16px 20px;
+  padding: 14px 18px;
   border-radius: 18px;
   border: 1.5px solid #e2e8f0;
   background: #f8fafc;
+}
+
+.collapsible-hint-box .hint-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+}
+
+.collapsible-hint-box .hint-title-group {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.98rem;
+  font-weight: 700;
+  color: #1e293b;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.collapsible-hint-box .hint-card-body {
+  margin-top: 10px;
+  padding-top: 10px;
+  border-top: 1px solid #e2e8f0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.collapsible-hint-box .hint-cue-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  margin-bottom: 2px;
+}
+
+.collapsible-hint-box .hint-instruction-text {
+  font-size: 0.88rem;
+  color: #334155;
+  line-height: 1.4;
+  margin: 0;
+}
+
+.collapsible-hint-box .practice-photo {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+}
+
+.collapsible-hint-box .hint-photo-wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  margin-top: 6px;
+  overflow: hidden;
+}
+
+.collapsible-hint-box .practice-photo img,
+.collapsible-hint-box .hint-photo-wrapper img,
+.collapsible-hint-box img,
+.collapsible-hint-box video {
+  height: 96px !important;
+  max-height: 96px !important;
+  width: auto !important;
+  max-width: 100% !important;
+  object-fit: contain !important;
+  border-radius: 10px;
+  margin: 0 auto;
 }
 
 .target-sign-card {
@@ -3812,15 +3889,22 @@ a.path-card:hover { box-shadow: 0 5px 16px #52365b2a; }
   flex-shrink: 0;
 }
 
-.hint-toggle {
-  min-height: 32px;
-  padding: 3px 10px;
-  font-size: 0.82rem;
-  font-weight: 700;
-  border-radius: 10px;
-  white-space: nowrap;
-  flex-shrink: 0;
-  width: auto;
+.hint-toggle,
+.button.hint-toggle,
+button.hint-toggle {
+  min-height: 32px !important;
+  height: 32px !important;
+  max-height: 32px !important;
+  padding: 0 14px !important;
+  font-size: 0.82rem !important;
+  font-weight: 700 !important;
+  border-radius: 10px !important;
+  white-space: nowrap !important;
+  flex: 0 0 auto !important;
+  width: auto !important;
+  max-width: fit-content !important;
+  min-width: auto !important;
+  box-shadow: 0 2px 0 #cbd5e1 !important;
 }
 
 .hint-card-body {
@@ -3946,35 +4030,50 @@ a.path-card:hover { box-shadow: 0 5px 16px #52365b2a; }
 }
 
 .camera-viewport-off-state {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 100%;
+  max-width: 90%;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 14px;
+  text-align: center;
+  gap: 16px;
   color: #ffffff;
   padding: 24px;
+  box-sizing: border-box;
+  margin: 0;
+  z-index: 2;
 }
 
 .off-emblem {
-  width: 64px;
-  height: 64px;
+  width: 68px;
+  height: 68px;
   border-radius: 50%;
   background: rgba(255, 255, 255, 0.1);
-  display: grid;
-  place-items: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   color: #94a3b8;
+  margin: 0 auto;
 }
 
 .off-emblem svg {
-  width: 32px;
-  height: 32px;
+  width: 34px;
+  height: 34px;
 }
 
 .off-message {
-  font-size: 1.05rem;
+  font-size: 1.15rem;
   color: #cbd5e1;
   font-weight: 600;
-  margin: 0;
+  margin: 0 auto;
+  text-align: center;
+  width: 100%;
+  line-height: 1.4;
 }
 
 .in-stage-start-btn {

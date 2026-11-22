@@ -290,7 +290,7 @@ export function Camera({ target, term, match, guided = false, fallback, image, l
                 </div>
                 <button
                   type="button"
-                  className="button secondary hint-toggle btn-3d"
+                  className="button secondary hint-toggle"
                   aria-expanded={hint}
                   onClick={() => showHint(!hint)}
                 >
@@ -303,8 +303,11 @@ export function Camera({ target, term, match, guided = false, fallback, image, l
                     <Icon name="hand" />
                     <p className="hint-instruction-text">{getHandshapeHint(letterLabel)}</p>
                   </div>
-                  {letter && <SignPhoto letter={letter} image={image} />}
-                  {term && <LessonMedia name={letterLabel} file={term?.video} image={image} bundledVideo={term?.demo} />}
+                  {(letter || image) ? (
+                    <div className="hint-photo-wrapper">
+                      <SignPhoto letter={letter} image={image} name={letterLabel} />
+                    </div>
+                  ) : null}
                 </div>
               )}
             </div>
@@ -351,7 +354,7 @@ export function Camera({ target, term, match, guided = false, fallback, image, l
 
             {/* 16:10 Dark Viewport */}
             <div className={`camera-stage-viewport ${stable ? 'viewport-matched' : ''}`} data-camera={state} data-match={stable || undefined}>
-              <video ref={video} muted playsInline aria-label="Your camera preview" className={flipped ? 'mirrored' : ''} />
+              <video ref={video} muted playsInline aria-label="Your camera preview" className={flipped ? 'mirrored' : ''} style={{ display: state === 'on' ? 'block' : 'none' }} />
               {state === 'on' ? (
                 <>
                   <div className={`camera-alignment-box ${stable ? 'matched' : ''}`}>
@@ -459,7 +462,7 @@ export function Camera({ target, term, match, guided = false, fallback, image, l
                 </div>
                 <button
                   type="button"
-                  className="button secondary hint-toggle btn-3d"
+                  className="button secondary hint-toggle"
                   aria-expanded={hint}
                   onClick={() => showHint(!hint)}
                 >
@@ -517,7 +520,7 @@ export function Camera({ target, term, match, guided = false, fallback, image, l
 
             {/* 16:10 Dark Viewport */}
             <div className={`camera-stage-viewport ${stable ? 'viewport-matched' : ''}`} data-camera={state} data-match={stable || undefined}>
-              <video ref={video} muted playsInline aria-label="Your camera preview" className={flipped ? 'mirrored' : ''} />
+              <video ref={video} muted playsInline aria-label="Your camera preview" className={flipped ? 'mirrored' : ''} style={{ display: isCameraOn ? 'block' : 'none' }} />
               {isCameraOn ? (
                 <>
                   <div className={`camera-alignment-box ${stable ? 'matched' : ''}`}>
@@ -535,9 +538,6 @@ export function Camera({ target, term, match, guided = false, fallback, image, l
                 <div className="camera-viewport-off-state">
                   <div className="off-emblem"><Icon name="videoOff" /></div>
                   <p className="off-message">Start the camera when you're ready.</p>
-                  <button type="button" className="button primary in-stage-start-btn btn-3d" onClick={start}>
-                    <Icon name="camera" /> Start camera
-                  </button>
                 </div>
               )}
             </div>

@@ -233,8 +233,8 @@ Unified into a single, cohesive card container (`.camera-unified-card.paper`):
      - Camera Off: *"Start the camera when you're ready."*
    - **Letter Tile:** Large prominent B letter tile (`width: 64px; height: 64px`) on the right side of the card.
 2. **Compact Collapsible Hint Section:**
-   - Header: *Need a hint?* with a shorter, compact *Show hint / Hide hint* toggle button (`min-height: 32px; padding: 3px 10px; font-size: 0.82rem`) so it never wraps or displaces the header text.
-   - Expanding reveals hand icon (`hand`) and plain-language cue: *"Hold 4 fingers straight up together and tuck your thumb across your palm."*, plus sign reference media.
+   - Header: *Need a hint?* with a shorter, compact *Show hint / Hide hint* toggle button (`min-height: 32px; padding: 0 14px; font-size: 0.82rem; flex: 0 0 auto; width: auto !important; max-width: fit-content !important`) so it never wraps or extends outside the column container.
+   - Expanding reveals hand icon (`hand`), plain-language cue (*"Hold 4 fingers straight up together and tuck your thumb across your palm."*), and a strictly height-constrained hint sign image wrapper (`.hint-photo-wrapper img { height: 96px; object-fit: contain; }`) preventing layout shifting.
 3. **Bottom-Pinned Controls & Privacy Note:**
    - Pinned cleanly to the bottom of the column container via `margin-top: auto`.
    - Two side-by-side 16px-rounded tactile buttons (`.camera-actions-row.side-by-side`):
@@ -250,7 +250,7 @@ Dedicated entirely to the live camera feed, matching Lesson Stage's expansive de
    - **Right:** Live status pill (*Recognizing...* with a pulsing green dot when active, or *Camera Off* when stopped).
 2. **Camera Viewport (16:10 Dark Frame):**
    - **Camera Active State:** Centered dashed green *Align Hand Here* target box with a hand icon, plus a bottom guidance pill (*"Bring your whole hand into view"*).
-   - **Camera Off State:** Centered `videocam_off` emblem and Camera off message (*"Start the camera when you're ready."*). In-stage start button removed to keep the right column strictly focused on live video.
+   - **Camera Off State:** Centered `videocam_off` emblem and Camera off message (*"Start the camera when you're ready."*), vertically and horizontally centered with `position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); text-align: center;`. In-stage start button removed to keep the right column strictly focused on live video.
 3. **Stage Footer Strip:**
    - **Left:** Lighting tip (*"💡 Good lighting helps detection"*).
    - **Right:** *FSL Letter B* label.
