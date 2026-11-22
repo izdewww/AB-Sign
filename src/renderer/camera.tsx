@@ -311,7 +311,7 @@ export function Camera({ target, term, match, guided = false, fallback, image, l
 
             {/* Camera Control Buttons (Start & Mirror) & Privacy Note */}
             <div className="camera-controls-section">
-              <div className="actions camera-actions-row">
+              <div className="actions camera-actions-row side-by-side">
                 {state === 'on' || state === 'starting' ? (
                   <button type="button" className="button secondary btn-3d" onClick={() => { reset(); setState('off'); setStatus('Camera off.'); }}>
                     <Icon name="videoOff" /> Stop camera
@@ -329,7 +329,6 @@ export function Camera({ target, term, match, guided = false, fallback, image, l
                 >
                   <Icon name="flip" /> {flipped ? 'Mirrored' : 'Mirror view'}
                 </button>
-                {fallback}
               </div>
               <p className="small-copy camera-privacy-note centered">
                 <Icon name="lock" /> Your camera stays on this device.
@@ -370,9 +369,6 @@ export function Camera({ target, term, match, guided = false, fallback, image, l
                 <div className="camera-viewport-off-state">
                   <div className="off-emblem"><Icon name="videoOff" /></div>
                   <p className="off-message">Start the camera when you're ready.</p>
-                  <button type="button" className="button primary in-stage-start-btn btn-3d" onClick={start}>
-                    <Icon name="camera" /> Start camera
-                  </button>
                 </div>
               )}
             </div>

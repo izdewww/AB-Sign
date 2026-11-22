@@ -220,10 +220,11 @@ An interactive camera training stage matching the Lesson Stage column distributi
   - Does **not** span across two columns; restricted to occupy only **half of the left column** (~210px–240px width).
   - Displays the 16px-rounded tactile **`Back to demonstration`** button (`<Icon name="retry" />`).
 
-### 5.2. Two-Column Main Workspace (Lesson Stage Column Distribution)
+### 5.2. Two-Column Main Workspace (Matching Fixed Height & Distribution)
+Both the Left and Right column cards use `align-items: stretch` with a shared fixed height (`min-height: clamp(520px, 60vh, 660px); height: 100%`), matching the exact column heights in the Lesson Demonstration Stage:
 
 #### Left Column (5 Columns) — Information, Hint & Start / Mirror Buttons
-Unified into a single, cohesive card container matching Lesson Stage's `.target-letter-card`:
+Unified into a single, cohesive card container (`.camera-unified-card.paper`):
 1. **Target Sign Information:**
    - **Eyebrow Row:** `Camera Practice` pill badge paired with `Sign B` tag.
    - **Heading:** `Look at B` (Fredoka Variable bold heading).
@@ -231,13 +232,15 @@ Unified into a single, cohesive card container matching Lesson Stage's `.target-
      - Camera Active: *"Bring your whole hand into view."*
      - Camera Off: *"Start the camera when you're ready."*
    - **Letter Tile:** Large prominent B letter tile (`width: 64px; height: 64px`) on the right side of the card.
-2. **Collapsible Hint Section:**
-   - Header: *Need a hint?* with a 16px-rounded *Show hint / Hide hint* toggle button.
+2. **Compact Collapsible Hint Section:**
+   - Header: *Need a hint?* with a shorter, compact *Show hint / Hide hint* toggle button (`min-height: 32px; padding: 3px 10px; font-size: 0.82rem`) so it never wraps or displaces the header text.
    - Expanding reveals hand icon (`hand`) and plain-language cue: *"Hold 4 fingers straight up together and tuck your thumb across your palm."*, plus sign reference media.
-3. **Camera Controls & Privacy Note:**
-   - Two side-by-side 16px-rounded tactile buttons:
+3. **Bottom-Pinned Controls & Privacy Note:**
+   - Pinned cleanly to the bottom of the column container via `margin-top: auto`.
+   - Two side-by-side 16px-rounded tactile buttons (`.camera-actions-row.side-by-side`):
      - *Start camera / Stop camera* (`videocam` / `videocam_off` icon) — primary green when off, neutral when active.
      - *Mirror view / Mirrored* (`flip` icon).
+   - Duplicate "back to demonstration" button removed from inside this container.
    - Centered privacy line underneath with a lock icon: *"Your camera stays on this device."*
 
 #### Right Column (7 Columns) — Camera Only Stage
@@ -247,7 +250,7 @@ Dedicated entirely to the live camera feed, matching Lesson Stage's expansive de
    - **Right:** Live status pill (*Recognizing...* with a pulsing green dot when active, or *Camera Off* when stopped).
 2. **Camera Viewport (16:10 Dark Frame):**
    - **Camera Active State:** Centered dashed green *Align Hand Here* target box with a hand icon, plus a bottom guidance pill (*"Bring your whole hand into view"*).
-   - **Camera Off State:** Centered `videocam_off` emblem, Camera off message (*"Start the camera when you're ready."*), and a 16px-rounded primary *Start camera* button directly inside the viewport.
+   - **Camera Off State:** Centered `videocam_off` emblem and Camera off message (*"Start the camera when you're ready."*). In-stage start button removed to keep the right column strictly focused on live video.
 3. **Stage Footer Strip:**
    - **Left:** Lighting tip (*"💡 Good lighting helps detection"*).
    - **Right:** *FSL Letter B* label.
