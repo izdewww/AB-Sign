@@ -1,9 +1,13 @@
 import { useState } from 'react';
 import type { Student } from '../main/account-types.cjs';
 import type { ClassroomStore } from './classroom';
+import { GuessSignGame } from './guess-sign-game';
 import { Icon } from './icons';
-import { quizFor, type TeacherLibrary } from './lessons';
 import { deriveLearnerStats } from './learner-profile';
+import { type TeacherLibrary } from './lessons';
+import { MemoryMatchGame } from './memory-match-game';
+import { SignCameraGame } from './sign-camera-game';
+import { VocabChallengeGame } from './vocab-challenge-game';
 
 interface ActivitiesHubProps {
   library: TeacherLibrary;
@@ -16,72 +20,31 @@ export function ActivitiesHub({ library, store, student, mode }: ActivitiesHubPr
   const stats = deriveLearnerStats(student, store.data, library);
   const [selectedScoreCard, setSelectedScoreCard] = useState<string | null>(null);
 
-  // If sub-mode is selected (e.g. #activities/cards, #activities/guess), render the drill list
-  const quizzes = library.visible.filter(quizFor);
-  const options =
-    mode === 'cards'
-      ? library.visible.map((lesson) => ({ title: lesson.title, url: '#lesson/' + lesson.id + '/demo/0' }))
-      : mode === 'spell'
-      ? library.visible.flatMap((lesson) =>
-          lesson.steps.flatMap((step, index) =>
-            step.kind === 'spell' ? [{ title: lesson.title, url: '#lesson/' + lesson.id + '/demo/' + index }] : []
-          )
-        )
-      : quizzes
-          .filter((lesson) => mode !== 'words' || (lesson.category && lesson.category !== 'alphabet'))
-          .map((lesson) => ({ title: lesson.title, url: '#lesson/' + lesson.id + '/quiz' }));
-
-  if (mode) {
-    const modeTitles: Record<string, { title: string; desc: string; tone: string }> = {
-      cards: { title: 'Sign & Word Cards', desc: 'Look at a sign and practice it.', tone: 'mint' },
-      guess: { title: 'Guess the Sign', desc: 'Find the letter or word that matches.', tone: 'sky' },
-      spell: { title: 'Fingerspell Sprint', desc: 'Read signs one letter at a time.', tone: 'yellow' },
-      words: { title: 'Vocabulary Challenge', desc: 'Match signs for numbers and everyday words.', tone: 'peach' },
-    };
-    const currentMode = modeTitles[mode] || { title: 'Activity', desc: 'Practice your signs.', tone: 'sky' };
-
-    return (
-      <section className="activities-submode-view">
-        <a className="back-link" href="#activities">
-          <Icon name="back" /> Back to Activities &amp; games
-        </a>
-        <header className={`path-card ${currentMode.tone}`}>
-          <div>
-            <h1>{currentMode.title}</h1>
-            <p>{currentMode.desc}</p>
-          </div>
-        </header>
-        {options.length ? (
-          <ul className="lesson-list paper section-actions">
-            {options.map(({ title, url }) => (
-              <li key={url}>
-                <h2>{title}</h2>
-                <a className="button secondary" href={url}>
-                  Open <Icon name="arrow" />
-                </a>
-              </li>
-            ))}
-          </ul>
-        ) : (
-          <div className="paper empty section-actions">
-            <p>{library.status === 'loading' ? 'Opening activities…' : 'No activities available yet.'}</p>
-          </div>
-        )}
-      </section>
-    );
+  // Dedicated game arenas mapped accordingly to their names
+  if (mode === 'cards') {
+    return <MemoryMatchGame store={store} onExit={() => { window.location.hash = '#activities'; }} />;
+  }
+  if (mode === 'guess') {
+    return <GuessSignGame store={store} onExit={() => { window.location.hash = '#activities'; }} />;
+  }
+  if (mode === 'words') {
+    return <VocabChallengeGame store={store} student={student} onExit={() => { window.location.hash = '#activities'; }} />;
+  }
+  if (mode === 'sign' || mode === 'camera') {
+    return <SignCameraGame store={store} onExit={() => { window.location.hash = '#activities'; }} />;
   }
 
   // 2x2 Game Cards definitions
   const gameCards = [
     {
       id: 'cards',
-      eyebrow: 'MEMORY MATCH',
+      eyebrow: 'IMAGE & LETTER MATCH',
       title: 'Sign & Word Cards',
-      description: 'Flip-tile matching game to connect FSL gestures with letters and pictures.',
+      description: 'Match FSL hand-sign pictures directly with their corresponding letters.',
       icon: 'spark',
       tone: 'mint',
       bestScore: '100% Match',
-      pills: ['12 Cards', 'Beginner Friendly', '+30 XP'],
+      pills: ['4 Pairs', 'Visual Matching', '+30 XP'],
       href: '#activities/cards',
     },
     {
@@ -105,6 +68,17 @@ export function ActivitiesHub({ library, store, student, mode }: ActivitiesHubPr
       bestScore: `${stats.dailyGoal.completedToday} of 5 Done`,
       pills: ['5 Signs Today', 'Daily Streak', '+60 XP'],
       href: '#activities/words',
+    },
+    {
+      id: 'sign',
+      eyebrow: 'CAMERA CHALLENGE',
+      title: 'Sign on Camera',
+      description: 'Look at the prompt letter and form the FSL sign in front of your live camera.',
+      icon: 'camera',
+      tone: 'yellow',
+      bestScore: '100% Detected',
+      pills: ['5 Signs', 'AI Detection', '+50 XP'],
+      href: '#activities/sign',
     },
   ];
 

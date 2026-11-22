@@ -11,6 +11,10 @@ import { WelcomePage } from './welcome-page';
 import { LearnerDashboard } from './dashboard';
 import { NavigationSidebar } from './navigation-sidebar';
 import { ActivitiesHub } from './activities-hub';
+import { MemoryMatchGame } from './memory-match-game';
+import { GuessSignGame } from './guess-sign-game';
+import { VocabChallengeGame } from './vocab-challenge-game';
+import { SignCameraGame } from './sign-camera-game';
 import { ProgressView } from './progress-view';
 import { CameraSetupPage } from './camera-setup-page';
 import { Icon } from './icons';
@@ -65,27 +69,26 @@ function Home({ library, store, name }: { library: TeacherLibrary; store: Classr
 }
 
 function PracticeHub({ library, mode }: { library: TeacherLibrary; mode?: string }) {
-  const quizzes = library.visible.filter(quizFor);
+  if (mode === 'cards') {
+    return <MemoryMatchGame onExit={() => { window.location.hash = '#activities'; }} />;
+  }
+  if (mode === 'guess') {
+    return <GuessSignGame onExit={() => { window.location.hash = '#activities'; }} />;
+  }
+  if (mode === 'words') {
+    return <VocabChallengeGame onExit={() => { window.location.hash = '#activities'; }} />;
+  }
+  if (mode === 'sign' || mode === 'camera') {
+    return <SignCameraGame onExit={() => { window.location.hash = '#activities'; }} />;
+  }
+
   const activities = [
-    { id: 'cards', title: 'Sign & word cards', description: 'Look at a sign and practice it.', tone: 'mint' },
+    { id: 'cards', title: 'Sign & word cards', description: 'Match signs and letters.', tone: 'mint' },
     { id: 'guess', title: 'Guess the sign', description: 'Find the letter or word that matches.', tone: 'sky' },
-    { id: 'spell', title: 'Fingerspelling', description: 'Read signs one letter at a time.', tone: 'yellow' },
     { id: 'words', title: 'Vocabulary challenge', description: 'Match signs for numbers and words.', tone: 'peach' },
+    { id: 'sign', title: 'Sign on camera', description: 'See the letter and sign it to your camera.', tone: 'yellow' },
   ] as const;
-  const activity = activities.find((item) => item.id === mode);
-  const options = mode === 'cards'
-    ? library.visible.map((lesson) => ({ title: lesson.title, url: '#lesson/' + lesson.id + '/demo/0' }))
-    : mode === 'spell' ? library.visible.flatMap((lesson) => lesson.steps.flatMap((step, index) => step.kind === 'spell'
-      ? [{ title: lesson.title, url: '#lesson/' + lesson.id + '/demo/' + index }] : []))
-    : quizzes.filter((lesson) => mode !== 'words' || (lesson.category && lesson.category !== 'alphabet'))
-      .map((lesson) => ({ title: lesson.title, url: '#lesson/' + lesson.id + '/quiz' }));
-  if (activity) return <section>
-    <a className="back-link" href="#activities">Activities &amp; games</a>
-    <header className={'path-card ' + activity.tone}><div><h1>{activity.title}</h1><p>{activity.description}</p></div></header>
-    {options.length ? <ul className="lesson-list paper section-actions">{options.map(({ title, url }) => <li key={url}>
-      <h2>{title}</h2><a className="button secondary" href={url}>Open <Icon name="arrow" /></a>
-    </li>)}</ul> : <div className="paper empty section-actions"><p>{library.status === 'loading' ? 'Opening lessons…' : 'No activities here yet.'}</p></div>}
-  </section>;
+
   return <section>
     <header className="page-heading activities-heading"><div className="activity-mark"><Icon name="match" /></div><div><h1>Activities &amp; games</h1><p>Choose how you want to practice.</p></div></header>
     <div className="activity-grid">{activities.map((item) => <a key={item.id} className={'paper activity-tile ' + item.tone} href={'#activities/' + item.id}>
@@ -187,7 +190,7 @@ function Classroom({ account, act }: { account: AccountState; act: AccountAction
   const [[name, id, action, position], setPage] = useState(getPage);
   const page = !activeAccount ? (name === 'teacher-sign-in' ? name : 'welcome')
     : teacher?.setup ? 'teacher-account'
-    : name === 'welcome' || name === 'teacher-sign-in' || !name ? (teacher ? 'teachers' : 'home') : name;
+      : name === 'welcome' || name === 'teacher-sign-in' || !name ? (teacher ? 'teachers' : 'home') : name;
   const routeKey = [page, id, action, position].join('/');
   const content = useRef<HTMLElement>(null);
 
@@ -203,7 +206,7 @@ function Classroom({ account, act }: { account: AccountState; act: AccountAction
 
   const active = ['learn', 'path', 'category', 'lesson', 'sign-check'].includes(page) ? 'path'
     : ['match', 'camera', 'activities', 'camera-setup'].includes(page) ? 'activities'
-    : page === 'student' ? 'students' : page;
+      : page === 'student' ? 'students' : page;
   const navPages = teacher ? teacherPages : pages;
   useEffect(() => {
     const label = navPages.find(({ key }) => key === active)?.label;

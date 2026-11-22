@@ -220,11 +220,11 @@ An interactive camera training stage matching the Lesson Stage column distributi
   - Does **not** span across two columns; restricted to occupy only **half of the left column** (~210px–240px width).
   - Displays the 16px-rounded tactile **`Back to demonstration`** button (`<Icon name="retry" />`).
 
-### 5.2. Two-Column Main Workspace (Matching Fixed Height & Distribution)
-Both the Left and Right column cards use `align-items: stretch` with a shared fixed height (`min-height: clamp(520px, 60vh, 660px); height: 100%`), matching the exact column heights in the Lesson Demonstration Stage:
+### 5.2. Two-Column Main Workspace (Equal 1:1 Distribution & Matching Fixed Height)
+Both the Left and Right column cards use `align-items: stretch` in an equal 1:1 desktop grid (`repeat(2, minmax(0, 1fr))`) with a shared fixed height (`min-height: clamp(540px, 60vh, 640px); height: clamp(540px, 60vh, 640px)`), matching the column heights in the Lesson Demonstration Stage and providing ample space for the sign reference image to grow:
 
-#### Left Column (5 Columns) — Information, Hint & Start / Mirror Buttons
-Unified into a single, cohesive card container (`.camera-unified-card.paper`):
+#### Left Column (Equal 1fr Width) — Information, Hint & Start / Mirror Buttons
+Unified into a single, cohesive card container (`.camera-stage-left-col.camera-unified-card.paper`):
 1. **Target Sign Information:**
    - **Eyebrow Row:** `Camera Practice` pill badge paired with `Sign B` tag.
    - **Heading:** `Look at B` (Fredoka Variable bold heading).
@@ -232,9 +232,9 @@ Unified into a single, cohesive card container (`.camera-unified-card.paper`):
      - Camera Active: *"Bring your whole hand into view."*
      - Camera Off: *"Start the camera when you're ready."*
    - **Letter Tile:** Large prominent B letter tile (`width: 64px; height: 64px`) on the right side of the card.
-2. **Compact Collapsible Hint Section:**
-   - Header: *Need a hint?* with a shorter, compact *Show hint / Hide hint* toggle button (`min-height: 32px; padding: 0 14px; font-size: 0.82rem; flex: 0 0 auto; width: auto !important; max-width: fit-content !important`) so it never wraps or extends outside the column container.
-   - Expanding reveals hand icon (`hand`), plain-language cue (*"Hold 4 fingers straight up together and tuck your thumb across your palm."*), and a strictly height-constrained hint sign image wrapper (`.hint-photo-wrapper img { height: 96px; object-fit: contain; }`) preventing layout shifting.
+2. **Collapsible Hint Section (With Expanded Hint Image):**
+   - Header: *Need a hint?* with a compact *Show hint / Hide hint* toggle button (`min-height: 32px; padding: 0 14px; font-size: 0.82rem; flex: 0 0 auto; width: auto !important; max-width: fit-content !important`) so it never wraps or extends outside the column container.
+   - Expanding reveals hand icon (`hand`), plain-language cue (*"Hold 4 fingers straight up together and tuck your thumb across your palm."*), and a larger, prominent hint sign image (`height: clamp(140px, 18vh, 180px); object-fit: contain;`) wrapped in `.hint-photo-wrapper` that takes advantage of the expanded column width.
 3. **Bottom-Pinned Controls & Privacy Note:**
    - Pinned cleanly to the bottom of the column container via `margin-top: auto`.
    - Two side-by-side 16px-rounded tactile buttons (`.camera-actions-row.side-by-side`):
@@ -243,17 +243,20 @@ Unified into a single, cohesive card container (`.camera-unified-card.paper`):
    - Duplicate "back to demonstration" button removed from inside this container.
    - Centered privacy line underneath with a lock icon: *"Your camera stays on this device."*
 
-#### Right Column (7 Columns) — Camera Only Stage
-Dedicated entirely to the live camera feed, matching Lesson Stage's expansive demonstration frame:
+#### Right Column (Equal 1fr Width) — Camera Only Stage (1:1 Square Viewport)
+Dedicated entirely to the live camera feed:
 1. **Stage Header:**
    - **Left:** videocam icon and *Your Camera Preview* label.
    - **Right:** Live status pill (*Recognizing...* with a pulsing green dot when active, or *Camera Off* when stopped).
-2. **Camera Viewport (16:10 Dark Frame):**
+2. **Camera Viewport (1:1 Square Dark Frame):**
+   - **Square Aspect Ratio:** Sized at `aspect-ratio: 1 / 1;` so the camera feed is perfectly square and centered.
    - **Camera Active State:** Centered dashed green *Align Hand Here* target box with a hand icon, plus a bottom guidance pill (*"Bring your whole hand into view"*).
    - **Camera Off State:** Centered `videocam_off` emblem and Camera off message (*"Start the camera when you're ready."*), vertically and horizontally centered with `position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); text-align: center;`. In-stage start button removed to keep the right column strictly focused on live video.
 3. **Stage Footer Strip:**
    - **Left:** Lighting tip (*"💡 Good lighting helps detection"*).
    - **Right:** *FSL Letter B* label.
+
+*(Note: The equal 1:1 column split and 1:1 square camera viewport are applied consistently to all camera layouts across the application: Camera Practice, Camera Quiz, Free/Guided Camera, and Camera Setup).*
 
 ### 5.3. Wide Rounded Navigation Container (Outside Columns, Full Width)
 A dedicated wide rounded card (`border-radius: 24px; padding: 18px 28px;`) positioned outside and below both columns:
@@ -389,7 +392,113 @@ To simplify the student navigation hierarchy and streamline learner progression:
 
 ---
 
-## 9. Implementation Phases & Milestones
+## 9. Dedicated Games & Practice Spaces (Free-Play Hub Redirection Fix)
+
+### 9.1. Root Cause Analysis: Why Games Currently Lead to the Learning Path
+In `src/renderer/activities-hub.tsx` (and `PracticeHub` in `src/renderer/main.tsx`), the submode router currently checks `if (mode)`. However, instead of launching dedicated, standalone game engines:
+1. `mode === 'cards'` queries `library.visible` and generates drill links pointing directly to `#lesson/${lesson.id}/demo/0` (Learning Path Lesson Demonstrations).
+2. `mode === 'guess'` queries `quizzes` and generates drill links pointing to `#lesson/${lesson.id}/quiz` (Learning Path Lesson Quizzes).
+3. `mode === 'words'` queries non-alphabet `quizzes` and generates drill links pointing to `#lesson/${lesson.id}/quiz` (Learning Path Lesson Quizzes).
+
+Consequently, clicking "PLAY GAME" on any game card simply displays a list of standard curriculum lessons that redirects the learner out of the Games Hub and into the rigid lesson progression of the Learning Path.
+
+### 9.2. Dedicated Game Spaces Architecture
+
+To turn Games & Practice into an authentic, standalone play environment matching their advertised names:
+
+```
++---------------------------------------------------------------------------------------+
+|  GAMES & PRACTICE HUB (#activities)                                                   |
+|  [ Free Play Hub • Play anytime • No unlock required ]        [ ⭐ 280 Total Stars ]  |
+|                                                                                       |
+|  +-----------------------------+  +-----------------------------+  +----------------+ |
+|  | [🎴] MEMORY MATCH            |  | [⚡] RAPID IDENTIFICATION   |  | [🏆] DAILY QUEST | |
+|  | Sign & Word Cards           |  | Guess the Sign              |  | Vocab Challenge| |
+|  | Flip-tile matching pairs    |  | Fast-moving timed quiz      |  | 5 daily signs  | |
+|  | [ PLAY GAME ] [🔄] [🏆 Score]|  | [ PLAY GAME ] [🔄] [🏆 Score]|  | [PLAY GAME]... | |
+|  +-----------------------------+  +-----------------------------+  +----------------+ |
++---------------------------------------------------------------------------------------+
+                     │                              │                              │
+          Click #activities/cards        Click #activities/guess        Click #activities/words
+                     ▼                              ▼                              ▼
++-----------------------------+  +-----------------------------+  +-----------------------------+
+| GAME 1: SIGN & WORD CARDS   |  | GAME 2: GUESS THE SIGN      |  | GAME 3: VOCABULARY CHALLENGE|
+| (Interactive Memory Match)  |  | (Rapid Timed Arcade)        |  | (Daily 5-Sign Streak Quest) |
+| • 3x4 / 4x3 Grid (12 Cards) |  | • 10 Rounds Rapid Fire      |  | • 5 Signs (Everyday Vocab)  |
+| • 6 FSL Signs + 6 Letters   |  | • 10s Countdown Timer Bar   |  | • Multimodal Practice Round |
+| • 3D Card Flip Animation    |  | • 1 Sign (Video/Img) + 4 Opt|  | • Streak Defense Mechanic   |
+| • Match Pairs to Clear Board|  | • Score & Speed Multipliers |  | • Direct XP & Daily Goal    |
+| • [← Back to Games Hub]     |  | • [← Back to Games Hub]     |  | • [← Back to Games Hub]     |
++-----------------------------+  +-----------------------------+  +-----------------------------+
+```
+
+---
+
+### 9.3. Game 1: Sign & Word Cards (`#activities/cards`)
+**Space Type:** Direct Image & Letter Matching Game (Replaced Flipping Cards).
+- **Game Engine & Mechanics:**
+  - **Visible Dual-Column Board:** Completely replaces hidden flip cards with direct, visible pairing between hand sign pictures and letter cards.
+  - **Left Column:** 4 Hand Sign Pictures displaying clear FSL gesture photos with tap-to-pair badges.
+  - **Right Column:** 4 Letter Tiles displaying large bold letter glyphs (`A`, `B`, `C`...) shuffled independently.
+  - **Interactivity:**
+    - Tapping an image card selects it (indigo highlight and subtle elevation).
+    - Tapping a letter card attempts a pair match.
+    - **Match:** Both cards turn emerald green with checkmarks (`.tile-matched`), display a *"Matched (Letter)"* indicator, and lock in.
+    - **Mismatch:** Both cards gently shake in red for 700ms and deselect without penalty.
+  - **HUD Header:**
+    - Back button: `[← Games Hub]` (returns to `#activities`).
+    - Stat badges: **Matched (4 / 4 Pairs)**, **Tries Counter**, and **Timer**.
+    - Shuffle button to start fresh with new signs.
+  - **Victory Modal:**
+    - Triggers upon pairing all 4 signs: Celebratory confetti icon, stars earned, total tries, and a tactile `[Play Again]` button.
+
+---
+
+### 9.4. Game 2: Guess the Sign (`#activities/guess`)
+**Space Type:** Rapid Identification / Time Attack Arcade Quiz.
+- **Game Engine & Mechanics:**
+  - **Format:** 10 fast-paced rounds featuring random signs from the student's unlocked library and starter FSL vocabulary.
+  - **Timer & Rush Mechanic:**
+    - An animated countdown bar (10 seconds per round) ticking down at the top of the card.
+    - Fast answers yield a speed bonus multiplier (`1.5x Speed Bonus!`).
+  - **Main Game Stage (Split Layout):**
+    - **Sign Preview Card (Left):** Prominently displays the hand sign photo or video clip loop.
+    - **Rapid Choice Cards (Right):** 3 or 4 large tactile 3D option cards (`A`, `B`, `C` or words).
+  - **Instant Feedback:**
+    - Selecting an answer immediately stops the timer, reveals green (correct) or red (incorrect), adds combo streaks, and automatically advances after 900ms.
+  - **Results Screen:**
+    - Final Accuracy % (e.g. `90% Accuracy`), XP earned, Streak bonus, and `[Play Again]` button.
+
+---
+
+### 9.5. Game 3: Vocabulary Challenge (`#activities/words`)
+**Space Type:** Daily 5-Sign Streak Quest.
+- **Game Engine & Mechanics:**
+  - **Purpose:** A focused, 5-question daily challenge covering everyday vocabulary categories (Greetings, Family, Numbers, Food).
+  - **Daily Goal Integration:**
+    - Completing this challenge directly increments `stats.dailyGoal.completedToday` in `learner-profile.ts`, giving learners a clear purpose to play each day and defend their flame streak (`flame` icon).
+  - **Round Progression:**
+    - 5 sequential sign challenges with mixed question types (picture matching, sign recognition, meaning identification).
+  - **Streak Shield & Completion Banner:**
+    - Displays a golden trophy banner upon 5/5 completion, awards +60 XP, and confirms streak defense for the day.
+
+---
+
+### 9.6. Game 4: Sign on Camera (`#activities/sign`)
+**Space Type:** Interactive AI Camera Signing Challenge.
+- **Game Engine & Mechanics:**
+  - **Core Concept:** The game presents a target letter prompt (e.g., "Sign the letter B"), and the learner forms the matching FSL hand shape directly in front of their live camera feed.
+  - **5 Sequential Rounds:** Randomly draws 5 camera-supported letters (`labels.filter(cameraSupports)`).
+  - **Live Recognition Integration:**
+    - Integrates the tested `<Camera>` component with real-time MediaPipe hand landmark detection.
+    - As soon as the correct hand sign is detected in the alignment target frame, it automatically triggers success (`match()`), displays a cheerful green detection banner (*"✓ Great job! You signed letter B!"*), and advances to the next sign.
+    - Includes a tactile `[Skip sign]` fallback button.
+  - **Victory Modal:**
+    - Celebrates with a golden star emblem upon completing all 5 signs, awards **+50 XP**, and gives options to `[Play Again]` or return to `[Games Hub]`.
+
+---
+
+## 10. Implementation Phases & Milestones
 
 ### Phase 1: Fullscreen Fluid Grid & CSS Overhaul
 - [x] Update `src/renderer/style.css` to remove rigid max-width clamps on `.content`, `.shell-top .content`, and screen containers.
@@ -423,15 +532,24 @@ To simplify the student navigation hierarchy and streamline learner progression:
 - [x] Remove Fingerspell Sprint activity card from `src/renderer/activities-hub.tsx`.
 - [x] Convert unstyled "Learning Path" category back-links into polished 3D tactile navigation buttons (`.back-nav-btn`).
 
-### Phase 6: Verification & Acceptance
+### Phase 6: Dedicated Games & Practice Implementation
+- [x] Create dedicated `MemoryMatchGame` component (`#activities/cards`) with 12 flip-tiles (6 FSL sign pairs), 3D flip animation, move counter, and victory modal.
+- [x] Create dedicated `GuessSignGame` component (`#activities/guess`) with 10-round time attack, ticking countdown bar, rapid 3D choice cards, and score multipliers.
+- [x] Create dedicated `VocabChallengeGame` component (`#activities/words`) with 5 daily signs, everyday vocabulary pools, streak defense integration, and XP rewards.
+- [x] Update `src/renderer/activities-hub.tsx` to mount the respective dedicated game space on `mode`, replacing the previous Learning Path lesson link lists.
+- [x] Style game arenas, 3D memory card flip cards, timer progress bars, and score modals in `src/renderer/style.css`.
+- [x] Verify each game opens its own dedicated space directly from `#activities` without ever redirecting to `#lesson/...`.
+
+### Phase 7: Verification & Acceptance
 - [x] Verify fullscreen behavior on 1920×1080 resolution (zero awkward borders, fluid column expansion).
 - [x] Verify responsive scaling on 1280×900, 1024×768, and mobile viewports.
 - [x] Verify keyboard accessibility (`Tab`, `Space`, `Enter`) across all 3D buttons.
 - [x] Execute `npm run check` and `npm run build` to confirm zero errors.
+- [x] Verify each game opens its own dedicated space directly from `#activities` without ever redirecting to `#lesson/...`.
 
 ---
 
-## 10. Verification & Acceptance Criteria
+## 11. Verification & Acceptance Criteria
 
 | Component / Area | Acceptance Criteria |
 | :--- | :--- |
@@ -442,5 +560,9 @@ To simplify the student navigation hierarchy and streamline learner progression:
 | **Camera Quiz Stage** | 5/7 split with Camera Question prompt card, large tile, hint drawer, Start/Stop + Use pictures buttons, 16:10 viewport with Show Sign pill, and full-width bottom bar with Skip question. |
 | **Navigation Sidebar** | Only 4 visible tabs (Dashboard, Learning Path, Games & Practice, My Progress); Challenge and Free Camera removed. |
 | **Activities Hub** | Only 3 core activities displayed (Sign & Word Cards, Guess the Sign, Vocabulary Challenge); Fingerspell Sprint removed. |
+| **Games & Practice Space**| Clicking "PLAY GAME" on any card opens its respective standalone game (Memory Match, Rapid Guess, Daily Vocab) directly in Games & Practice without redirecting to the Learning Path. |
+| **Memory Match Game** | 12 cards (6 pairs) flip in 3D, match sign photo to letter/word, track moves, and display victory modal. |
+| **Guess the Sign Game** | 10 rapid rounds with 10s countdown timer, sign media preview, 4 choices, and time-attack score multipliers. |
+| **Vocabulary Challenge**| 5 everyday signs from daily pool; increments daily streak goal in profile upon completion. |
 | **Back Navigation Button**| "Learning Path" link in category view styled as tactile 3D rounded button with back icon. |
 | **Build & Type Safety** | `npm run check` passes with 0 errors; `npm run build` bundles all assets without errors. |
