@@ -3606,6 +3606,30 @@ a.path-card:hover { box-shadow: 0 5px 16px #52365b2a; }
    Camera Practice Stage Styles
    ========================================================================== */
 
+.camera-above-stage-row {
+  width: 100%;
+  display: flex;
+  justify-content: flex-start;
+  margin-bottom: 20px;
+}
+
+.camera-above-stage-row .back-to-demo-btn {
+  /* Takes up only half of the left column width */
+  width: clamp(210px, 20vw, 260px);
+  max-width: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 44px;
+  padding: 10px 18px;
+  border-radius: 16px;
+  font-weight: 700;
+  font-size: 0.95rem;
+  box-shadow: 0 4px 0 #cbd5e1;
+  white-space: nowrap;
+}
+
 .camera-stage-title-row {
   display: flex;
   justify-content: space-between;
@@ -3641,6 +3665,42 @@ a.path-card:hover { box-shadow: 0 5px 16px #52365b2a; }
   display: flex;
   flex-direction: column;
   gap: 18px;
+}
+
+.camera-stage-left-col.camera-unified-card {
+  background: #ffffff;
+  border: 1.5px solid #e2e8f0;
+  border-radius: 24px;
+  padding: clamp(20px, 2.4vw, 28px);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.05);
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.target-eyebrow-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.camera-stage-right-col.camera-feed-card {
+  background: #ffffff;
+  border: 1.5px solid #e2e8f0;
+  border-radius: 24px;
+  padding: clamp(20px, 2.4vw, 28px);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.05);
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.collapsible-hint-box {
+  padding: 16px 20px;
+  border-radius: 18px;
+  border: 1.5px solid #e2e8f0;
+  background: #f8fafc;
 }
 
 .target-sign-card {
@@ -3885,7 +3945,7 @@ a.path-card:hover { box-shadow: 0 5px 16px #52365b2a; }
   border: 1px solid #a7f3d0;
 }
 
-/* Docked Bottom Navigation Bar */
+/* Docked Bottom Navigation Bar (Wide Rounded Container) */
 .stage-bottom-nav-bar {
   display: flex;
   justify-content: space-between;
@@ -3898,8 +3958,33 @@ a.path-card:hover { box-shadow: 0 5px 16px #52365b2a; }
   box-shadow: 0 4px 16px rgba(0, 0, 0, 0.04);
 }
 
-.stage-bottom-nav-bar .button {
+.stage-bottom-nav-bar.wide-nav-container {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 20px;
+  padding: clamp(16px, 2vw, 22px) clamp(22px, 3vw, 36px);
+  border-radius: 24px;
+  margin-top: clamp(20px, 2.4vw, 32px);
+  background: #ffffff;
+  border: 1.5px solid #e2e8f0;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.05);
+  box-sizing: border-box;
+}
+
+.stage-bottom-nav-bar .button,
+.stage-bottom-nav-bar .nav-go-back-btn,
+.stage-bottom-nav-bar .nav-next-step-btn {
   min-width: 160px;
+  padding: 12px 24px;
+  font-size: 1.05rem;
+  font-weight: 700;
+  border-radius: 16px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
 }
 
 @media (max-width: 960px) {

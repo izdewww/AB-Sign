@@ -250,39 +250,39 @@ export function Camera({ target, term, match, guided = false, fallback, image, l
           </div>
         </header>
 
-        {/* Page Title Row */}
-        <div className="camera-stage-title-row">
-          <div className="camera-stage-title-group">
-            <h1 className="camera-stage-title">Look at {letterLabel}</h1>
-            <span className="badge-pill emerald">Camera Practice</span>
-          </div>
+        {/* Above-Columns Action Row (Back to demonstration takes up only half of left column) */}
+        <div className="camera-above-stage-row">
           <button
             type="button"
             className="button secondary back-to-demo-btn btn-3d"
             onClick={lessonContext.onBackToDemo}
           >
-            <Icon name="retry" /> Back to demonstration
+            <Icon name="retry" />
+            <span>Back to demonstration</span>
           </button>
         </div>
 
-        {/* Main 5 / 7 Desktop Split */}
+        {/* Main 5 / 7 Desktop Split (Matching Lesson Stage distribution) */}
         <div className="camera-stage-5-7-grid">
-          {/* Left Column (5 Columns) — Information, Hint & Camera Controls */}
-          <div className="camera-stage-left-col">
-            {/* Target Sign Info Card */}
-            <div className="target-sign-card paper">
-              <div className="target-sign-header">
-                <div className="camera-hint">
-                  <span className="target-sign-eyebrow">Target Sign</span>
-                  <h2>Sign {letterLabel}</h2>
-                  <p className="prompt-text" aria-live="polite">{status}</p>
+          {/* Left Column (5 Columns) — Information, Hint & Start / Mirror Buttons */}
+          <div className="camera-stage-left-col camera-unified-card paper">
+            {/* Target Sign Information */}
+            <div className="target-card-header-row">
+              <div className="target-card-info">
+                <div className="target-eyebrow-row">
+                  <span className="camera-stage-pill">Camera Practice</span>
+                  <span className="target-sign-eyebrow">Sign {letterLabel}</span>
                 </div>
-                <div className="letter-tile-large">{letterLabel}</div>
+                <h1 className="lesson-stage-title">Look at {letterLabel}</h1>
+                <p className="prompt-text" aria-live="polite">
+                  {state === 'on' ? 'Bring your whole hand into view.' : "Start the camera when you're ready."}
+                </p>
               </div>
+              <div className="letter-tile-large">{letterLabel}</div>
             </div>
 
             {/* Collapsible Hint Section */}
-            <div className="collapsible-hint-card paper">
+            <div className="collapsible-hint-box">
               <div className="hint-card-header">
                 <div className="hint-title-group">
                   <span>💡</span>
@@ -309,8 +309,8 @@ export function Camera({ target, term, match, guided = false, fallback, image, l
               )}
             </div>
 
-            {/* Camera Control Buttons & Privacy Note */}
-            <div className="camera-controls paper">
+            {/* Camera Control Buttons (Start & Mirror) & Privacy Note */}
+            <div className="camera-controls-section">
               <div className="actions camera-actions-row">
                 {state === 'on' || state === 'starting' ? (
                   <button type="button" className="button secondary btn-3d" onClick={() => { reset(); setState('off'); setStatus('Camera off.'); }}>
@@ -321,11 +321,14 @@ export function Camera({ target, term, match, guided = false, fallback, image, l
                     <Icon name="camera" /> {state === 'error' ? 'Try camera again' : 'Start camera'}
                   </button>
                 )}
-                {state === 'on' && (
-                  <button type="button" className="button secondary btn-3d" aria-pressed={flipped} onClick={() => setFlipped(!flipped)}>
-                    <Icon name="flip" /> {flipped ? 'Mirrored' : 'Mirror view'}
-                  </button>
-                )}
+                <button
+                  type="button"
+                  className="button secondary btn-3d"
+                  aria-pressed={flipped}
+                  onClick={() => setFlipped(!flipped)}
+                >
+                  <Icon name="flip" /> {flipped ? 'Mirrored' : 'Mirror view'}
+                </button>
                 {fallback}
               </div>
               <p className="small-copy camera-privacy-note centered">
@@ -334,8 +337,8 @@ export function Camera({ target, term, match, guided = false, fallback, image, l
             </div>
           </div>
 
-          {/* Right Column (7 Columns) — Live Camera Stage */}
-          <div className="camera-stage-right-col">
+          {/* Right Column (7 Columns) — Camera Only */}
+          <div className="camera-stage-right-col camera-feed-card paper">
             <div className="camera-preview-card-header">
               <div className="stage-header-title">
                 <Icon name="camera" />
@@ -384,15 +387,23 @@ export function Camera({ target, term, match, guided = false, fallback, image, l
           </div>
         </div>
 
-        {/* Bottom Step Navigation Bar (Full Width) */}
-        <div className="stage-bottom-nav-bar paper">
-          {lessonContext.previousUrl ? (
-            <a className="button secondary btn-3d" href={lessonContext.previousUrl}>
-              <Icon name="back" /> Previous step
-            </a>
-          ) : <span />}
-          <button type="button" className="button primary btn-3d" onClick={lessonContext.onNext}>
-            {lessonContext.actionText} <Icon name="arrow" />
+        {/* Wide Rounded Navigation Container (Outside Columns, Full Width) */}
+        <div className="stage-bottom-nav-bar wide-nav-container paper">
+          <button
+            type="button"
+            className="button secondary btn-3d nav-go-back-btn"
+            onClick={lessonContext.previousUrl ? () => { window.location.hash = lessonContext.previousUrl!; } : lessonContext.onBackToDemo}
+          >
+            <Icon name="back" />
+            <span>Go back</span>
+          </button>
+          <button
+            type="button"
+            className="button primary btn-3d nav-next-step-btn"
+            onClick={lessonContext.onNext}
+          >
+            <span>Next step</span>
+            <Icon name="arrow" />
           </button>
         </div>
 

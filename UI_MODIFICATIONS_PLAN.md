@@ -178,7 +178,7 @@ A structured lesson demonstration view that presents the sign before camera prac
 
 ## 5. Screen Specification: Camera Practice Stage (Look at B)
 
-An interactive camera training stage with real-time hand-positioning feedback, 16px-rounded tactile controls, and collapsible hints.
+An interactive camera training stage matching the Lesson Stage column distribution, with real-time hand-positioning feedback, 16px-rounded tactile controls, and a dedicated wide rounded container outside the columns.
 
 ```
 +-------------------------------------------------------------------------------+
@@ -186,62 +186,62 @@ An interactive camera training stage with real-time hand-positioning feedback, 1
 |  [ < Back to Demo ]     Letters A, B, C   [ 2 of 3 ]     [ ● Camera Active ]  |
 |                         [=============== Progress Bar 66% ===============]    |
 +-------------------------------------------------------------------------------+
-|  PAGE TITLE ROW                                                               |
-|  Look at B  [ Camera Practice Badge ]            [ 🔄 Back to demonstration ] |
+|  ABOVE-COLUMNS ACTION ROW (Half Width of Left Column)                         |
+|  [ 🔄 Back to demonstration ]                                                 |
 +---------------------------------------------+---------------------------------+
 |  LEFT COLUMN (5 Columns)                    |  RIGHT COLUMN (7 Columns)       |
-|  Information, Hint & Camera Controls        |  Live Camera Stage              |
+|  Information, Hint & Start / Mirror Buttons |  Camera Only Stage              |
 |                                             |                                 |
-|  Target Sign Info Card:                     |  Stage Header:                  |
-|  [Target Sign Eyebrow]                      |  [📹] Your Camera Preview [Live]|
-|  Sign B                             +-----+ |  +----------------------------+ |
-|  Bring your whole hand into view.   |  B  | |  |                            | |
-|                                     +-----+ |  |    +------------------+    | |
-|  Collapsible Hint Section:                  |  |    |     ( ✋ )       |    | |
-|  Need a hint?          [ Show / Hide hint ] |  |    | Align Hand Here  |    | |
-|  (✋) Hold 4 fingers straight up together   |  |    +------------------+    | |
-|  and tuck your thumb across your palm.      |  |                            | |
-|                                             |  | [Bring your whole hand...] | |
-|  Camera Controls & Privacy:                 |  +----------------------------+ |
-|  [ ⏹ Stop camera ]  [ 🪞 Mirror view ]       |  💡 Good lighting helps     FSL B|
-|  🔒 Your camera stays on this device.       |  detection                      |
+|  [Camera Practice Pill]   [Sign B Eyebrow]  |  Stage Header:                  |
+|  Look at B                          +-----+ |  [📹] Your Camera Preview [Live]|
+|  Bring your whole hand into view.   |  B  | |  +----------------------------+ |
+|                                     +-----+ |  |                            | |
+|  Need a hint?          [ Show / Hide hint ] |  |    +------------------+    | |
+|  (✋) Hold 4 fingers straight up together   |  |    |     ( ✋ )       |    | |
+|  and tuck your thumb across your palm.      |  |    | Align Hand Here  |    | |
+|                                             |  |    +------------------+    | |
+|  [ ⏹ Stop camera ]  [ 🪞 Mirror view ]       |  |                            | |
+|  🔒 Your camera stays on this device.       |  | [Bring your whole hand...] | |
+|                                             |  +----------------------------+ |
+|                                             |  💡 Good lighting helps   FSL B|
 +---------------------------------------------+---------------------------------+
-|  BOTTOM STEP NAVIGATION BAR (Full Width)                                      |
-|  [ < Previous step ]                                       [ Next step > ]    |
+|  WIDE ROUNDED NAVIGATION CONTAINER (Outside Columns, Full Width)              |
+|  [ < Go back ]                                               [ Next step > ]  |
 +-------------------------------------------------------------------------------+
 ```
 
-### 5.1. Top Header & Title Row (Full Width)
+### 5.1. Top Header & Above-Columns Action Row
 - **Sticky Progress Header:**
   - **Left:** 16px-rounded back button (`arrow_back` icon) returning to the demonstration step.
   - **Center:** Lesson title (*Letters A, B, C*), step counter pill (*2 of 3*), and a progress bar filled to **66%**.
   - **Right:** Live Camera Active / Camera Off status pill with an indicator dot (*"● Live Camera Active"* or *"● Camera Off"*).
-- **Page Title Row:**
-  - **Left:** *Look at B* headline paired with a *Camera Practice* pill badge.
-  - **Right:** 16px-rounded *Back to demonstration* button with replay icon (`<Icon name="retry" />`).
+- **Above-Columns Action Row:**
+  - Placed directly above both columns, aligned to the left edge of the workspace.
+  - Does **not** span across two columns; restricted to occupy only **half of the left column** (~210px–240px width).
+  - Displays the 16px-rounded tactile **`Back to demonstration`** button (`<Icon name="retry" />`).
 
-### 5.2. Two-Column Main Workspace (12-Column Desktop Grid)
+### 5.2. Two-Column Main Workspace (Lesson Stage Column Distribution)
 
-#### Left Column (5 Columns) — Information, Hint & Camera Controls
-All learner guidance, target sign info, and camera controls live in this left card:
-1. **Target Sign Info Card:**
-   - **Eyebrow:** `Target Sign`.
-   - **Heading:** `Sign B`.
-   - **Dynamic Status Line:**
-     - Active: *"Bring your whole hand into view."*
-     - Off: *"Start the camera when you're ready."*
-   - **Letter Tile:** Large prominent B letter tile on the right side of the card for instant visual reference.
+#### Left Column (5 Columns) — Information, Hint & Start / Mirror Buttons
+Unified into a single, cohesive card container matching Lesson Stage's `.target-letter-card`:
+1. **Target Sign Information:**
+   - **Eyebrow Row:** `Camera Practice` pill badge paired with `Sign B` tag.
+   - **Heading:** `Look at B` (Fredoka Variable bold heading).
+   - **Dynamic Prompt Text:**
+     - Camera Active: *"Bring your whole hand into view."*
+     - Camera Off: *"Start the camera when you're ready."*
+   - **Letter Tile:** Large prominent B letter tile (`width: 64px; height: 64px`) on the right side of the card.
 2. **Collapsible Hint Section:**
    - Header: *Need a hint?* with a 16px-rounded *Show hint / Hide hint* toggle button.
-   - Expanding reveals a hand icon (`hand`) and plain-language cue: *"Hold 4 fingers straight up together and tuck your thumb across your palm."*
-3. **Camera Control Buttons & Privacy Note:**
+   - Expanding reveals hand icon (`hand`) and plain-language cue: *"Hold 4 fingers straight up together and tuck your thumb across your palm."*, plus sign reference media.
+3. **Camera Controls & Privacy Note:**
    - Two side-by-side 16px-rounded tactile buttons:
-     - *Stop camera / Start camera* (`videocam_off` / `videocam` icon).
+     - *Start camera / Stop camera* (`videocam` / `videocam_off` icon) — primary green when off, neutral when active.
      - *Mirror view / Mirrored* (`flip` icon).
    - Centered privacy line underneath with a lock icon: *"Your camera stays on this device."*
 
-#### Right Column (7 Columns) — Live Camera Stage
-The right card is dedicated entirely to the camera feed and real-time hand-alignment feedback:
+#### Right Column (7 Columns) — Camera Only Stage
+Dedicated entirely to the live camera feed, matching Lesson Stage's expansive demonstration frame:
 1. **Stage Header:**
    - **Left:** videocam icon and *Your Camera Preview* label.
    - **Right:** Live status pill (*Recognizing...* with a pulsing green dot when active, or *Camera Off* when stopped).
@@ -252,9 +252,10 @@ The right card is dedicated entirely to the camera feed and real-time hand-align
    - **Left:** Lighting tip (*"💡 Good lighting helps detection"*).
    - **Right:** *FSL Letter B* label.
 
-### 5.3. Bottom Step Navigation Bar (Full Width)
-- **Left:** 16px-rounded secondary *Previous step* button (`arrow_back` icon).
-- **Right:** 16px-rounded primary *Next step* button (`arrow_forward` icon) advancing to the sign detection success state.
+### 5.3. Wide Rounded Navigation Container (Outside Columns, Full Width)
+A dedicated wide rounded card (`border-radius: 24px; padding: 18px 28px;`) positioned outside and below both columns:
+- **Start of Container (Far Left):** 16px-rounded secondary **`Go back`** button with back arrow on the start (`<Icon name="back" /> Go back`).
+- **End of Container (Far Right):** 16px-rounded primary **`Next step`** button with forward arrow on the end (`Next step <Icon name="arrow" />`).
 
 ---
 
