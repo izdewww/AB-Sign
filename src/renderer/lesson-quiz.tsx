@@ -94,6 +94,9 @@ export function LessonQuiz({ lesson, plan, sound, finish }: {
             quizContext={{
               onUsePictures: () => setPicture(true),
               usePicturesLabel: alphabet ? 'Use pictures' : 'Use matching',
+              questionNumber: index + 1,
+              totalQuestions: questions.length,
+              onSkip: () => setPicture(true),
             }}
             fallback={<button className="button secondary btn-3d" onClick={() => setPicture(true)}>{alphabet ? 'Use pictures' : 'Use matching'}</button>}
           />

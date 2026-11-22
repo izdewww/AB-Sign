@@ -24,6 +24,8 @@ const paths = {
   close: 'M18 6 6 18M6 6l12 12',
   flip: 'M8 3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h3m8-18h3a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-3M12 2v20',
   videoOff: 'M16 16v1a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2h1m4-1h4a2 2 0 0 1 2 2v4l5-3v8l-2-1.2M2 2l20 20',
+  image: 'M3 5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5Zm0 11 5-5 4 4 3-3 5 5M9 9h.01',
+  info: 'M12 9h.01M11 12h1v4h1M12 22a10 10 0 1 0 0-20 10 10 0 0 0 0 20Z',
 };
 
 export function Icon({ name }: { name: keyof typeof paths }) {

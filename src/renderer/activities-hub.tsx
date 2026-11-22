@@ -96,17 +96,6 @@ export function ActivitiesHub({ library, store, student, mode }: ActivitiesHubPr
       href: '#activities/guess',
     },
     {
-      id: 'spell',
-      eyebrow: 'LETTER BY LETTER',
-      title: 'Fingerspell Sprint',
-      description: 'Spell out complete words letter-by-letter on camera or touchscreen.',
-      icon: 'hand',
-      tone: 'yellow',
-      bestScore: '85% Match',
-      pills: ['Alphabet A-Z', 'Camera Active', '+50 XP'],
-      href: '#activities/spell',
-    },
-    {
       id: 'words',
       eyebrow: 'DAILY QUEST',
       title: 'Vocabulary Challenge',

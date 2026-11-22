@@ -23,6 +23,9 @@ export type LessonCameraContext = {
 export type QuizCameraContext = {
   onUsePictures?: () => void;
   usePicturesLabel?: string;
+  questionNumber?: number;
+  totalQuestions?: number;
+  onSkip?: () => void;
 };
 
 function release(run: Run | undefined) {
@@ -415,18 +418,26 @@ export function Camera({ target, term, match, guided = false, fallback, image, l
   // 2. If in quiz context, render the balanced two-column Camera Quiz stage
   if (quizContext) {
     const letterLabel = targetName || 'A';
+    const isCameraOn = state === 'on';
+    const dynamicPrompt = isCameraOn
+      ? `Show the letter ${letterLabel} sign to your camera.`
+      : "Start the camera when you're ready.";
+    const hintCue = letterLabel === 'A'
+      ? 'Make a gentle fist with your thumb resting upright on the side.'
+      : getHandshapeHint(letterLabel);
 
     return (
       <div className="camera-quiz-stage-wrapper">
         <div className="camera-stage-5-7-grid">
-          {/* Left Column (5 Columns) — Sign Prompt, Hint & Controls */}
+          {/* Left Column (5 Columns) — Question Prompt, Hint & Action Buttons */}
           <div className="camera-stage-left-col">
+            {/* Question Prompt Card */}
             <div className="target-sign-card paper">
               <div className="target-sign-header">
                 <div className="camera-hint">
-                  <span className="target-sign-eyebrow">Target Sign</span>
+                  <span className="target-sign-eyebrow">Camera Question</span>
                   <h2>Sign {letterLabel}</h2>
-                  <p className="prompt-text" aria-live="polite">{status}</p>
+                  <p className="prompt-text" aria-live="polite">{dynamicPrompt}</p>
                 </div>
                 <div className="letter-tile-large">{letterLabel}</div>
               </div>
@@ -452,7 +463,7 @@ export function Camera({ target, term, match, guided = false, fallback, image, l
                 <div className="hint-card-body">
                   <div className="hint-cue-row">
                     <Icon name="hand" />
-                    <p className="hint-instruction-text">{getHandshapeHint(letterLabel)}</p>
+                    <p className="hint-instruction-text">{hintCue}</p>
                   </div>
                   {letter && <SignPhoto letter={letter} image={image} />}
                   {term && <LessonMedia name={letterLabel} file={term?.video} image={image} bundledVideo={term?.demo} />}
@@ -460,21 +471,21 @@ export function Camera({ target, term, match, guided = false, fallback, image, l
               )}
             </div>
 
-            {/* Control & Alternate Input Action Bar */}
+            {/* Action Buttons & Privacy Note */}
             <div className="camera-controls paper">
               <div className="actions camera-actions-row">
-                {state === 'on' || state === 'starting' ? (
+                {isCameraOn ? (
                   <button type="button" className="button secondary btn-3d" onClick={() => { reset(); setState('off'); setStatus('Camera off.'); }}>
                     <Icon name="videoOff" /> Stop camera
                   </button>
                 ) : (
                   <button type="button" className="button primary btn-3d" onClick={start}>
-                    <Icon name="camera" /> {state === 'error' ? 'Try camera again' : 'Start camera'}
+                    <Icon name="camera" /> Start camera
                   </button>
                 )}
                 {quizContext.onUsePictures && (
                   <button type="button" className="button secondary btn-3d" onClick={quizContext.onUsePictures}>
-                    <Icon name="book" /> {quizContext.usePicturesLabel || 'Use pictures'}
+                    <Icon name="image" /> {quizContext.usePicturesLabel || 'Use pictures'}
                   </button>
                 )}
               </div>
@@ -484,33 +495,33 @@ export function Camera({ target, term, match, guided = false, fallback, image, l
             </div>
           </div>
 
-          {/* Right Column (7 Columns) — Interactive Camera Stage */}
+          {/* Right Column (7 Columns) — Quiz Camera Stage */}
           <div className="camera-stage-right-col">
             <div className="camera-preview-card-header">
               <div className="stage-header-title">
                 <Icon name="camera" />
-                <span className="preview-label">Your Camera Preview</span>
+                <span className="preview-label">Quiz Camera Stage</span>
               </div>
-              <span className={`preview-status-badge ${state === 'on' ? (stable ? 'badge-matched' : 'badge-recognizing') : 'badge-off'}`}>
-                <span className={`camera-dot ${state === 'on' ? 'dot-active' : 'dot-off'}`} />
-                {state === 'on' ? (stable ? '✓ Sign Matched!' : 'Recognizing…') : 'Camera Off'}
+              <span className={`preview-status-badge ${isCameraOn ? (stable ? 'badge-matched' : 'badge-recognizing') : 'badge-off'}`}>
+                <span className={`camera-dot ${isCameraOn ? 'dot-active' : 'dot-off'}`} />
+                {isCameraOn ? (stable ? '✓ Sign Matched!' : 'Recognizing…') : 'Camera Off'}
               </span>
             </div>
 
             {/* 16:10 Dark Viewport */}
             <div className={`camera-stage-viewport ${stable ? 'viewport-matched' : ''}`} data-camera={state} data-match={stable || undefined}>
               <video ref={video} muted playsInline aria-label="Your camera preview" className={flipped ? 'mirrored' : ''} />
-              {state === 'on' ? (
+              {isCameraOn ? (
                 <>
                   <div className={`camera-alignment-box ${stable ? 'matched' : ''}`}>
                     <div className="hand-guide-inner">
                       <Icon name="hand" />
                       <span>Align Hand Here</span>
                     </div>
-                    {stable && <span className="right-sign-pill">Right Sign!</span>}
+                    <span className="show-sign-pill">Show Sign {letterLabel}</span>
                   </div>
                   <div className="viewport-bottom-guidance">
-                    <span>Bring your whole hand into view</span>
+                    <span>Hold letter {letterLabel} inside the frame</span>
                   </div>
                 </>
               ) : (
@@ -527,11 +538,27 @@ export function Camera({ target, term, match, guided = false, fallback, image, l
             {/* Stage Footer Strip */}
             <div className="camera-stage-bottom-strip">
               <div className="lighting-tip-item">
-                <span>💡 Good lighting helps detection</span>
+                <span>💡 Or switch to picture matching anytime</span>
               </div>
-              <span className="fsl-letter-tag">FSL Letter {letterLabel}</span>
+              <span className="fsl-letter-tag">Question {quizContext.questionNumber || 1} of {quizContext.totalQuestions || 3}</span>
             </div>
           </div>
+        </div>
+
+        {/* Bottom Action Bar (Full Width) */}
+        <div className="quiz-bottom-action-bar paper">
+          <div className="quiz-helper-note">
+            <Icon name="info" />
+            <span>Try it on camera, or play a matching question.</span>
+          </div>
+          <button
+            type="button"
+            className="button secondary btn-3d quiz-skip-btn"
+            onClick={quizContext.onSkip || quizContext.onUsePictures}
+          >
+            <span>Skip question</span>
+            <Icon name="arrow" />
+          </button>
         </div>
 
         {/* Success Modal */}

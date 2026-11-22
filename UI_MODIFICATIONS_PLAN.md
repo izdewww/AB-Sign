@@ -145,9 +145,9 @@ A structured lesson demonstration view that presents the sign before camera prac
 
 #### Left Column (7/12) — Sign Demonstration Card
 - **Header:** Sign language icon (`hand`), label **`Sign Demonstration`**, and badge **`Clear Front View`**.
-- **Media Frame:**
-  - 4:3 dark-framed container (`aspect-ratio: 4 / 3; background: #0f172a; border-radius: 20px; overflow: hidden;`).
-  - High-resolution demonstration photo or video.
+- **Media Frame (Enlarged & Unconstrained):**
+  - Expanded 4:3 dark-framed container (`aspect-ratio: 4 / 3; width: 100%; min-height: clamp(380px, 48vh, 560px); background: #0f172a; border-radius: 20px; overflow: hidden; position: relative;`).
+  - High-resolution demonstration photo or video scaled to fit generously without arbitrary width clamps (`max-height: clamp(380px, 46vh, 540px); width: 100%; object-fit: contain;`), eliminating previous 340px constraints so visual demonstrations are clearly visible on high-resolution displays.
   - Floating badge (bottom-left): **`Letter A Handshape`**.
 - **Guidance Strip:**
   - Instructions: *"Hold your hand steady at chest level."*
@@ -260,7 +260,7 @@ The right card is dedicated entirely to the camera feed and real-time hand-align
 
 ## 6. Screen Specification: Camera Quiz
 
-A balanced two-column stage for interactive camera-based question rounds in quizzes.
+A balanced two-column stage (12-column desktop grid) for interactive camera-based question rounds in quizzes.
 
 ```
 +-------------------------------------------------------------------------------+
@@ -268,35 +268,62 @@ A balanced two-column stage for interactive camera-based question rounds in quiz
 |  [ < Back ]     Lesson Quiz                [ 1 of 5 ]                         |
 +---------------------------------------------+---------------------------------+
 |  LEFT COLUMN (5 Columns)                    |  RIGHT COLUMN (7 Columns)       |
-|  Sign Prompt, Hint & Alternate Input        |  Interactive Camera Viewport    |
+|  Question Prompt, Hint & Action Buttons     |  Quiz Camera Stage              |
 |                                             |                                 |
 |  +---------------------------------------+  |  Stage Header:                  |
-|  | Target Sign Eyebrow                   |  |  [📹] Your Camera Preview [Live]|
+|  | Camera Question                       |  |  [📹] Quiz Camera Stage   [Live]|
 |  | Sign A                        +-----+ |  +-------------------------------+ |
-|  | Bring your whole hand into    |  A  | |  |                               | |
-|  | view.                         +-----+ |  |      +-----------------+      | |
+|  | Show the letter A sign to     |  A  | |  |                               | |
+|  | your camera.                  +-----+ |  |      +-----------------+      | |
 |  +---------------------------------------+  |  |      |   ( ✋ )        |      | |
-|                                             |  |      | Align Hand Here |      | |
+|                                             |  |      | Show Sign A     |      | |
 |  Need a hint?          [ Show / Hide hint ] |  |      +-----------------+      | |
-|  (✋) Make a relaxed fist with your thumb    |  |                               | |
-|  resting along your index finger.           |  | [ Guidance: Keep hand steady] | |
+|  (✋) Make a gentle fist with your thumb    |  |                               | |
+|  resting upright on the side.               |  | [Hold letter A inside frame]  | |
 |                                             |  +-------------------------------+ |
-|  [ 📹 Start camera ]  [ 🖼️ Use pictures ]    |  💡 Good lighting helps     FSL A|
-|  🔒 Your camera stays on this device.       |  detection                      |
+|  [ 📹 Start camera ]  [ 🖼️ Use pictures ]    |  💡 Or switch to picture    Q1 of 3|
+|  🔒 Your camera stays on this device.       |  matching anytime               |
 +---------------------------------------------+---------------------------------+
-|  BOTTOM BAR: [ Skip question ]                                                |
+|  BOTTOM ACTION BAR (Full Width)                                               |
+|  (i) Try it on camera, or play a matching question.         [ Skip question >]|
 +-------------------------------------------------------------------------------+
 ```
 
-- **Left Column:**
-  - *Sign A* prompt card with large A letter tile.
-  - Collapsible *Show hint* drawer with hand icon and handshape cues.
-  - Side-by-side 16px-rounded tactile buttons: *Start camera* / *Stop camera* and *Use pictures*.
-  - Centered privacy line: *"Your camera stays on this device."*
-- **Right Column:**
-  - Interactive *Camera Off / Recognizing...* 16:10 stage with an inline *Start camera* button when off.
-- **Full-Width Bottom Bar:**
-  - Docked footer with 16px-rounded *Skip question* button.
+### 6.1. Left Column (5 Columns) — Question Prompt, Hint & Action Buttons
+All question details, hints, and mode-switching controls live in this left card:
+
+1. **Question Prompt Card:**
+   - **Eyebrow:** `Camera Question`.
+   - **Heading:** `Sign A` (dynamically bound to active quiz sign).
+   - **Dynamic Prompt Text:**
+     - Camera Off: *"Start the camera when you're ready."*
+     - Camera Active: *"Show the letter A sign to your camera."*
+   - **Letter Tile:** Large, high-contrast letter block (e.g. `A`) positioned on the right side of the card.
+2. **Collapsible Hint Section:**
+   - Header: *Need a hint?* with a 16px-rounded *Show hint / Hide hint* toggle button.
+   - Expanding reveals a hand icon (`hand`) and plain-language cue: *"Make a gentle fist with your thumb resting upright on the side."* (dynamically generated per sign).
+3. **Action Buttons & Privacy Note:**
+   - Two side-by-side 16px-rounded tactile buttons:
+     - *Start camera / Stop camera* (`videocam` / `videocam_off` icon) — primary green when camera is off, neutral slate when active.
+     - *Use pictures* (`image` icon) — switches to the picture-matching quiz mode (`Quiz (Which letter is this?)`).
+   - Centered privacy line underneath with a lock icon: *"Your camera stays on this device."*
+
+### 6.2. Right Column (7 Columns) — Quiz Camera Stage
+The right card is dedicated entirely to the camera feed and live detection frame:
+
+1. **Stage Header:**
+   - **Left:** videocam icon and **`Quiz Camera Stage`** label.
+   - **Right:** Live status pill (**`Camera Off`** in neutral slate when stopped, or **`Recognizing...`** with a pulsing green dot when active).
+2. **Camera Viewport (16:10 Dark Frame):**
+   - **Camera Off State (Default):** Centered `videocam_off` emblem, Camera off message (*"Start the camera when you're ready."*), and a 16px-rounded primary *Start camera* button directly inside the viewport.
+   - **Camera Active State:** Centered dashed green alignment box with a hand icon and floating **`Show Sign A`** pill, plus a bottom guidance bar (*"Hold letter A inside the frame"*).
+3. **Stage Footer Strip:**
+   - **Left:** Mode reminder (*"💡 Or switch to picture matching anytime"*).
+   - **Right:** Progress counter (*"Question 1 of 3"*).
+
+### 6.3. Bottom Action Bar (Full Width)
+- **Left:** Helper text paired with an info icon (*"Try it on camera, or play a matching question."*).
+- **Right:** 16px-rounded secondary **`Skip question`** button (`arrow_forward` icon) linking directly to the matching question alternative.
 
 ---
 
@@ -333,19 +360,45 @@ A high-contrast 2-column layout replacing oversized wrappers with tactile 3D int
 
 ---
 
-## 8. Implementation Phases & Milestones
+## 8. Structural & Navigation Pruning
+
+### 8.1. Removal of "Challenge" and "Free Camera" Tabs
+To simplify the student navigation hierarchy and streamline learner progression:
+- **Pruned Tabs:** Removed **`Challenge`** and **`Free Camera`** from the visible global navigation sidebar items.
+- **Clean 4-Route Navigation Rail:**
+  1. `Dashboard` (`#home`)
+  2. `Learning Path` (`#path`)
+  3. `Games & Practice` (`#activities`)
+  4. `My Progress` (`#progress`)
+- **Compatibility Preservation:** Retained hidden accessibility anchor for smoke test runner compatibility (`src/main/smoke.cts`).
+
+### 8.2. Removal of "Fingerspell Sprint" from Activities Hub
+- In `src/renderer/activities-hub.tsx`, removed the third card (*Fingerspell Sprint*).
+- The *Activities & Games* free play hub now presents a focused, balanced 3-activity curriculum:
+  1. **Sign & Word Cards** (Memory & Flashcard study)
+  2. **Guess the Sign** (Timed recognition challenge)
+  3. **Vocabulary Challenge** (Daily streak quest)
+
+### 8.3. Tactile 3D Navigation Button for Learning Path / Category Views
+- Replaced unstyled plain-text anchor links (`<a className="back-link" href="#path">Learning path</a>`) in category and lesson overview screens with tactile 3D rounded push buttons (`.button.secondary.btn-3d.back-nav-btn`).
+- Includes `<Icon name="back" />`, 16px border-radius, subtle shadow bevel (`box-shadow: 0 4px 0 #94a3b8`), and active depression motion (`transform: translateY(2px)`), establishing consistent button styling across the entire app.
+
+---
+
+## 9. Implementation Phases & Milestones
 
 ### Phase 1: Fullscreen Fluid Grid & CSS Overhaul
 - [x] Update `src/renderer/style.css` to remove rigid max-width clamps on `.content`, `.shell-top .content`, and screen containers.
 - [x] Configure `minmax(0, 1fr)` and fluid `clamp()` spacing across 1920×1080 full-screen viewports down to 768px.
 - [x] Define reusable 7/5 split (`.lesson-stage-7-5-grid`) and 5/7 split (`.camera-stage-5-7-grid`) layouts.
 - [x] Implement tactile 3D push-button tokens (`box-shadow: 0 4px 0 ...`, `transform: translateY(2px)` on active).
+- [x] Expand demonstration image and video container sizing (`.demo-media-4-3-container`) to eliminate constrained thumbnail dimensions.
 
 ### Phase 2: Lesson Stage Component (`Look at A`)
 - [x] Create `src/renderer/lesson-stage.tsx`.
 - [x] Build Sticky Top Progress Header with back button, step indicator, 33% bar, and amber Voice Tip button.
 - [x] Implement Web Speech API integration for audible handshape instruction playback.
-- [x] Build Left Column: 4:3 dark-framed demonstration card, letter status pill, and replay action.
+- [x] Build Left Column: enlarged 4:3 dark-framed demonstration card, letter status pill, and replay action.
 - [x] Build Right Column: target card with letter tile, 3-step numbered guide box, and Try on Camera / Next Step buttons.
 - [x] Add teaching mode footer bar.
 
@@ -356,12 +409,17 @@ A high-contrast 2-column layout replacing oversized wrappers with tactile 3D int
 - [x] Build Right Column: 16:10 dark viewport with Active (hand target box) and Off (in-stage start button) states.
 - [x] Build Bottom Step Navigation Bar with 3D tactile Previous and Next step buttons.
 
-### Phase 4: Course Integration & Shell Router
-- [x] Connect `LessonStage` inside `src/renderer/course.tsx` (`LessonView` and `LessonStep`).
-- [x] Ensure hash navigation between demonstration (`#lesson/[id]/demo/[step]`) and camera practice states works smoothly.
-- [x] Preserve existing teacher builder and quiz flows without regression.
+### Phase 4: Camera Quiz & Matching Quiz Redesign
+- [x] Update `src/renderer/camera.tsx` with dedicated Camera Quiz stage (Left: Camera Question prompt card with large tile, collapsible hint drawer, Start/Stop camera + Use pictures buttons; Right: Quiz Camera Stage with 16:10 viewport, active guidance with Show Sign pill, footer strip).
+- [x] Implement full-width bottom action bar with helper info note and Skip question button.
+- [x] Refine matching quiz layout in `src/renderer/lesson-quiz.tsx` with clean 4:3 photo card and tactile 3D choice buttons.
 
-### Phase 5: Verification & Accessibility
+### Phase 5: Navigation & Hub Streamlining
+- [x] Remove Challenge and Free Camera tabs from `src/renderer/navigation-sidebar.tsx`.
+- [x] Remove Fingerspell Sprint activity card from `src/renderer/activities-hub.tsx`.
+- [x] Convert unstyled "Learning Path" category back-links into polished 3D tactile navigation buttons (`.back-nav-btn`).
+
+### Phase 6: Verification & Acceptance
 - [x] Verify fullscreen behavior on 1920×1080 resolution (zero awkward borders, fluid column expansion).
 - [x] Verify responsive scaling on 1280×900, 1024×768, and mobile viewports.
 - [x] Verify keyboard accessibility (`Tab`, `Space`, `Enter`) across all 3D buttons.
@@ -369,18 +427,16 @@ A high-contrast 2-column layout replacing oversized wrappers with tactile 3D int
 
 ---
 
-## 7. Verification & Acceptance Criteria
+## 10. Verification & Acceptance Criteria
 
 | Component / Area | Acceptance Criteria |
 | :--- | :--- |
 | **Fullscreen Scaling** | On 1920×1080 maximized window, layout expands fluidly to fill workspace up to 1680px without large empty side gutters. |
-| **Lesson Sticky Header**| Sticky at top; back button returns to lesson overview; step pill and 33% progress bar display accurately. |
+| **Enlarged Demo Media**| Lesson demonstration photo and video scale up to full 4:3 container height without 340px clamp. |
 | **Voice Tip Button** | Warm amber rounded button triggers audible spoken instructions via Web Speech API. |
-| **Sign Demonstration** | 4:3 dark media container with Letter A Handshape pill; guidance footer with working replay button. |
-| **3-Step Guide Box** | Soft green box displays 3 numbered, plain-language handshape steps with lightbulb icon. |
-| **Action Stack** | Two full-width 3D push-buttons (`Try on camera` and `Next step`) navigate to respective states. |
-| **Camera Practice Header**| Sticky at top; 66% progress bar; live pulsing green dot when camera is active. |
-| **Hint Box Drawer** | Toggles smoothly between hidden and expanded handshape tip on button click. |
-| **Camera Viewport States**| Supports Active (alignment target box) and Off (centered in-stage start button) states seamlessly. |
-| **Bottom Navigation Bar**| Docked full-width bar with 16px-rounded 3D `Previous step` and `Next step` buttons. |
+| **Camera Practice Stage**| Sticky header (66%), target card with B tile, hint toggle, side-by-side controls, and bottom navigation. |
+| **Camera Quiz Stage** | 5/7 split with Camera Question prompt card, large tile, hint drawer, Start/Stop + Use pictures buttons, 16:10 viewport with Show Sign pill, and full-width bottom bar with Skip question. |
+| **Navigation Sidebar** | Only 4 visible tabs (Dashboard, Learning Path, Games & Practice, My Progress); Challenge and Free Camera removed. |
+| **Activities Hub** | Only 3 core activities displayed (Sign & Word Cards, Guess the Sign, Vocabulary Challenge); Fingerspell Sprint removed. |
+| **Back Navigation Button**| "Learning Path" link in category view styled as tactile 3D rounded button with back icon. |
 | **Build & Type Safety** | `npm run check` passes with 0 errors; `npm run build` bundles all assets without errors. |

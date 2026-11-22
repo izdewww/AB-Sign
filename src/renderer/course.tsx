@@ -38,7 +38,7 @@ export function CategoryView({ id, library, store, teacher }: LibraryView & { id
   const lessons = library.visible.filter((lesson) => categoryFor(lesson.category).id === category.id);
   const finished = lessons.filter((lesson) => store.data.completed.includes(lesson.id)).length;
   return <section>
-    <a className="back-link" href="#path">Learning path</a>
+    <a className="button secondary btn-3d back-nav-btn" href="#path"><Icon name="back" /> <span>Learning path</span></a>
     <header className={'category-heading path-card ' + category.tone}><div><h1>{category.title}</h1><p>{category.detail}</p>
       {lessons.length > 0 && <p>{finished} of {lessons.length} lessons finished</p>}</div>
       <span className="category-mark" aria-hidden="true">{category.mark}</span></header>
@@ -112,7 +112,7 @@ export function LessonView({ id, action, position, library, store }: LibraryView
   </section>;
 
   return <section>
-    <a className="back-link" href={'#category/' + category.id}>{category.title}</a>
+    <a className="button secondary btn-3d back-nav-btn" href={'#category/' + category.id}><Icon name="back" /> <span>{category.title}</span></a>
     <div className={'path-card mint' + (celebrated ? ' celebrate-card' : '')}>
       {celebrated && <Confetti />}
       <div><h1>{celebrated ? 'Lesson finished!' : lesson.title}</h1><p>{celebrated ? lesson.title : lesson.steps.length + (lesson.steps.length === 1 ? ' step' : ' steps')}</p>
