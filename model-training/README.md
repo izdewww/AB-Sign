@@ -1,6 +1,18 @@
 # Train the FSL models
 
-## Numbers and words
+## Bundled number model
+
+Use the FSL-105 and Transactional FSL archive setup described below. Run the trainer from the repository root.
+
+```powershell
+& './model-training/.work/venv/Scripts/python.exe' -B -u './model-training/train_client_numbers.py'
+```
+
+The trainer compares FSL-105-only and blended runs on the FSL-105 validation clips. It saves the selected weights and per-number results to `artifacts/`. The app reads those weights and offers camera practice for 1–10. The benchmark tracks the 90% precision and recall cutoff separately. FSL-105 scored 35 of 40 on number clips and Transactional FSL scored 68 of 68. Both evaluations use recordings with no signer IDs. [Bundled number benchmark](artifacts/fsl-numbers-v3-benchmark.json)
+
+## Earlier number and word experiments
+
+The commands in this section reproduce historical results. The original exporters rewrite the old lesson catalog, so run those exporters from a separate checkout of the earlier app if needed.
 
 The vocabulary trainer uses the publisher’s FSL-105 v2 split for 30 signs. It downloads or extracts 608 source clips and keeps 121 test clips out of training, including any clips with missed hand detections. The word model uses hand and pose movement across 16 frames. The number model uses hand shapes across the same frames and uses word clips as examples of other signs. [FSL-105 v2](https://data.mendeley.com/datasets/48y2y99mb9/2) · [Per-sign results](artifacts/fsl-vocabulary-v1-benchmark.json)
 
@@ -14,7 +26,7 @@ uv pip install --python $trainingPython 'imageio-ffmpeg==0.6.0'
 
 For a smaller download, put the version’s Mendeley file manifest in `.work/fsl105/files.json` and run `download_fsl105_subset.py` with the same Python environment in place of downloading `clips.zip`. It validates the selected ZIP entries against the original checksums. The trainer writes local models and a report under `artifacts/`, then exports the demo clips and lesson catalog under `src/renderer/`.
 
-Camera availability requires at least 90% precision and recall and at least three examples for the sign in the publisher’s test set. These numbers and words have four or five test recordings each. The same test split was reviewed during development. It lacks signer identities and examples of resting hands. Run a separate classroom webcam evaluation to measure performance with new signers.
+The original model used a 90% precision and recall cutoff and at least three examples for a sign. These numbers and words have four or five test recordings each. The same test split was reviewed during development. It lacks signer identities and examples of resting hands.
 
 ### Full vocabulary retraining
 
@@ -42,7 +54,7 @@ The report scores the two test sets separately and together. FSL-105 uses its pu
 
 The expanded model used 2,150 training recordings. It met the cutoff for 50 words and phrases on 603 test recordings, including seven of the added labels. On the same 426 FSL-105 test recordings, 42 words cleared the cutoff, down from 54 for the FSL-105-only model. [Expanded word benchmark](artifacts/fsl-words-v3-benchmark.json)
 
-To update the desktop assets after a new run, copy the validated `.work/fsl105/fsl-words-v3-benchmark.json` to `artifacts/` and run `export_word_lessons.py` with the same Python environment. It checks the model against the report, updates the lesson catalog, and generates any missing FSL-105 videos. The app loads the expanded word weights separately from the existing number weights.
+The earlier word release used `export_word_lessons.py` to check the model against the report, update the old lesson catalog, and generate missing FSL-105 videos. The current app uses matching for word lessons.
 
 ## Alphabet
 

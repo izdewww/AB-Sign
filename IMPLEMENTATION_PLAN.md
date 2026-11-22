@@ -6,7 +6,7 @@ A-B Sign! helps children practice Filipino Sign Language with an instructor or s
 
 - Open the library on first launch. Learners can choose any available lesson and finish it at their own pace.
 - Include one Porton dataset photo for each letter A–Z. Group three letters per editable lesson, with Y and Z together in the last lesson. Give each sign an empty video slot.
-- Include editable FSL-105 video lessons for numbers 1–10 and 95 vocabulary signs, grouped by topic. Keep Numbers 11–20 and the Everyday Errands lessons as teacher drafts with blank media.
+- Use the four client categories. Alphabet covers A–Z, Numbers covers 1–100, and Greetings & Expression and Names of People each cover 30 signs. Preload verified FSL-105 video demonstrations for 1–10, 10 greetings, and seven people signs. Keep the other entries as editable teacher drafts.
 - Start new teacher lessons with an empty title and no steps or quiz. Teachers choose signs, reorder steps, and upload their own pictures and videos. The picture is available when there is no playable video.
 - Store drafts and learner versions separately. Keep existing teacher lessons when updating the library. Allow teachers to hide and restore the bundled alphabet lessons.
 - A teacher can add one optional quiz per lesson. The teacher picks the sign and format for each prompt and the number of questions in a round. Draw without repeating a sign-and-format pair. Shuffle the round and the answer choices independently, using only lesson signs as choices. Include both formats when the teacher chooses both and the round has room.
@@ -22,7 +22,8 @@ A-B Sign! helps children practice Filipino Sign Language with an instructor or s
 | Lesson | View steps, watch teacher videos, or open the optional quiz |
 | Quiz | Match a picture or try a sign on camera |
 | Result | See answers to practice and start another round |
-| Play | Find available lesson quizzes or choose a letter for camera practice |
+| Play | Find available lesson quizzes or choose a letter or number for camera practice |
+| Challenge | Try 20 camera signs and check the classroom leaderboard |
 | Progress | Review finished lessons and recent practice |
 | For teachers | Manage the lesson library and show or hide alphabet examples |
 | Lesson editor | Add steps and media, set up a quiz, preview, and make the lesson available |
@@ -33,7 +34,9 @@ The app bundles the A–Z MediaPipe model and runs recognition locally in a work
 
 J and Z remain available in lessons and picture quizzes. Teachers can add their own videos to show the movement. Saved J or Z camera quiz prompts open as picture matches. Test full webcam frames from independent signers and non-sign hand poses to establish classroom accuracy.
 
-Number and word camera practice uses four seconds of hand and pose landmarks. Offer it only for approved signs in the lesson catalog. Keep matching with a video or picture available for every published number and word lesson.
+Number camera practice uses about four seconds of hand landmarks and covers 1–10. Greetings and people use video or picture matching. Teachers can publish the remaining numbers with matching activities.
+
+The student challenge samples 20 distinct signs. Letters only uses camera-supported letters. Letters + numbers draws 16 letters and four numbers from the FSL-105 benchmark’s labels that reached 90% precision and recall. A camera match earns one point and a skipped sign earns zero. The local account file keeps the latest and best completed scores per student and mode. Each mode ranks students by their best score.
 
 [Model research](MODEL_RESEARCH.md) · [Training and evaluation](model-training/README.md) · [Desktop architecture](docs/ARCHITECTURE.md)
 

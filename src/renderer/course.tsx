@@ -33,7 +33,8 @@ export function LearningPath({ library, store }: LibraryView) {
 }
 
 export function CategoryView({ id, library, store, teacher }: LibraryView & { id?: string; teacher: boolean }) {
-  const category = categoryFor(id);
+  const category = categories.find((entry) => entry.id === id);
+  if (!category) return <div className="paper empty"><h1>Category unavailable</h1><a className="button secondary" href="#path">See categories</a></div>;
   const lessons = library.visible.filter((lesson) => categoryFor(lesson.category).id === category.id);
   const finished = lessons.filter((lesson) => store.data.completed.includes(lesson.id)).length;
   return <section>

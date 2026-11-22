@@ -16,17 +16,20 @@ import { CameraSetupPage } from './camera-setup-page';
 import { Icon } from './icons';
 import { Builder } from './builder';
 import { Camera } from './camera';
+import { Challenge } from './challenge';
 import { streak, useClassroom, type ClassroomStore } from './classroom';
 import { CategoryView, DashboardStrip, LearningPath, LessonView, Results } from './course';
 import { StepProgress } from './learning-ui';
 import { cameraSupports, findLetter, labels } from './letters';
 import { categories, quizFor, useTeacherLessons, type TeacherLibrary } from './lessons';
+import { vocabulary, vocabularyVideo } from './vocabulary';
 import './style.css';
 
 const pages = [
   { key: 'home', label: 'Home', icon: 'home' },
   { key: 'path', label: 'Learn', icon: 'book' },
   { key: 'activities', label: 'Play', icon: 'match' },
+  { key: 'challenge', label: 'Challenge', icon: 'trophy' },
   { key: 'progress', label: 'Progress', icon: 'chart' },
 ] as const;
 const teacherPages = [
@@ -49,7 +52,7 @@ function Home({ library, store, name }: { library: TeacherLibrary; store: Classr
     </section>
     <DashboardStrip library={library} store={store} />
     <section className="paper dashboard-categories"><div className="section-heading"><h2>Learning path</h2><a className="text-link" href="#path">All categories <Icon name="arrow" /></a></div>
-      <div className="dashboard-category-links">{categories.slice(0, 3).map((category) => <a key={category.id}
+      <div className="dashboard-category-links">{categories.map((category) => <a key={category.id}
         className={'button secondary ' + category.tone} href={'#category/' + category.id}>{category.title}</a>)}</div>
     </section>
     <div className="dashboard-grid">
@@ -88,7 +91,7 @@ function PracticeHub({ library, mode }: { library: TeacherLibrary; mode?: string
     <div className="activity-grid">{activities.map((item) => <a key={item.id} className={'paper activity-tile ' + item.tone} href={'#activities/' + item.id}>
       <div><h2>{item.title}</h2><p>{item.description}</p></div><Icon name="arrow" />
     </a>)}</div>
-    <section className="path-card sky"><div><h2>Try the camera</h2><p>Choose a letter to practice.</p></div><a className="button secondary" href="#camera">Camera practice</a></section>
+    <section className="path-card sky"><div><h2>Try the camera</h2><p>Choose a letter or number to practice.</p></div><a className="button secondary" href="#camera">Camera practice</a></section>
   </section>;
 }
 
@@ -103,14 +106,22 @@ function CameraSetup() {
 
 function CameraPractice({ id, store }: { id?: string; store: ClassroomStore }) {
   const target = cameraSupports(id) ? id : undefined;
+  const numbers = vocabulary.filter(({ category }) => category === 'numbers').flatMap(({ terms }) => terms).filter(({ camera }) => camera);
+  const number = numbers.find(({ term }) => id === 'number-' + term);
   return <section>
     <a className="back-link" href="#activities">Play &amp; practice</a>
-    <header className="page-heading"><h1>Camera practice</h1><p>Choose a letter to try.</p></header>
+    <header className="page-heading"><h1>Camera practice</h1><p>Choose a letter or number to try.</p></header>
     <div className="letter-picker camera-letter-picker" aria-label="Letters">{labels.filter(cameraSupports).map((label) =>
       <a className={'letter-chip ' + findLetter(label).tone} aria-current={label === target ? 'true' : undefined} key={label} href={'#camera/' + label}>{label}</a>)}</div>
+    <div className="letter-picker camera-letter-picker section-actions" aria-label="Numbers">{numbers.map(({ term }) =>
+      <a className="letter-chip sky" aria-current={term === number?.term ? 'true' : undefined} key={term} href={'#camera/number-' + term}>{term}</a>)}</div>
     {target && <Camera key={target} target={target} fallback={<a className="button secondary" href="#activities">Use pictures</a>} match={() => {
       store.record({ activity: 'camera', title: 'Camera · ' + target, score: 1, total: 1, missed: [] });
     }} />}
+    {number?.id && <Camera key={number.id} term={{ id: number.id, name: number.term, demo: vocabularyVideo(number.id) }} guided
+      fallback={<a className="button secondary" href="#category/numbers">Use matching</a>} match={() => {
+        store.record({ activity: 'camera', title: 'Camera · ' + number.term, score: 1, total: 1, missed: [] });
+      }} />}
   </section>;
 }
 
@@ -236,6 +247,8 @@ function Classroom({ account, act }: { account: AccountState; act: AccountAction
         {['activities', 'match'].includes(page) && !student && <PracticeHub library={library} mode={page === 'match' ? 'guess' : id} />}
         {page === 'camera' && <CameraPractice id={id} store={store} />}
         {page === 'camera-setup' && <CameraSetupPage onContinue={() => { window.location.hash = '#camera'; }} />}
+        {page === 'challenge' && student && account.challenge && <Challenge data={account.challenge} studentId={student.student.id} act={act} />}
+        {page === 'challenge' && teacher && <section className="paper empty"><h1>Student challenge</h1><p>Choose a student account to play.</p></section>}
         {page === 'progress' && student && <ProgressView data={store.data} library={library} reset={store.reset} />}
         {page === 'teacher-account' && teacher && <TeacherAccount setup={teacher.setup} act={act} />}
         {page === 'teachers' && teacher && <section><header className="page-heading"><h1>Classroom</h1><p>Get today’s lesson ready or check student progress.</p></header>
@@ -250,7 +263,7 @@ function Classroom({ account, act }: { account: AccountState; act: AccountAction
         })()}
         {!teacher && ['teachers', 'builder', 'students', 'student', 'teacher-account'].includes(page) &&
           <section className="paper empty"><h1>Teacher area</h1><button className="button primary" onClick={() => void act({ action: 'logout' }, 'teacher-sign-in')}>Teacher sign-in</button></section>}
-        {!['welcome', 'teacher-sign-in', 'preferences', 'sign-check', 'camera-setup', 'home', 'learn', 'path', 'category', 'lesson', 'result', 'activities', 'camera', 'match', 'progress', 'teachers', 'builder', 'students', 'student', 'teacher-account'].includes(page) &&
+        {!['welcome', 'teacher-sign-in', 'preferences', 'sign-check', 'camera-setup', 'home', 'learn', 'path', 'category', 'lesson', 'result', 'activities', 'camera', 'match', 'challenge', 'progress', 'teachers', 'builder', 'students', 'student', 'teacher-account'].includes(page) &&
           <section><h1>Page not found</h1><a className="button primary section-actions" href="#home">Go to Home</a></section>}
       </main>
     </div>

@@ -491,6 +491,27 @@ a.path-card:hover { box-shadow: 0 5px 16px #52365b2a; }
 @media (max-width: 900px) { .account-entry { gap: 20px; } .account-card { padding: 17px; } }
 @media (max-width: 620px) { .account-entry { grid-template-columns: 1fr; } .account-art img { width: 90px; height: 90px; } }
 @media (prefers-reduced-motion: reduce) { .confetti { display: none; } }
+
+.challenge-page { width: min(100%, 970px); margin-inline: auto; }
+.challenge-hero { display: flex; flex-wrap: wrap; align-items: center; gap: 18px; padding: 24px; border-radius: 20px; background: var(--lavender); }
+.challenge-hero.mint { background: var(--mint); }
+.challenge-hero h1 { font-size: clamp(1.9rem, 4vw, 3rem); }
+.challenge-hero p { margin-top: 7px; }
+.challenge-mark { flex: 0 0 58px; height: 58px; display: grid; place-items: center; border-radius: 18px; background: var(--white); color: var(--plum-dark); }
+.challenge-lobby { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 330px), 1fr)); gap: 16px; align-items: start; }
+.challenge-panel { display: grid; gap: 12px; justify-items: start; padding: 20px; border-radius: 16px; }
+.challenge-panel h2 { display: flex; align-items: center; gap: 8px; }
+.challenge-panel h2 svg { color: var(--plum-dark); }
+.challenge-modes .button[aria-pressed='true'] { background: var(--green-soft); border-color: var(--plum); }
+.challenge-ranks { display: grid; gap: 6px; width: 100%; margin: 0; padding: 0; list-style: none; }
+.challenge-ranks li { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; align-items: center; gap: 12px; padding: 8px 10px; border: 1px solid var(--line); border-radius: 12px; overflow-wrap: anywhere; }
+.challenge-ranks li[data-you] { background: var(--green-soft); border-color: var(--plum); }
+.challenge-ranks small { color: var(--muted); }
+.challenge-rank { display: grid; place-items: center; min-width: 28px; min-height: 28px; padding-inline: 5px; border-radius: 9px; background: var(--yellow); }
+.challenge-round-heading { display: grid; gap: 8px; }
+.challenge-round-heading .question-count { margin: 0; }
+.challenge-round-heading .step-progress { max-width: 340px; }
+.challenge-page .challenge-score { color: var(--plum-dark); font: 600 1.6rem/1.25 var(--heading); }
 .dashboard-categories { border-radius: 18px; padding: 17px; }
 .dashboard-category-links { display: flex; flex-wrap: wrap; gap: 9px; margin-top: 12px; }
 .activity-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; }

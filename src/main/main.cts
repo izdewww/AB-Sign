@@ -99,11 +99,23 @@ app.whenReady().then(async () => {
       if (!saved.ok || saved.state.active || saved.state.students.length !== 1 || saved.state.students[0].name !== 'Maya S') {
         throw new Error('The classroom file did not preserve the edited roster.');
       }
+      if (reopened({ action: 'save-challenge', mode: 'letters', score: 20 }).ok) throw new Error('A signed-out account saved a challenge score.');
+      const challenge = reopened({ action: 'select', id: saved.state.students[0].id });
+      if (!challenge.ok || challenge.state.challenge?.scores.letters?.best !== 1 || challenge.state.challenge.scores.mixed?.latest !== 0 ||
+        challenge.state.challenge.leaderboard.letters.length !== 1 || challenge.state.challenge.leaderboard.letters[0].name !== 'Maya S') {
+        throw new Error('Challenge scores or leaderboard changes did not persist.');
+      }
       if (reopened({ action: 'login', password: 'TeacherStart24!' }).ok ||
         !reopened({ action: 'login', password: 'ClassroomExample24!' }).ok) throw new Error('The new teacher password did not persist.');
+      if (reopened({ action: 'save-challenge', mode: 'letters', score: 20 }).ok) throw new Error('A teacher saved a student challenge score.');
       const student = reopened({ action: 'student-progress', id: saved.state.students[0].id });
       if (!student.ok || !student.progress?.badges.includes('numbers') || student.progress.attempts.length < 2) {
         throw new Error('Student quiz scores and badges did not persist.');
+      }
+      reopened({ action: 'select', id: saved.state.students[0].id });
+      const replay = reopened({ action: 'save-challenge', mode: 'letters', score: 0 });
+      if (!replay.ok || replay.state.challenge?.scores.letters?.best !== 1 || replay.state.challenge.scores.letters.latest !== 0) {
+        throw new Error('A lower challenge score replaced a personal best.');
       }
     } finally {
       rmSync(accountsFile, { force: true });

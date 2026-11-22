@@ -9,22 +9,22 @@ export type Step =
   | { id: string; kind: 'spell'; word: string };
 
 export const categories = [
-  { id: 'alphabet', title: 'Alphabet & Letters', detail: 'Learn the signs for A to Z.', mark: 'Aa', tone: 'mint' },
+  { id: 'alphabet', title: 'Alphabet', detail: 'Learn the signs for A to Z.', mark: 'Aa', tone: 'mint' },
   { id: 'numbers', title: 'Numbers', detail: 'Practice counting signs.', mark: '123', tone: 'sky' },
-  { id: 'greetings', title: 'Everyday Greetings', detail: 'Say hello and more.', mark: 'Hi', tone: 'peach' },
-  { id: 'family', title: 'Family Members', detail: 'Signs for people close to you.', mark: '♥', tone: 'yellow' },
-  { id: 'food', title: 'Food & Colors', detail: 'Sign things you see every day.', mark: '✦', tone: 'mint' },
-  { id: 'words', title: 'Words', detail: 'Explore more everyday signs.', mark: 'W', tone: 'sky' },
-  { id: 'days', title: 'Days & Time', detail: 'Sign today, tomorrow, and the days of the week.', mark: '☀', tone: 'yellow' },
-  { id: 'months', title: 'Calendar', detail: 'Learn the months of the year.', mark: 'Jan', tone: 'peach' },
-  { id: 'people', title: 'People', detail: 'Learn signs for people and relationships.', mark: '☺', tone: 'mint' },
-  { id: 'drinks', title: 'Drinks & Flavors', detail: 'Learn signs for drinks and how to order them.', mark: '☕', tone: 'sky' },
-  { id: 'errands', title: 'Everyday Errands', detail: 'Practice signs for asking for help and shopping.', mark: '★', tone: 'yellow' },
+  { id: 'greetings', title: 'Greetings & Expression', detail: 'Say hello and share how you feel.', mark: 'Hi', tone: 'peach' },
+  { id: 'people', title: 'Names of People', detail: 'Learn signs for family and people in your community.', mark: '☺', tone: 'yellow' },
 ] as const;
 export type Category = typeof categories[number]['id'];
 export const categoryFor = (id?: string) => categories.find((category) => category.id === id) ?? categories[0];
 export type Lesson = { id: string; title: string; steps: Step[]; revision: number; category?: Category; quiz?: QuizPlan<string> };
 export type TeacherLesson = { id: string; draft: Lesson; published?: Lesson; starter?: boolean; hidden?: boolean };
+
+const vocabularyIds = new Set(vocabulary.map(({ id }) => id));
+
+export function inCurriculum(lesson: Lesson) {
+  return categories.some(({ id }) => id === (lesson.category ?? 'alphabet')) &&
+    (!lesson.id.startsWith('vocabulary-') || vocabularyIds.has(lesson.id));
+}
 
 const automaticPractice: QuizPlan<string> = { count: 0, prompts: [], perSign: true };
 
@@ -72,7 +72,7 @@ export function termMedia(lesson: Lesson, term: string) {
 
 export function termCamera(step?: MediaStep) {
   const example = vocabularyExample(step?.example);
-  return example?.camera && example.term === step?.term.trim() ? example.id : undefined;
+  return example?.camera && example.id && /^2\d$/.test(example.id) && example.term === step?.term.trim() ? example.id : undefined;
 }
 
 export function quizCamera(lesson: Lesson, term: string) {
@@ -124,7 +124,7 @@ function upgradeDefaultPractice(existing: TeacherLesson, bundled: TeacherLesson)
 
 function openLessons() {
   return new Promise<IDBDatabase>((resolve, reject) => {
-    const request = indexedDB.open('ab-sign-lessons', 5);
+    const request = indexedDB.open('ab-sign-lessons', 6);
     let blocked = false;
     request.onupgradeneeded = (event) => {
       const store = event.oldVersion === 0 ? request.result.createObjectStore('lessons', { keyPath: 'id' }) : request.transaction!.objectStore('lessons');
@@ -187,7 +187,7 @@ export function useTeacherLessons(canEdit: boolean) {
     setItems((current) => current.map((item) => item.starter ? { ...item, hidden: !visible } : item));
   };
 
-  const visible = items.flatMap(({ published, hidden }) => published && !hidden ? [published] : []);
+  const visible = items.flatMap(({ published, hidden }) => published && !hidden && inCurriculum(published) ? [published] : []);
   return { items: canEdit ? items : [], visible, status, save, showStarters };
 }
 

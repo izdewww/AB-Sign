@@ -18,53 +18,18 @@ export function LearnerDashboard({ student, store, library }: LearnerDashboardPr
   const [showGoalCelebration, setShowGoalCelebration] = useState(false);
 
   // Resume link for continue lesson button
-  const continueUrl = store.data.resume
+  const continueUrl = library.visible.some(({ id }) => store.data.resume.startsWith(`lesson/${id}/`))
     ? '#' + store.data.resume
     : stats.currentLesson
     ? `#lesson/${stats.currentLesson.id}`
     : '#path';
 
   // Learning units mapped from categories
-  const units = [
-    {
-      unitNum: 1,
-      id: 'alphabet',
-      title: 'The Alphabet',
-      description: 'A to Z Hand Shapes & Letters',
-      status: store.data.completed.some((id) => library.visible.find((l) => l.id === id && (l.category || 'alphabet') === 'alphabet'))
-        ? 'IN PROGRESS'
-        : 'NEXT',
-      icon: 'book',
-      tone: 'mint',
-      lessonsCount: library.visible.filter((l) => (l.category || 'alphabet') === 'alphabet').length,
-      finishedCount: library.visible.filter((l) => (l.category || 'alphabet') === 'alphabet' && store.data.completed.includes(l.id)).length,
-      isLocked: false,
-    },
-    {
-      unitNum: 2,
-      id: 'greetings',
-      title: 'Greetings & Basics',
-      description: 'Hello, Salamat, Please, Bye',
-      status: store.data.completed.length >= 2 ? 'IN PROGRESS' : 'NEXT',
-      icon: 'teach',
-      tone: 'sky',
-      lessonsCount: library.visible.filter((l) => l.category === 'greetings').length || 4,
-      finishedCount: library.visible.filter((l) => l.category === 'greetings' && store.data.completed.includes(l.id)).length,
-      isLocked: false,
-    },
-    {
-      unitNum: 3,
-      id: 'food',
-      title: 'Food & Colors',
-      description: 'Requires Unit 2 completion',
-      status: 'LOCKED',
-      icon: 'trophy',
-      tone: 'peach',
-      lessonsCount: library.visible.filter((l) => l.category === 'food').length || 6,
-      finishedCount: 0,
-      isLocked: true,
-    },
-  ];
+  const units = categories.map((category, index) => {
+    const lessons = library.visible.filter((lesson) => categoryFor(lesson.category).id === category.id);
+    return { ...category, unitNum: index + 1,
+      status: lessons.some(({ id }) => store.data.completed.includes(id)) ? 'IN PROGRESS' : 'NEXT' };
+  });
 
   return (
     <div className="learner-dashboard-container">
@@ -161,12 +126,12 @@ export function LearnerDashboard({ student, store, library }: LearnerDashboardPr
             <div className="learning-units-list">
               {units.map((unit) => {
                 const statusColor =
-                  unit.status === 'IN PROGRESS' ? 'badge-in-progress' : unit.status === 'NEXT' ? 'badge-next' : 'badge-locked';
+                  unit.status === 'IN PROGRESS' ? 'badge-in-progress' : 'badge-next';
 
                 return (
                   <div
                     key={unit.id}
-                    className={`learning-unit-card paper ${unit.tone} ${unit.isLocked ? 'unit-locked' : ''}`}
+                    className={`learning-unit-card paper ${unit.tone}`}
                   >
                     <div className="unit-card-left">
                       <div className="unit-number-badge">Unit {unit.unitNum}</div>
@@ -175,25 +140,19 @@ export function LearnerDashboard({ student, store, library }: LearnerDashboardPr
                           <h3 className="unit-title">{unit.title}</h3>
                           <span className={`unit-status-tag ${statusColor}`}>{unit.status}</span>
                         </div>
-                        <p className="unit-description">{unit.description}</p>
+                        <p className="unit-description">{unit.detail}</p>
                       </div>
                     </div>
 
                     <div className="unit-card-right">
-                      {!unit.isLocked ? (
-                        <a
+                      <a
                           href={`#category/${unit.id}`}
                           className="button secondary unit-open-btn"
                           aria-label={`Open ${unit.title}`}
                         >
                           <span>{unit.status === 'IN PROGRESS' ? 'Continue' : 'Start'}</span>
                           <Icon name="arrow" />
-                        </a>
-                      ) : (
-                        <div className="locked-pill" title="Complete previous units to unlock">
-                          <span>🔒 Locked</span>
-                        </div>
-                      )}
+                      </a>
                     </div>
                   </div>
                 );

@@ -23,6 +23,7 @@ export function NavigationSidebar({
     { key: 'home', label: 'Dashboard', icon: 'home', href: '#home' },
     { key: 'path', label: 'Learning Path', icon: 'map', href: '#path' },
     { key: 'activities', label: 'Games & Practice', icon: 'game', href: '#activities' },
+    { key: 'challenge', label: 'Challenge', icon: 'trophy', href: '#challenge' },
     { key: 'progress', label: 'My Progress', icon: 'chart', href: '#progress' },
     { key: 'camera', label: 'Free Camera', icon: 'camera', href: '#camera' },
   ] as const;
@@ -42,7 +43,7 @@ export function NavigationSidebar({
         </a>
       </div>
 
-      {/* Primary Navigation Links (5 Global Routes) */}
+      {/* Primary Navigation Links */}
       <nav className="sidebar-nav-menu">
         {navItems.map((item) => {
           const isActive =

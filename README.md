@@ -18,7 +18,16 @@ A Windows desktop app for teaching children Filipino Sign Language (FSL) through
 
 **Learn** includes nine editable alphabet lessons with one dataset photo per letter. Lessons group three letters at a time, with Y and Z in the last lesson. Learners can open any lesson and take its optional quiz.
 
-The app also includes **21 editable video lessons** covering numbers 1–10 and 95 words and phrases. Learners watch the demonstrations, then practice each sign in a shuffled round.
+Learners watch the demonstrations, then practice each sign in a shuffled round. The lesson library follows the client’s four categories.
+
+| Category | Ready to learn | Teacher drafts | Webcam practice |
+| --- | --- | --- | --- |
+| Alphabet | A–Z photos | Optional videos for A–Z | 24 letters |
+| Numbers | Videos for 1–10 | 11–100 | 1–10 |
+| Greetings & Expression | 10 videos | 20 signs | — |
+| Names of People | 7 videos | 23 signs | — |
+
+Teachers can add a picture or video to a draft, then publish it for learners. Older lessons outside these categories are available under **Previous lessons** in the teacher library. [Lesson catalog](src/renderer/vocabulary.json)
 
 ![The learning path shows nine pastel lesson cards covering A through Z.](docs/images/lesson-library.png)
 
@@ -29,6 +38,10 @@ The app also includes **21 editable video lessons** covering numbers 1–10 and 
 - Open **Students** to view progress, edit a name, or remove an account and its progress. The app asks before removing an account.
 - Progress from older versions was shared and stays separate from the new student accounts.
 
+## Camera challenge
+
+Open **Challenge** as a student to try 20 random signs. Choose **Letters only** or **Letters + numbers**. The mixed round draws 16 letters and four numbers from 1, 2, 5, 8, 9, and 10. Each round has its own classroom leaderboard. The app saves each student’s latest and best scores on this device.
+
 ## For teachers
 
 1. Open **Lessons** and create a blank lesson or edit a bundled lesson. Use **Hide alphabet lessons** to hide the letter lessons.
@@ -38,19 +51,9 @@ The app also includes **21 editable video lessons** covering numbers 1–10 and 
 
 Picture matching covers A–Z. Webcam practice covers 24 letters. J and Z are available in lessons and picture quizzes, and teachers can upload videos to show the movement.
 
-### Numbers and words
-
-| Activity | What’s available |
-| --- | --- |
-| Video demonstrations and matching | Numbers 1–10, Greetings, Family, Food & Colors, Words, Days & Time, Calendar, People, and Drinks & Flavors |
-| Webcam practice | Numbers 1, 3, 5, 9, and 10, plus 43 words in published video lessons |
-| Teacher drafts | Numbers 11–20 and 12 Everyday Errands signs. Add pictures or videos and publish when ready. Seven of the errands signs also support camera practice once published. |
-
-Bundled lessons show the demonstrations first, then shuffle one question per sign. When a round contains supported signs, it mixes camera and matching questions. Camera questions offer matching as a fallback. Learners can also select **Try on camera** on any supported sign’s demonstration. Teachers can choose their own quiz questions in the lesson editor. [Lesson catalog](src/renderer/vocabulary.json)
+Bundled lessons show the demonstrations first, then shuffle one question per sign. Alphabet and number rounds can include camera questions with **Use matching** as a fallback. Learners can also select **Try on camera** from a supported sign’s demonstration. Greetings and people lessons use matching throughout.
 
 ![The Numbers category shows two starter lessons covering 1–10.](docs/images/number-lessons.png)
-
-![The Days & Time category shows two lessons with short sign videos.](docs/images/days-lessons.png)
 
 ## Quick start
 
@@ -83,8 +86,8 @@ The bundled **v3 model** got **1,679 of 1,770 held-out photos correct (94.86%)**
 
 ![Held-out photo accuracy for each of the 24 letters available in camera practice.](docs/images/alphabet-results.png)
 
-The bundled **word model** was trained on 107 words and phrases. Fifty met the 90% precision and recall cutoff on 603 test recordings, including seven Everyday Errands signs. On the 426 FSL-105 test clips alone, 42 words met the cutoff, down from 54 for the earlier FSL-105-only candidate. The **number model** uses a separate set of weights and supports the same five numbers. The splits have no signer IDs, so classroom webcam accuracy with new signers remains unverified. [Word benchmark](model-training/artifacts/fsl-words-v3-benchmark.json) · [Number benchmark](model-training/artifacts/fsl-vocabulary-v1-benchmark.json) · [Training guide](model-training/README.md)
+The **number model** recognized all ten numbers in held-out FSL-105 recordings, scoring **35 of 40 (87.5%)**. Numbers 1, 2, 5, 8, 9, and 10 each reached 90% precision and recall. On the held-out Transactional FSL number clips it scored 68 of 68. These are recording-level results. The datasets lack signer IDs for an independent classroom accuracy check. [Number benchmark](model-training/artifacts/fsl-numbers-v3-benchmark.json) · [Training guide](model-training/README.md)
 
 ## Credits
 
-The alphabet uses John Gabriel Porton’s FSL alphabet dataset. The lesson videos use Isaiah Jassen Tupal’s FSL-105 dataset. The word model also uses Transactional FSL landmarks by Franz Columna and Angela Cardano. [Alphabet dataset](https://www.kaggle.com/datasets/japorton/fsl-dataset) · [FSL-105](https://data.mendeley.com/datasets/48y2y99mb9/2) · [Transactional FSL](https://data.mendeley.com/datasets/jdyrr7cm4z/2) · [Third-party credits](docs/THIRD_PARTY.md)
+The alphabet uses John Gabriel Porton’s FSL alphabet dataset. The lesson videos use Isaiah Jassen Tupal’s FSL-105 dataset. The number model uses FSL-105 and Transactional FSL landmarks by Franz Columna and Angela Cardano. [Alphabet dataset](https://www.kaggle.com/datasets/japorton/fsl-dataset) · [FSL-105](https://data.mendeley.com/datasets/48y2y99mb9/2) · [Transactional FSL](https://data.mendeley.com/datasets/jdyrr7cm4z/2) · [Third-party credits](docs/THIRD_PARTY.md)

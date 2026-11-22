@@ -1,6 +1,18 @@
 import assert from 'node:assert/strict';
+import { readFileSync } from 'node:fs';
 import { test } from 'node:test';
 import { makeQuiz } from '../src/renderer/quiz.ts';
+
+test('the starter curriculum limits vocabulary camera practice to numbers 1–10', () => {
+  const catalog = JSON.parse(readFileSync(new URL('../src/renderer/vocabulary.json', import.meta.url), 'utf8'));
+  const terms = (category) => catalog.filter((lesson) => lesson.category === category).flatMap((lesson) => lesson.terms);
+  assert.deepEqual([...new Set(catalog.map((lesson) => lesson.category))], ['numbers', 'greetings', 'people']);
+  assert.deepEqual(terms('numbers').map(({ term }) => Number(term)), Array.from({ length: 100 }, (_, index) => index + 1));
+  assert.equal(terms('greetings').length, 30);
+  assert.equal(terms('people').length, 30);
+  assert.deepEqual(catalog.flatMap(({ terms }) => terms).filter(({ camera }) => camera).map(({ term }) => Number(term)),
+    Array.from({ length: 10 }, (_, index) => index + 1));
+});
 
 function seeded(seed) {
   let state = seed;

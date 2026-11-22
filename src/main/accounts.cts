@@ -1,10 +1,10 @@
 import { randomBytes, randomUUID, scryptSync, timingSafeEqual } from 'node:crypto';
 import { mkdirSync, readFileSync, renameSync, writeFileSync } from 'node:fs';
 import { dirname } from 'node:path';
-import type { AccountCommand, AccountReply, AccountState, Progress, Student } from './account-types.cjs';
+import type { AccountCommand, AccountReply, AccountState, ChallengeMode, ChallengeScores, Progress, Student } from './account-types.cjs';
 
 type Password = { salt: string; digest: string };
-type Record = Student & { progress: Progress };
+type Record = Student & { progress: Progress; challenge?: ChallengeScores };
 type AccountFile = { version: 1; password?: Password; students: Record[] };
 const starter = {
   salt: 'ab-sign-initial-teacher-v1',
@@ -15,6 +15,14 @@ const emptyProgress = (): Progress => ({ attempts: [], completed: [], badges: []
 const text = (value: unknown, limit: number): value is string => typeof value === 'string' && value.length <= limit;
 const list = (value: unknown, limit: number, check: (item: unknown) => boolean) =>
   Array.isArray(value) && value.length <= limit && value.every(check);
+const challengeMode = (mode: unknown): mode is ChallengeMode => mode === 'letters' || mode === 'mixed';
+const challengeScore = (score: unknown): score is number => typeof score === 'number' && Number.isInteger(score) && score >= 0 && score <= 20;
+
+function validChallenge(value: unknown): value is ChallengeScores {
+  return Boolean(value && typeof value === 'object' && !Array.isArray(value) &&
+    Object.entries(value as ChallengeScores).every(([mode, result]) => challengeMode(mode) && result &&
+      challengeScore(result.latest) && challengeScore(result.best) && result.best >= result.latest));
+}
 
 function validProgress(value: unknown): value is Progress {
   if (!value || typeof value !== 'object') return false;
@@ -38,7 +46,8 @@ function load(file?: string): AccountFile {
     try {
       const data = JSON.parse(readFileSync(file, 'utf8')) as AccountFile;
       if (data.version !== 1 || !Array.isArray(data.students) ||
-        !data.students.every((student) => student && text(student.id, 100) && text(student.name, 40) && validProgress(student.progress)) ||
+        !data.students.every((student) => student && text(student.id, 100) && text(student.name, 40) && validProgress(student.progress) &&
+          (student.challenge === undefined || validChallenge(student.challenge))) ||
         (data.password && (!/^[a-f0-9]{32}$/.test(data.password.salt) || !/^[a-f0-9]{64}$/.test(data.password.digest)))) {
         throw new Error('Could not read the local classroom file.');
       }
@@ -58,10 +67,17 @@ export function localAccounts(file?: string) {
   let lockedUntil = 0;
   const student = (id: unknown) => data.students.find((user) => user.id === id);
   const publicStudent = ({ id, name }: Record): Student => ({ id, name });
+  const ranking = (mode: ChallengeMode) => data.students.flatMap(({ id, name, challenge }) => {
+    const score = challenge?.[mode];
+    return score ? [{ id, name, best: score.best }] : [];
+  }).sort((left, right) => right.best - left.best || left.name.localeCompare(right.name));
   const state = (): AccountState => {
     const selected = student(currentStudent);
     return {
       students: data.students.map(publicStudent),
+      challenge: role === 'student' && selected ? {
+        scores: selected.challenge ?? {}, leaderboard: { letters: ranking('letters'), mixed: ranking('mixed') },
+      } : undefined,
       active: role === 'teacher' ? { role, setup: !data.password }
         : role === 'student' && selected ? { role, student: publicStudent(selected), progress: selected.progress } : null,
     };
@@ -140,6 +156,15 @@ export function localAccounts(file?: string) {
           teacher();
           progress = requireStudent(command.id).progress;
           break;
+        case 'save-challenge': {
+          const { mode, score } = command;
+          if (role !== 'student' || !challengeMode(mode) || !challengeScore(score)) throw new Error('Could not save this challenge score.');
+          const selected = requireStudent(currentStudent);
+          const best = Math.max(score, selected.challenge?.[mode]?.best ?? 0);
+          save({ ...data, students: data.students.map((user) => user.id === selected.id
+            ? { ...user, challenge: { ...user.challenge, [mode]: { best, latest: score } } } : user) });
+          break;
+        }
         case 'save-progress': {
           if (role !== 'student' || currentStudent !== command.id || !validProgress(command.progress)) throw new Error('Could not save your progress.');
           const selected = requireStudent(command.id);

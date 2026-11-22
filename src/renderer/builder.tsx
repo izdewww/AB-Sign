@@ -3,7 +3,7 @@ import { LessonStep, stepTitle } from './course';
 import { Icon } from './icons';
 import { cameraSupports, findLetter, isLabel, labels } from './letters';
 import { LessonMedia } from './lesson-media';
-import { categories, categoryFor, hasTermMedia, lessonTerms, quizCamera, quizFor, type Category, type Lesson, type Step, type TeacherLesson, type TeacherLibrary } from './lessons';
+import { categories, categoryFor, hasTermMedia, inCurriculum, lessonTerms, quizCamera, quizFor, type Category, type Lesson, type Step, type TeacherLesson, type TeacherLibrary } from './lessons';
 import { vocabularyVideo } from './vocabulary';
 import type { Prompt } from './quiz';
 
@@ -69,7 +69,12 @@ export function Builder({ library, id, category }: { library: TeacherLibrary; id
         }}>{items.some(({ starter, hidden }) => starter && !hidden) ? 'Hide alphabet lessons' : 'Show alphabet lessons'}</button>}
       </div>
       {message && <p className="notice section-actions" role="status">{message}</p>}
-      {items.length > 0 && <ul className="lesson-list paper section-actions">{items.map((item) => <li key={item.id}><div><h2>{item.draft.title || 'Untitled lesson'}</h2><p>{categoryFor(item.draft.category).title} · {item.hidden ? 'Hidden from learners' : item.published ? 'Ready on this device' : 'Draft'}</p></div><a className="button secondary" href={`#builder/${item.id}`} aria-label={`Edit ${item.draft.title || 'untitled lesson'}`}>Edit</a></li>)}</ul>}
+      {items.length > 0 && <ul className="lesson-list paper section-actions">{items.filter(({ draft }) => inCurriculum(draft)).map((item) => <li key={item.id}><div><h2>{item.draft.title || 'Untitled lesson'}</h2><p>{categoryFor(item.draft.category).title} · {item.hidden ? 'Hidden from learners' : item.published ? 'Ready on this device' : 'Draft'}</p></div><a className="button secondary" href={`#builder/${item.id}`} aria-label={`Edit ${item.draft.title || 'untitled lesson'}`}>Edit</a></li>)}</ul>}
+      {items.some(({ draft }) => !inCurriculum(draft)) && <details className="paper section-actions"><summary>Previous lessons</summary>
+        <ul className="lesson-list">{items.filter(({ draft }) => !inCurriculum(draft)).map(({ id, draft }) => <li key={id}>
+          <h2>{draft.title || 'Untitled lesson'}</h2><a className="button secondary" href={`#builder/${id}`}>Open</a>
+        </li>)}</ul>
+      </details>}
       {items.length === 0 && <p className="notice section-actions">Lessons you save will show here.</p>}
     </section>
   );
@@ -95,7 +100,8 @@ function Editor({ library, entry, category }: { library: TeacherLibrary; entry?:
   const index = Math.max(0, draft.steps.findIndex(({ id }) => id === selectedId));
   const step = draft.steps[index];
   const currentCategory = categoryFor(draft.category).id;
-  const alphabet = currentCategory === 'alphabet';
+  const alphabet = !draft.category || draft.category === 'alphabet';
+  const archived = !inCurriculum(draft);
   const automaticRound = draft.quiz?.perSign ? quizFor(draft) : undefined;
   const dirty = useRef(false);
   const queue = useRef(Promise.resolve());
@@ -183,7 +189,7 @@ function Editor({ library, entry, category }: { library: TeacherLibrary; entry?:
   if (preview !== undefined) return (
     <section>
       <div className="actions preview-toolbar"><button className="button secondary" onClick={() => setPreview(undefined)}>Back to editing</button><p>Preview · Step {Math.min(preview + 1, draft.steps.length)} of {draft.steps.length}</p></div>
-      {draft.steps[preview] ? <LessonStep key={draft.steps[preview].id} step={draft.steps[preview]} lesson={draft} next={() => setPreview(preview + 1)} /> : <h1>Preview complete</h1>}
+      {draft.steps[preview] ? <LessonStep key={draft.steps[preview].id} index={preview} total={draft.steps.length} step={draft.steps[preview]} lesson={draft} next={() => setPreview(preview + 1)} /> : <h1>Preview complete</h1>}
     </section>
   );
   return (
@@ -276,8 +282,8 @@ function Editor({ library, entry, category }: { library: TeacherLibrary; entry?:
         <p role="status">{busy ? 'Working…' : notice}</p>
         <div className="actions">
           <button className="button secondary" disabled={busy} onClick={() => void save(false)}>Save draft</button>
-          <button className="button primary" disabled={busy} onClick={() => void save(true)}>Use on this device</button>
-          {entry?.published && !entry.hidden && <a className="button secondary" href={`#lesson/${entry.id}`}>Open saved lesson</a>}
+          {!archived && <button className="button primary" disabled={busy} onClick={() => void save(true)}>Use on this device</button>}
+          {!archived && entry?.published && !entry.hidden && <a className="button secondary" href={`#lesson/${entry.id}`}>Open saved lesson</a>}
         </div>
       </footer>
     </section>

@@ -1,20 +1,17 @@
 import { FilesetResolver, HandLandmarker, PoseLandmarker } from '@mediapipe/tasks-vision';
 import { classifyHand, type GeometryModel } from './geometry';
 
-type SignModel = GeometryModel & { minHands: number };
-type WordModel = SignModel & { frames: number; fps: number; layout?: 'xy' | 'xyz' };
+type NumberModel = GeometryModel & { frames: number; fps: number; minHands: number };
 type Point = { x: number; y: number; z: number };
-export type WordCameraReport =
+export type NumberCameraReport =
   | { kind: 'ready'; fps: number }
   | { kind: 'progress'; elapsed: number }
-  | { kind: 'word'; id?: string; hands: boolean }
+  | { kind: 'number'; id?: string; hands: boolean }
   | { kind: 'error'; message: string };
 
 let hand: HandLandmarker | undefined;
 let body: PoseLandmarker | undefined;
-let model: WordModel | undefined;
-let classifier: SignModel | undefined;
-let numbers = false;
+let model: NumberModel | undefined;
 const sequence: number[][] = [];
 let handsFound = 0;
 
@@ -30,7 +27,7 @@ function capture(pose: Point[], hands: Point[][], aspect: number) {
     ...hands.flatMap((points) => points.length === 21 ? [1, ...coords(points)] : Array<number>(64).fill(0))];
 }
 
-function send(report: WordCameraReport) {
+function send(report: NumberCameraReport) {
   self.postMessage(report);
 }
 
@@ -42,26 +39,26 @@ function numberFeatures(frames: number[][]) {
     const size = Math.max(...Array.from({ length: 21 }, (_, index) => Math.hypot(...shape.slice(index * 3, index * 3 + 3))));
     return size > 1e-5 ? [shape.map((value) => value / size)] : [];
   }));
-  if (!shapes.length) return Array<number>(126).fill(0);
+  if (!shapes.length) return Array<number>(252).fill(0);
   const columns = shapes[0].map((_, index) => shapes.map((shape) => shape[index]).sort((a, b) => a - b));
-  const mid = Math.floor(shapes.length / 2);
-  return [...columns.map((values) => (values[mid] + values[Math.floor((values.length - 1) / 2)]) / 2),
-    ...columns.map((values) => {
-      const mean = values.reduce((a, b) => a + b, 0) / values.length;
-      return Math.sqrt(values.reduce((sum, value) => sum + (value - mean) ** 2, 0) / values.length);
-    })];
+  const means = columns.map((values) => values.reduce((sum, value) => sum + value, 0) / values.length);
+  const spread = columns.map((values, index) => Math.sqrt(values.reduce((sum, value) => sum + (value - means[index]) ** 2, 0) / values.length));
+  const percentile = (fraction: number) => columns.map((values) => {
+    const index = (values.length - 1) * fraction;
+    const floor = Math.floor(index);
+    return values[floor] + (values[Math.ceil(index)] - values[floor]) * (index - floor);
+  });
+  return [...means, ...spread, ...percentile(.2), ...percentile(.8)];
 }
 
 self.onmessage = async ({ data }: MessageEvent<{ kind: 'start'; term: string } | { kind: 'frame'; image: ImageBitmap }>) => {
   try {
     const asset = (name: string) => new URL('/vision/' + name, self.location.href).href;
     if (data.kind === 'start') {
-      numbers = /^2\d$/.test(data.term);
-      const response = await fetch(asset(numbers ? 'fsl-vocabulary-v1.json' : 'fsl-words-v3.json'));
-      if (!response.ok) throw new Error('Could not open the vocabulary model.');
-      const bundle = await response.json() as WordModel & { numbers: SignModel };
-      model = bundle;
-      classifier = numbers ? bundle.numbers : bundle;
+      const response = await fetch(asset('fsl-numbers-v3.json'));
+      if (!response.ok) throw new Error('Could not open the number model.');
+      model = await response.json() as NumberModel;
+      if (!/^2\d$/.test(data.term) || !model.labels.includes(data.term)) throw new Error('This sign has no number camera practice.');
       const wasm = await FilesetResolver.forVisionTasks(asset('wasm'), true);
       hand = await HandLandmarker.createFromOptions(wasm, {
         baseOptions: { modelAssetPath: asset('vocabulary-hands.task') },
@@ -76,24 +73,18 @@ self.onmessage = async ({ data }: MessageEvent<{ kind: 'start'; term: string } |
       send({ kind: 'ready', fps: model.fps });
       return;
     }
-    if (!hand || !body || !model || !classifier) throw new Error('The vocabulary camera is not ready.');
+    if (!hand || !body || !model) throw new Error('The number camera is not ready.');
     const poses = body.detect(data.image).landmarks;
     const result = hand.detect(data.image);
     const both: Point[][] = [[], []];
     result.landmarks.forEach((points, index) => {
       both[result.handedness[index]?.[0]?.categoryName === 'Left' ? 0 : 1] = points;
     });
-    const landmarks = capture(poses[0] ?? [], both, data.image.width / data.image.height);
-    if (!numbers && model.layout === 'xy') {
-      for (const [start, end] of [[2, 21], [24, 85], [88, 149]]) {
-        for (let i = start; i < end; i += 3) landmarks[i] = 0;
-      }
-    }
-    sequence.push(landmarks);
+    sequence.push(capture(poses[0] ?? [], both, data.image.width / data.image.height));
     if (sequence.length < model.frames) send({ kind: 'progress', elapsed: Math.ceil(sequence.length / model.fps) });
     else {
-      const hands = handsFound >= classifier.minHands;
-      send({ kind: 'word', hands, id: hands ? classifyHand(classifier, numbers ? numberFeatures(sequence) : sequence.flat()) : undefined });
+      const hands = handsFound >= model.minHands;
+      send({ kind: 'number', hands, id: hands ? classifyHand(model, numberFeatures(sequence)) : undefined });
       sequence.length = 0;
       handsFound = 0;
     }
