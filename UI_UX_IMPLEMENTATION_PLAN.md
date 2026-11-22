@@ -7,7 +7,7 @@
 
 ## 1. Executive Summary & Design System
 
-This plan outlines the implementation of a modern, playful, child-friendly educational interface for **A-B Sign!**, inspired by contemporary gamified learning platforms (such as Duolingo and Khan Academy Kids).
+This plan outlines the implementation of a modern, tactile, child-friendly and SPED-accessible educational interface for **A-B Sign!**, inspired by contemporary gamified learning platforms (such as Duolingo and Khan Academy Kids) and high-polish design engineering standards.
 
 ### Design Foundations & Tokens
 
@@ -25,6 +25,8 @@ This plan outlines the implementation of a modern, playful, child-friendly educa
   --accent-green-hover: #15803d;
   --accent-green-dark: #14532d;
   --accent-green-soft: #dcfce7;
+  --emerald-surface: #ecfdf5;
+  --emerald-border: #a7f3d0;
   
   --accent-blue: #0284c7;
   --accent-blue-soft: #e0f2fe;
@@ -34,6 +36,11 @@ This plan outlines the implementation of a modern, playful, child-friendly educa
   --accent-amber-soft: #fef3c7;
   --accent-rose: #e11d48;
   --accent-rose-soft: #ffe4e6;
+
+  /* Tactile 3D Buttons & Surfaces */
+  --bevel-green: 0 4px 0 #14532d;
+  --bevel-card: 0 4px 0 #cbd5e1;
+  --bevel-amber: 0 4px 0 #b45309;
 
   /* Surfaces & Radii */
   --radius-sm: 12px;
@@ -51,20 +58,24 @@ This plan outlines the implementation of a modern, playful, child-friendly educa
 
 ## 2. Architecture & File Inventory
 
-All changes stay within `src/renderer/`. Existing backend IPC commands (`create`, `select`, `save-progress`, `state`) remain completely unaltered.
+All changes stay strictly within `src/renderer/`. Existing backend IPC commands (`create`, `select`, `save-progress`, `state`) remain completely unaltered.
 
 ```
 src/renderer/
 ├── assets/
-│   └── avatars/                    # SVG / vector & image Buddy illustrations
-├── avatars.tsx                      # Avatar definitions, metadata, palette tokens & icons
-├── learner-profile.ts              # Client-side store & metadata adapter
-├── welcome-page.tsx                 # Screen 1: Welcome & Profile Switcher/Creator
-├── dashboard.tsx                    # Screen 2: Learner Dashboard (central learning space)
-├── camera-setup-page.tsx            # Screen 3: Check Camera – Camera Calibration Page
-├── camera.tsx                       # Live video capture, frame analysis & landmark stream
-├── style.css                        # Modernized design tokens, layout & responsive rules
-└── main.tsx                         # Router integration for welcome, dashboard & camera setup
+│   └── avatars/                      # Animal Buddy illustrations
+├── avatars.tsx                        # Avatar definitions, metadata, palette tokens & icons
+├── learner-profile.ts                # Client-side store & metadata adapter
+├── navigation-sidebar.tsx             # Global Navigation Sidebar (256px sticky rail)
+├── welcome-page.tsx                   # Screen 1: Welcome & Profile Switcher/Creator
+├── dashboard.tsx                      # Screen 2: Learner Dashboard (central learning space)
+├── camera-setup-page.tsx              # Screen 3: Check Camera – Camera Calibration Page
+├── activities-hub.tsx                 # Screen 4: Activities & Games (Free-Play Hub)
+├── progress-view.tsx                  # Screen 5: My Learning Progress (Analytics View)
+├── sign-success-modal.tsx             # Sign Detection Success Modal & Camera Indicators
+├── camera.tsx                         # Live video capture, frame analysis & landmark stream
+├── style.css                          # Modernized design tokens, layout & responsive rules
+└── main.tsx                           # Global shell routing & component integration
 ```
 
 ---
@@ -147,7 +158,7 @@ The first screen presented when opening the application or switching accounts (`
 
 ## 4. Screen 2: Learner Dashboard (`#home`)
 
-The learner's central learning space after login or profile selection.
+The learner's central command space after login or profile selection.
 
 ```
 +-------------------------------------------------------------------------------+
@@ -264,7 +275,7 @@ A dedicated calibration screen designed to verify camera access, room illuminati
   - Clear label: `"Hold Hand Here"`.
   - Supporting instruction at bottom: `"Hold your hand inside the guide box until it turns green."`
 - **Dynamic Interaction & Landmark Detection:**
-  - Integrates with MediaPipe Tasks Vision (or brightness/bounding check via canvas sampler).
+  - Integrates with MediaPipe Tasks Vision / brightness detection.
   - When hand is detected inside bounds:
     - Dashed guide border turns **solid luminous green** (`#22c55e`) with glowing aura (`box-shadow: 0 0 20px rgba(34, 197, 94, 0.4)`).
     - Status changes from *Hand Not Detected* to *Hand Aligned*.
@@ -296,35 +307,306 @@ The bottom status banner provides dynamic visual states:
 | **Adjust Hand Position** | Orange (`#ea580c`)| ↔️ | *"Move your hand a little closer inside the green dashed box."* |
 | **Camera Ready** | Green (`#16a34a`)| 🎉 | *"Awesome! Perfect lighting and position. You are ready to sign!"* |
 
-### 5.5. Navigation and Control Actions
-- **Back to Dashboard:** Secondary action link/button (`href="#home"`) to return without interruption.
-- **Retry Camera:** Appears if permission was denied, device disconnected, or stream failed; re-invokes `navigator.mediaDevices.getUserMedia`.
-- **Continue CTA:**
-  - Large primary button: **`Continue to Practice`** (or **`Start Signing`**).
-  - Becomes active and pulses once the camera conditions are validated.
-  - Navigates to `#camera` (alphabet letter practice) or returns to the active lesson quiz (`#lesson/...`).
-  - Preserves student progress and streak intact.
+---
+
+## 6. Global Navigation Sidebar
+
+A global shared shell component across all top-level learner pages (`Dashboard`, `Learning Path`, `Games & Practice`, `My Progress`, and `Free Camera`).
+
+```
++--------------------------+----------------------------------------------------+
+|  [🤟 A-B-Sign! ]         |                                                    |
+|  FSL Learning            |                                                    |
+|  ----------------------- |                                                    |
+|  🏠  Dashboard           |                                                    |
+|  🗺️  Learning Path       |                                                    |
+|  🎮  Games & Practice    |           MAIN LEARNER WORKSPACE                   |
+|  📊  My Progress         |                                                    |
+|  📹  Free Camera         |                                                    |
+|                          |                                                    |
+|                          |                                                    |
+|  ----------------------- |                                                    |
+|  [Avatar] Zoe            |                                                    |
+|  🔥 5-day streak [⚙️]    |                                                    |
++--------------------------+----------------------------------------------------+
+```
+
+### 6.1. Layout & Placement
+- **Width & Position:** Fixed-width **256px** left vertical rail (`width: 256px; flex-shrink: 0;`).
+- **Height & Stickiness:** Sticky to the full viewport height (`position: sticky; top: 0; min-height: 100vh; overflow-y: auto;`).
+- **Divider:** Clean right border (`border-right: 1px solid #e2e8f0; background: #ffffff;`).
+
+### 6.2. Top Brand Header
+- **Clickable Logo:** Tactile emerald badge with sign language gesture illustration (`🤟`), title **`A-B-Sign!`** (Fredoka Variable, bold 1.35rem), and subtitle **`FSL Learning`** (`#16a34a`, 0.8rem uppercase letter-spaced).
+- **Navigation Action:** Clicking returns directly to `#home` (Learner Dashboard).
+
+### 6.3. Primary Navigation Links (5 Global Routes)
+1. **Dashboard** (`#home`): Home icon (`home`), routing to the central dashboard.
+2. **Learning Path** (`#path`): Map/book icon (`map`), routing to structured category units.
+3. **Games & Practice** (`#activities`): Esports/gamepad icon (`sports_esports`), routing to free-play hub.
+4. **My Progress** (`#progress`): Insights/chart icon (`insights`), routing to real-time analytics.
+5. **Free Camera** (`#camera`): Videocam icon (`videocam`), routing to camera signing sandbox.
+
+- **Active State:**
+  - Soft emerald background fill (`#ecfdf5`).
+  - Solid emerald border (`border: 1.5px solid #a7f3d0`).
+  - Primary green typography and icon (`color: #15803d; font-weight: 700;`).
+  - Accessible attribute `aria-current="page"`.
+- **Inactive State:**
+  - Neutral text (`color: #475569`), subtle transparent border, hover fill (`background: #f8fafc`).
+
+### 6.4. Bottom Profile Footer
+- **Learner Display:** Compact circular buddy avatar (`BuddyAvatar` size 42px), learner name in bold typography.
+- **Status Indicator:** Shows active streak (`🔥 5-day streak`) or level (`Level 2`).
+- **Settings / Account Switch Button:** Tactile tune/gear button (`⚙️`) allowing quick account switching or preferences.
+
+### 6.5. Responsive Adaptation
+- **Tablet / Small Screens (< 960px):**
+  - Collapses into a top compact bar or bottom navigation bar with icons and badges.
+  - Profile avatar tucks into the top right header dropdown.
 
 ---
 
-## 6. Client-Side Storage & Data Adapter Strategy
+## 7. Screen 4: Activities & Games (Free-Play Hub, `#activities`)
 
-To guarantee **zero backend changes**, we use the strictly typed client adapter: `src/renderer/learner-profile.ts`.
+An open, free-play practice hub accessible anytime without curriculum prerequisites or locked gates.
+
+```
++-------------------------------------------------------------------------------+
+|  [ Free Play Hub ] Play anytime • No unlock required                          |
+|  Activities & Games                             [ ⭐ 280 Points Total Stars ] |
+|  Practice signs with fun mini-games at your own speed!                        |
++-------------------------------------------------------------------------------+
+|  2x2 TACTILE GAME CARDS GRID                                                  |
+|                                                                               |
+|  +-----------------------------------+  +-----------------------------------+  |
+|  | [🎴 Memory Icon]                  |  | [⚡ Rapid Icon]                   |  |
+|  | SIGN & WORD CARDS                 |  | GUESS THE SIGN                    |  |
+|  | Flip-tile matching challenge      |  | Timed recognition challenge       |  |
+|  | Best: 100% Match                  |  | Best: 92% Accuracy                |  |
+|  | [12 Cards] [Beginner] [+30 XP]    |  | [10 Rounds] [Time Attack] [+40 XP]|  |
+|  | [PLAY GAME]  [🔄]  [🏆 Score]     |  | [PLAY GAME]  [🔄]  [🏆 Score]     |  |
+|  +-----------------------------------+  +-----------------------------------+  |
+|                                                                               |
+|  +-----------------------------------+  +-----------------------------------+  |
+|  | [🔤 Sprint Icon]                  |  | [🎯 Quest Icon]                   |  |
+|  | FINGERSPELL SPRINT                |  | VOCABULARY CHALLENGE              |  |
+|  | Letter by letter practice         |  | Daily 5-sign quest                |  |
+|  | Best: 85% Match                   |  | Status: 3 of 5 Done               |  |
+|  | [Alphabet A-Z] [Camera] [+50 XP]  |  | [5 Signs Today] [Streak] [+60 XP] |  |
+|  | [PLAY GAME]  [🔄]  [🏆 Score]     |  | [PLAY GAME]  [🔄]  [🏆 Score]     |  |
+|  +-----------------------------------+  +-----------------------------------+  |
++-------------------------------------------------------------------------------+
+|  ℹ️ Games adapt automatically to your learning speed and recent signs.        |
++-------------------------------------------------------------------------------+
+```
+
+### 7.1. Header Banner
+- **Left Column:**
+  - Pill badge: `Free Play Hub` (Soft mint background, emerald text).
+  - Subtitle pill: `"Play anytime • No unlock required"`.
+  - Title: **`Activities & Games`** (Fredoka Variable, 2.4rem).
+  - Description: *"Practice signs with fun mini-games at your own speed!"*.
+- **Right Column:**
+  - Total Stars Summary Pill: Large gold star icon (`⭐`), points counter (e.g., `280 Points`), and level reward counter.
+
+### 7.2. 2×2 Tactile Game Card Grid
+Each game card uses a tactile 3D bottom bevel (`border-bottom: 4px solid #cbd5e1; border-radius: 20px; background: #ffffff; padding: 22px;`).
+
+1. **Card 1: Sign & Word Cards (Memory Match)**
+   - **Eyebrow:** `MEMORY MATCH`
+   - **Title:** `Sign & Word Cards`
+   - **Description:** *"Look at signs and match them with pictures or words."*
+   - **Best Score Badge:** `100% Match` (Green pill).
+   - **Metadata Pills:** `[12 Cards]` `[Beginner Friendly]` `[+30 XP]`.
+   - **Action Bar:** `PLAY GAME` (Primary green button -> `#activities/cards`), `Restart` icon button, `Score` button.
+
+2. **Card 2: Guess the Sign (Rapid Identification)**
+   - **Eyebrow:** `RAPID IDENTIFICATION`
+   - **Title:** `Guess the Sign`
+   - **Description:** *"Watch video demonstrations and pick the right meaning before time runs out."*
+   - **Best Score Badge:** `92% Accuracy` (Blue pill).
+   - **Metadata Pills:** `[10 Rounds]` `[Time Attack]` `[+40 XP]`.
+   - **Action Bar:** `PLAY GAME` (Primary sky blue button -> `#activities/guess`), `Restart` icon button, `Score` button.
+
+3. **Card 3: Fingerspell Sprint (Letter by Letter)**
+   - **Eyebrow:** `FINGERSPELLING`
+   - **Title:** `Fingerspell Sprint`
+   - **Description:** *"Form alphabet hand shapes letter-by-letter on camera or touchscreen."*
+   - **Best Score Badge:** `85% Match` (Purple pill).
+   - **Metadata Pills:** `[Alphabet A-Z]` `[Camera Active]` `[+50 XP]`.
+   - **Action Bar:** `PLAY GAME` (Primary purple button -> `#activities/spell`), `Restart` icon button, `Score` button.
+
+4. **Card 4: Vocabulary Challenge (Daily Quest)**
+   - **Eyebrow:** `DAILY QUEST`
+   - **Title:** `Vocabulary Challenge`
+   - **Description:** *"Master today's 5 everyday signs to defend your daily learning streak!"*
+   - **Status Badge:** `3 of 5 Done` (Amber pill).
+   - **Metadata Pills:** `[5 Signs Today]` `[Daily Streak]` `[+60 XP]`.
+   - **Action Bar:** `PLAY GAME` (Primary amber button -> `#activities/words`), `Restart` icon button, `Score` button.
+
+### 7.3. Footer Notice
+- Bottom bar callout: *"Games adapt automatically to your learning speed and recent signs."*
+
+---
+
+## 8. Screen 5: My Learning Progress (Analytics View, `#progress`)
+
+A comprehensive, real-time learner analytics dashboard paired with the global navigation sidebar.
+
+```
++-------------------------------------------------------------------------------+
+|  [ Learner Analytics • Updated in real-time ]                                 |
+|  My Learning Progress                            [ 68% Done ]  [ 24 Mastered ]|
+|  Track your mastered signs, unit milestones, and test history.                |
++---------------------------------------------+---------------------------------+
+|  LEFT COLUMN (7/12) — Level & Categories    |  RIGHT COLUMN (5/12) — Mastery  |
+|                                             |                                 |
+|  +---------------------------------------+  |  +----------------------------+ |
+|  | Level 1: Beginner Progress            |  |  | MASTERED TOPICS (24 Total) | |
+|  | 12 of 16 Lessons • [==== 75% ====]    |  |  | Verified 90%+ camera score | |
+|  | 🔒 Level 2: Intermediate (Unlocks at  |  |  | [✓ Letter A] [✓ Letter B]  | |
+|  |   100% Beginner)                      |  |  | [✓ Numbers 1-10]           | |
+|  | 🔒 Level 3: Advanced (Conversational) |  |  | [✓ Nanay (Mother)]         | |
+|  +---------------------------------------+  |  +----------------------------+ |
+|                                             |                                 |
+|  +---------------------------------------+  |  +----------------------------+ |
+|  | CATEGORY PROGRESS                     |  |  | ATTEMPT HISTORY (Last 3)   | |
+|  | • The Alphabet (4/6 Done, 66%)        |  |  | 1. Letters A-C Quiz        | |
+|  |   [ View Details ]                    |  |  |    100% • Today 2:30 PM    | |
+|  | • Numbers 1 - 20 (5/5 Done, 100%)     |  |  | 2. Camera Practice - B     | |
+|  |   [ View Details ]                    |  |  |    90% • Yesterday         | |
+|  | • Family Members (4/4 Done, Mastered) |  |  | 3. Everyday Words          | |
+|  |   [ 🏆 View Trophy ]                  |  |  |    80% • 3 days ago        | |
+|  +---------------------------------------+  |  +----------------------------+ |
++---------------------------------------------+---------------------------------+
+```
+
+### 8.1. Header Banner
+- **Left Side:**
+  - Badge: `Learner Analytics` with pulsating green dot (`"Updated in real-time"`).
+  - Title: **`My Learning Progress`** (Fredoka Variable, 2.4rem).
+  - Subtitle: *"Track your mastered signs, unit milestones, and test history."*
+- **Right Side:**
+  - Quick-Stat Card 1: **Overall Done** (`68%` completion meter).
+  - Quick-Stat Card 2: **Signs Mastered** (`24 Signs` in emerald badge).
+
+### 8.2. Two-Column Content Layout (7 / 5 Desktop Split)
+
+#### Left Column (7/12) — Level & Category Progress
+1. **Level 1: Beginner Progress Card:**
+   - Lesson ratio indicator pill (`12 of 16 Lessons Finished`).
+   - Full-width smooth progress bar (`75% Completed`).
+   - Preview of future levels:
+     - *Level 2: Intermediate* (Locked tile, *"Unlocks when Beginner reaches 100%"*).
+     - *Level 3: Advanced* (Locked tile, *"Conversational FSL"*).
+2. **Category Progress Breakdown Card:**
+   - Interactive rows for each category unit:
+     - **The Alphabet:** `4 of 6 Lessons Completed (66%)` -> `View Details` button (`#category/alphabet`).
+     - **Numbers 1 - 20:** `5 of 5 Lessons Completed (100%)` -> `View Details` button (`#category/numbers`).
+     - **Family Members:** `4 of 4 Lessons Completed (Mastered)` -> `View Trophy` button (`#progress/trophy` celebration).
+
+#### Right Column (5/12) — Mastery & History
+1. **Mastered Topics Card:**
+   - Header with total count: `24 Total Mastered Signs`.
+   - Quality note: *"Signs verified with 90%+ camera gesture accuracy"*.
+   - Wrapping pill tags with green checkmarks:
+     - `✓ Letter A`, `✓ Letter B`, `✓ Letter C`, `✓ Numbers 1-10`, `✓ Nanay (Mother)`, `✓ Tatay (Father)`, `✓ Salamat`.
+2. **Attempt History Card:**
+   - Chronological list of the last 3 quiz/camera sessions.
+   - Each item includes:
+     - Percentage score pill badge (e.g. `100%`, `90%`, `80%`).
+     - Activity title (e.g. *"Letters A-C Quiz"*).
+     - Timestamp and correct ratio summary (e.g. *"3 of 3 correct • Today 2:30 PM"*).
+     - Action button: `Review` or `Replay`.
+
+---
+
+## 9. Sign Detection Success Modal & Camera Indicators
+
+Enhancement to the 2-column camera practice layout (**Teacher Demonstration** on left, **Your Camera Preview** on right) that provides immediate on-feed feedback followed by a celebratory modal when the target sign is recognized.
+
+```
++-------------------------------------------------------------------------------+
+|  TEACHER DEMONSTRATION (Left)               |  CAMERA PREVIEW (Right - Active)|
+|  [ Video / Picture Demonstration ]          |  [● Sign Matched! ✓] [⭐ 100%]   |
+|                                             |  +---------------------------+  |
+|                                             |  |      [ RIGHT SIGN! ]      |  |
+|                                             |  |     (Solid Green Frame)   |  |
+|                                             |  +---------------------------+  |
+|                                             |  [ DETECTED: Nanay (Mother) ]  |
++---------------------------------------------+---------------------------------+
+|                                                                               |
+|                     [ SUCCESS MODAL OVERLAY (55% Scrim) ]                     |
+|                   +---------------------------------------+                   |
+|                   |                         [ Dismiss X ] |                   |
+|                   |              ( 🌟 )                   |                   |
+|                   |           GREAT SIGN!                 |                   |
+|                   |  You signed Nanay (Mother) correctly! |                   |
+|                   |                                       |                   |
+|                   |  +-----------------+ +-------------+  |                   |
+|                   |  |  ✓ 100% Match   | |  ⭐ +20 XP  |  |                   |
+|                   |  +-----------------+ +-------------+  |                   |
+|                   |                                       |                   |
+|                   |  [ ===== NEXT SIGN (->) ===== ]       |                   |
+|                   |  [  🔄 Practice Again        ]       |                   |
+|                   +---------------------------------------+                   |
+|                                                                               |
++-------------------------------------------------------------------------------+
+```
+
+### 9.1. On-Camera Success Indicators (Live Feed Layer)
+- **Card & Frame Highlight:**
+  - When recognition confidence crosses the threshold, the viewport border transitions from neutral to bright success green (`#22c55e`).
+  - Outer focus ring: `box-shadow: 0 0 0 4px rgba(34, 197, 94, 0.35)`.
+- **Top Status Pill:**
+  - Transitions from `Recognizing...` (neutral pulse) to solid green `Sign Matched!` badge with a checkmark icon.
+- **Alignment Box:**
+  - Hand guide bounding box turns solid green with an attached top pill: `Right Sign!`.
+- **Match Score Pill (Top-Right):**
+  - Displays `100% Match!` with a gold verified check badge.
+- **Detection Confirmation Banner (Bottom-Center):**
+  - Solid emerald banner docked inside the camera feed: `Detected: Nanay (Mother)`.
+
+### 9.2. Success Modal Overlay
+- **Backdrop Scrim:** Centered dialog positioned over a 55% dimmed backdrop (`background: rgba(15, 23, 42, 0.55); backdrop-filter: blur(4px);`).
+- **Container Styling:** Tactile 3D bottom-bevel card (`background: #ffffff; border: 2.5px solid #16a34a; border-radius: 28px; box-shadow: 0 20px 40px rgba(0,0,0,0.2), 0 8px 0 #14532d; padding: 32px; max-width: 460px;`).
+- **Entrance Animation:** Spring-pop scale and fade transition (`transform: scale(0.9) -> scale(1)` with cubic bezier).
+- **Dismiss Button:** Top-right `✕` icon button to close or dismiss without interrupting.
+- **Celebratory Emblem:**
+  - Bouncing circular badge (`#22c55e`) with filled check icon (`check_circle`) and an attached gold star badge (`⭐`) at the top-right corner.
+- **SPED-Friendly Copy:**
+  - Primary headline: **`Great Sign!`** (Fredoka Variable, 2.2rem, bold).
+  - Affirmation line: *"You signed [Sign Name] correctly."*
+- **Summary Strip (2-Column Grid):**
+  1. **Match Score Card:** Green tint background (`#dcfce7`), verified check icon, `100% Match`.
+  2. **Stars / XP Card:** Amber tint background (`#fef3c7`), gold star icon, `+20 Stars`.
+- **Action Buttons:**
+  1. **Primary Tactile Button:** **`NEXT SIGN`** with `arrow_forward` icon (large emerald button with `#14532d` 3D bevel). Advances to the next sign or lesson step.
+  2. **Secondary Tactile Button:** **`PRACTICE AGAIN`** with `replay` icon. Dismisses the modal and resets the camera back to active recognition.
+
+---
+
+## 10. Client-Side Storage & Data Adapter Strategy
+
+To guarantee **zero backend changes**, we utilize `src/renderer/learner-profile.ts` to derive real-time metrics and manage client preferences locally.
 
 ```mermaid
 flowchart TD
     BackendIPC[Backend IPC: localAccounts] <--> AppState[App Component State]
     AppState --> StoreData[Progress: attempts, completed, badges]
     StoreData --> ProfileAdapter[Learner Profile Adapter]
-    LocalStorage[(Local Storage: avatars, daily goals)] <--> ProfileAdapter
-    ProfileAdapter --> WelcomeUI[Welcome & Profile Setup Screen]
+    LocalStorage[(Local Storage: avatars, game scores, daily goals)] <--> ProfileAdapter
+    ProfileAdapter --> SidebarUI[Global Navigation Sidebar]
     ProfileAdapter --> DashboardUI[Learner Dashboard]
-    ProfileAdapter --> CameraSetupUI[Camera Calibration Page]
+    ProfileAdapter --> ActivitiesUI[Activities & Games Hub]
+    ProfileAdapter --> ProgressUI[My Progress Analytics]
+    ProfileAdapter --> CameraUI[Camera Practice & Success Modal]
 ```
 
 ---
 
-## 7. Implementation Phases & Milestones
+## 11. Implementation Phases & Milestones
 
 ### Phase 1: Buddy Avatar Assets & Token Setup
 - [x] Create 6 friendly vector buddy illustrations (`sprout`, `hoot`, `leo`, `sparky`, `barnaby`, `pip`) in `src/renderer/avatars.tsx`.
@@ -352,33 +634,63 @@ flowchart TD
 - [x] Implement `Learning Path`, `Recommended Review`, `Daily Goal`, `Progress Overview`, and `Recent Badges`.
 
 ### Phase 5: Screen 3 – Camera Calibration Page (`#camera-setup`)
-- [ ] Create `src/renderer/camera-setup-page.tsx`.
-- [ ] Implement Page Header with privacy badge (`"Your camera stays on your device"`).
-- [ ] Implement Camera Preview Panel with live feed, connection status, lighting analyzer, and central hand guide box.
-- [ ] Implement hand detection visual state feedback (box glows green when hand is aligned).
-- [ ] Implement `3 Easy Tips for Best Results` side panel with custom illustrations.
-- [ ] Implement dynamic readiness feedback banner and navigation actions (`Back to Dashboard`, `Retry Camera`, `Continue to Practice`).
-- [ ] Connect `#camera-setup` route in `src/renderer/main.tsx`.
+- [x] Create `src/renderer/camera-setup-page.tsx`.
+- [x] Implement Page Header with privacy badge (`"Your camera stays on your device"`).
+- [x] Implement Camera Preview Panel with live feed, connection status, lighting analyzer, and central hand guide box.
+- [x] Implement hand detection visual state feedback (box glows green when hand is aligned).
+- [x] Implement `3 Easy Tips for Best Results` side panel with custom illustrations.
+- [x] Implement dynamic readiness feedback banner and navigation actions (`Back to Dashboard`, `Retry Camera`, `Continue to Practice`).
+- [x] Connect `#camera-setup` route in `src/renderer/main.tsx`.
 
-### Phase 6: Styling, Accessibility & Verification
-- [ ] Add Camera Calibration styles to `src/renderer/style.css`.
-- [ ] Full keyboard navigation (`Tab`, `Enter`, `Space`) and screen-reader aria live regions.
-- [ ] Responsive testing across 1280x900 desktop and smaller 768px viewports.
-- [ ] Run `npm run check` and `npm run build` to verify type safety and asset compilation.
+### Phase 6: Global Navigation Sidebar
+- [x] Create `src/renderer/navigation-sidebar.tsx` with fixed 256px rail layout.
+- [x] Implement brand header with logo, title, and subtitle linking to `#home`.
+- [x] Implement 5 global navigation routes (`Dashboard`, `Learning Path`, `Games & Practice`, `My Progress`, `Free Camera`) with active emerald styling and `aria-current="page"`.
+- [x] Implement bottom profile footer with learner avatar, name, streak/level, and settings button.
+- [x] Integrate into `src/renderer/main.tsx` as the global shell.
+
+### Phase 7: Screen 4 – Activities & Games Hub (`#activities`)
+- [x] Create `src/renderer/activities-hub.tsx`.
+- [x] Implement Header Banner with Free Play Hub pill, title, subtitle, and Total Stars summary pill.
+- [x] Implement 2x2 Tactile Game Card Grid:
+  - *Sign & Word Cards* (Memory Match)
+  - *Guess the Sign* (Rapid Identification)
+  - *Fingerspell Sprint* (Letter by Letter)
+  - *Vocabulary Challenge* (Daily Quest)
+- [x] Implement 3-button action bars (Play Game, Restart, Score) and link to respective game flows.
+- [x] Implement bottom adaptation notice footer.
+
+### Phase 8: Screen 5 – My Progress Analytics (`#progress`)
+- [x] Create `src/renderer/progress-view.tsx`.
+- [x] Implement Header Banner with Real-time Analytics badge and quick stats (Overall Done %, Signs Mastered).
+- [x] Implement Left Column: Level 1 Beginner card with future level previews + Category Progress breakdown rows with action buttons.
+- [x] Implement Right Column: Mastered Topics list with checkmark pill tags + Attempt History session cards with review buttons.
+
+### Phase 9: Sign Detection Success Modal & Camera Indicators
+- [x] Create `src/renderer/sign-success-modal.tsx`.
+- [x] Implement live feed on-camera indicators: green frame highlight, `Sign Matched!` pill, alignment box feedback, `100% Match!` score pill, and detection bottom banner.
+- [x] Implement celebratory modal overlay: 55% dark scrim, tactile 3D card, bouncing check emblem, SPED headline, 2-column score/stars strip, and `NEXT SIGN` / `PRACTICE AGAIN` action buttons.
+- [x] Integrate with `src/renderer/camera.tsx` detection events.
+
+### Phase 10: Styling, Responsive Polish & Verification
+- [x] Add sidebar, activities, progress analytics, and success modal CSS in `src/renderer/style.css`.
+- [x] Ensure fluid responsive adaptation across 1280x900 desktop, 768-1024px tablets, and smaller viewports.
+- [x] Keyboard accessibility (`Tab`, `Enter`, `Escape`) and aria attributes throughout all components.
+- [x] Verify `npm run check` and `npm run build` with 0 errors.
 
 ---
 
-## 8. Verification & Acceptance Criteria
+## 12. Verification & Acceptance Criteria
 
 | Area | Acceptance Criteria |
 | :--- | :--- |
 | **Backend Integrity** | No edits made to `src/main/` or IPC contracts. Existing databases and accounts load without errors. |
+| **Global Sidebar** | 256px sticky rail on left; brand links to `#home`; all 5 routes highlight correctly; profile footer shows active avatar & streak. |
 | **Welcome Page** | Shows saved profiles with avatars, names, levels, streaks, and points. Name entry and 6-buddy grid create profiles. |
 | **Learner Dashboard** | Displays active buddy avatar, greeting, dark green continue card, learning path, daily goal, and badges. |
-| **Camera Privacy Badge** | Prominently displays privacy reassurance badge explaining video never leaves the device. |
-| **Live Camera Feed** | Prompts for permission, connects to device camera, handles camera disconnect/denial gracefully. |
-| **Hand Guide & Lighting** | Dashed hand silhouette guide in viewport center; turns solid green with glowing effect when hand is detected; monitors illumination. |
-| **3 Easy Tips** | Clean 3-card stack on the right explaining lighting, hand position, and green ready state. |
-| **Readiness States** | Accurately distinguishes *Camera Not Connected*, *Poor Lighting*, *Hand Not Detected*, *Adjust Position*, and *Camera Ready*. |
-| **Navigation Actions** | `Back to Dashboard` returns safely; `Retry Camera` re-requests feed; `Continue` proceeds to practice when ready. |
+| **Camera Calibration** | Privacy badge present; live feed, lighting quality, and hand guide box transition to green when aligned; 3 tips displayed. |
+| **Activities & Games** | 2x2 grid with 3D tactile bevels; all 4 cards show XP, pills, and 3-button action bars; launches respective mini-games. |
+| **My Progress** | Real-time analytics banner; Level 1 progress with locked Level 2/3 previews; category rows; mastered pills; attempt history. |
+| **Sign Success Modal** | Live feed frame turns green with `Sign Matched!` and score pills; celebratory pop modal displays SPED headline, XP strip, and `NEXT SIGN` CTA. |
+| **Responsive Layout** | Fluid layout across 1280x900 desktop, tablet collapses gracefully, and mobile maintains full touch usability. |
 | **Build & Type Check** | `npm run check` passes with 0 TypeScript errors; `npm run build` packages without errors. |

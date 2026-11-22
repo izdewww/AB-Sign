@@ -85,7 +85,18 @@ export function LessonQuiz({ lesson, plan, sound, finish }: {
       </header>
       {useCamera ? (
         confirmed ? <div className="study-stage paper"><LessonMedia letter={sign} name={media?.term} image={image} file={media?.video} bundledVideo={demo} /></div> :
-          <Camera key={index} target={target} term={term} image={image} match={() => mark(true)} fallback={<button className="button secondary" onClick={() => setPicture(true)}>{alphabet ? 'Use pictures' : 'Use matching'}</button>} />
+          <Camera
+            key={index}
+            target={target}
+            term={term}
+            image={image}
+            match={() => mark(true)}
+            quizContext={{
+              onUsePictures: () => setPicture(true),
+              usePicturesLabel: alphabet ? 'Use pictures' : 'Use matching',
+            }}
+            fallback={<button className="button secondary btn-3d" onClick={() => setPicture(true)}>{alphabet ? 'Use pictures' : 'Use matching'}</button>}
+          />
       ) : (
         <div className="practice-grid match-grid">
           <div className="practice-photo sign-stage" key={index}>{image || sign ? <SignPhoto letter={sign} image={image} prompt /> : <LessonMedia file={media?.video} bundledVideo={demo} prompt />}</div>
@@ -96,9 +107,9 @@ export function LessonQuiz({ lesson, plan, sound, finish }: {
         </div>
       )}
       <LessonFooter state={confirmed} message={feedback} action={
-        confirmed ? <button ref={nextButton} className="button primary" onClick={next}>{index + 1 === questions.length ? 'See my result' : 'Next question'} <Icon name="arrow" /></button>
-          : useCamera ? <button className="button secondary" onClick={() => mark(false)}>Skip question</button>
-          : <button ref={nextButton} className="button primary" disabled={!choice} onClick={() => mark(choice === question.letter)}>Check answer <Icon name="check" /></button>
+        confirmed ? <button ref={nextButton} className="button primary btn-3d" onClick={next}>{index + 1 === questions.length ? 'See my result' : 'Next question'} <Icon name="arrow" /></button>
+          : useCamera ? <button className="button secondary btn-3d" onClick={() => mark(false)}>Skip question</button>
+          : <button ref={nextButton} className="button primary btn-3d" disabled={!choice} onClick={() => mark(choice === question.letter)}>Check answer <Icon name="check" /></button>
       } />
     </section>
   );

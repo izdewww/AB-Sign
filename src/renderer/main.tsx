@@ -9,6 +9,10 @@ import { BuddyAvatar } from './avatars';
 import { getLearnerAvatar } from './learner-profile';
 import { WelcomePage } from './welcome-page';
 import { LearnerDashboard } from './dashboard';
+import { NavigationSidebar } from './navigation-sidebar';
+import { ActivitiesHub } from './activities-hub';
+import { ProgressView } from './progress-view';
+import { CameraSetupPage } from './camera-setup-page';
 import { Icon } from './icons';
 import { Builder } from './builder';
 import { Camera } from './camera';
@@ -199,20 +203,27 @@ function Classroom({ account, act }: { account: AccountState; act: AccountAction
   const days = streak(store.data.attempts);
 
   return (
-    <div className={`app-shell ${railLayout ? 'shell-sidebar' : 'shell-top'}${firstRun ? ' shell-setup' : ''}`}>
+    <div className={`app-shell ${student ? 'shell-with-sidebar' : railLayout ? 'shell-sidebar' : 'shell-top'}${firstRun ? ' shell-setup' : ''}`}>
       <button className="skip" onClick={() => content.current?.focus()}>Skip to content</button>
-      <header className="rail">
-        <a className="brand" href={teacher ? '#teachers' : '#home'}><img src={logo} alt="" width="54" height="54" /><span>A-B Sign!</span></a>
-        {!firstRun && !teacher?.setup && <nav aria-label="Main navigation">
-          {navPages.map(({ key, label, icon }) => <a key={key} href={`#${key}`} aria-current={active === key ? 'page' : undefined}><Icon name={icon} /><span>{label}</span></a>)}
-        </nav>}
-        <div className="header-tools">
-          {student && <BuddyAvatar id={getLearnerAvatar(student.student.id)} size={38} />}
-          {student && <a className="streak-mark" href="#progress" aria-label={`${days} day practice streak`}><Icon name="flame" /> <span>{days} {days === 1 ? 'day' : 'days'}</span></a>}
-          {student && <button className="icon-link sound-toggle" aria-label="Answer sounds" aria-pressed={store.data.sound} title={store.data.sound ? 'Sound on' : 'Sound off'} onClick={() => store.update({ sound: !store.data.sound })}><Icon name={store.data.sound ? 'sound' : 'mute'} /></button>}
-          {activeAccount && <button className="button secondary account-switch" onClick={() => void act({ action: 'logout' }, 'welcome')}>{teacher ? 'Sign out' : 'Switch account'}</button>}
-        </div>
-      </header>
+      {student && (
+        <NavigationSidebar
+          student={student.student}
+          activeRoute={page}
+          daysStreak={days}
+          onSwitchAccount={() => void act({ action: 'logout' }, 'welcome')}
+        />
+      )}
+      {!student && (
+        <header className="rail">
+          <a className="brand" href={teacher ? '#teachers' : '#home'}><img src={logo} alt="" width="54" height="54" /><span>A-B Sign!</span></a>
+          {!firstRun && !teacher?.setup && <nav aria-label="Main navigation">
+            {navPages.map(({ key, label, icon }) => <a key={key} href={`#${key}`} aria-current={active === key ? 'page' : undefined}><Icon name={icon} /><span>{label}</span></a>)}
+          </nav>}
+          <div className="header-tools">
+            {activeAccount && <button className="button secondary account-switch" onClick={() => void act({ action: 'logout' }, 'welcome')}>{teacher ? 'Sign out' : 'Switch account'}</button>}
+          </div>
+        </header>
+      )}
       <main className="content" ref={content} id="content" tabIndex={-1}>
         {store.saveFailed && <p className="notice" role="alert">Changes could not be saved on this device.</p>}
         {firstRun && (page === 'teacher-sign-in' ? <AccountEntry key={page} state={account} teacher act={act} /> : <WelcomePage key={page} state={account} act={act} />)}
@@ -221,10 +232,11 @@ function Classroom({ account, act }: { account: AccountState; act: AccountAction
         {page === 'category' && <CategoryView key={id} id={id} library={library} store={store} teacher={Boolean(teacher)} />}
         {page === 'lesson' && <LessonView key={routeKey} id={id} action={action} position={position} store={store} library={library} />}
         {page === 'result' && <Results id={id} completion={action} store={store} library={library} />}
-        {['activities', 'match'].includes(page) && <PracticeHub library={library} mode={page === 'match' ? 'guess' : id} />}
+        {['activities', 'match'].includes(page) && student && <ActivitiesHub library={library} store={store} student={student.student} mode={page === 'match' ? 'guess' : id} />}
+        {['activities', 'match'].includes(page) && !student && <PracticeHub library={library} mode={page === 'match' ? 'guess' : id} />}
         {page === 'camera' && <CameraPractice id={id} store={store} />}
-        {page === 'camera-setup' && <CameraSetup />}
-        {page === 'progress' && student && <Progress data={store.data} reset={store.reset} library={library} />}
+        {page === 'camera-setup' && <CameraSetupPage onContinue={() => { window.location.hash = '#camera'; }} />}
+        {page === 'progress' && student && <ProgressView data={store.data} library={library} reset={store.reset} />}
         {page === 'teacher-account' && teacher && <TeacherAccount setup={teacher.setup} act={act} />}
         {page === 'teachers' && teacher && <section><header className="page-heading"><h1>Classroom</h1><p>Get today’s lesson ready or check student progress.</p></header>
           <div className="dashboard-grid"><section className="game paper"><h2>Lessons</h2><a className="button primary" href="#builder">Open lesson builder</a><a className="text-link" href="#path">View learning path</a></section>

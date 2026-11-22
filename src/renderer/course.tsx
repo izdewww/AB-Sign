@@ -5,6 +5,7 @@ import { Fingerspelling } from './fingerspelling';
 import { Icon } from './icons';
 import { LessonMedia } from './lesson-media';
 import { LessonQuiz } from './lesson-quiz';
+import { LessonDemoStage } from './lesson-stage';
 import { StepProgress } from './learning-ui';
 import { cameraSupports, findLetter, isLabel, moves } from './letters';
 import { categories, categoryFor, quizFor, termCamera, type Lesson, type Step, type TeacherLibrary } from './lessons';
@@ -97,11 +98,11 @@ export function LessonView({ id, action, position, library, store }: LibraryView
   }} />;
 
   if (step) return <section className="learning-screen">
-    <header className="lesson-heading"><a className="icon-link" href={'#lesson/' + lesson.id} aria-label="Back to lesson"><Icon name="back" /></a>
+    <header className="lesson-heading sr-only" style={{ display: 'none' }}><a className="icon-link" href={'#lesson/' + lesson.id} aria-label="Back to lesson"><Icon name="back" /></a>
       <div className="lesson-heading-copy"><p>{lesson.title}</p><StepProgress value={index} total={lesson.steps.length} label="Steps finished" /></div>
       <span className="question-count">{index + 1} of {lesson.steps.length}</span>
     </header>
-    <LessonStep key={step.id} step={step} lesson={lesson} previous={index > 0 ? '#lesson/' + lesson.id + '/demo/' + (index - 1) : undefined}
+    <LessonStep key={step.id} index={index} total={lesson.steps.length} step={step} lesson={lesson} previous={index > 0 ? '#lesson/' + lesson.id + '/demo/' + (index - 1) : undefined}
       action={index + 1 === lesson.steps.length ? quiz?.perSign ? 'Start practice' : 'Finish lesson' : 'Next step'} next={() => {
         if (index + 1 < lesson.steps.length) location.hash = 'lesson/' + lesson.id + '/demo/' + (index + 1);
         else if (quiz?.perSign) location.hash = 'lesson/' + lesson.id + '/quiz/finish';
@@ -141,12 +142,52 @@ export function stepTitle(step: Step, showWord = false) {
   return (step.video ? 'Watch ' : 'Look at ') + step.letter;
 }
 
-export function LessonStep({ step, lesson, next, previous, action = 'Next step' }: { step: Step; lesson?: Lesson; next: () => void; previous?: string; action?: string }) {
+export function LessonStep({ step, lesson, next, previous, action = 'Next step', index = 0, total = 1 }: {
+  step: Step; lesson?: Lesson; next: () => void; previous?: string; action?: string; index?: number; total?: number;
+}) {
   const [practice, setPractice] = useState(step.kind === 'camera');
   if (step.kind === 'spell') return <Fingerspelling key={step.id} word={step.word} lesson={lesson} next={next} previous={previous} action={action} />;
+  
   if (step.kind === 'media') {
     const id = termCamera(step);
     const demo = step.image ? undefined : vocabularyVideo(step.example);
+    const canPractice = Boolean(id);
+
+    if (practice && id && lesson) {
+      return (
+        <Camera
+          term={{ id, name: step.term, demo, video: step.video }}
+          image={step.image}
+          match={() => setPractice(false)}
+          lessonContext={{
+            lessonTitle: lesson.title,
+            stepIndex: index,
+            totalSteps: total,
+            onBackToDemo: () => setPractice(false),
+            onNext: next,
+            previousUrl: previous,
+            actionText: action,
+          }}
+          fallback={<button className="button secondary" onClick={() => setPractice(false)}>Back to demonstration</button>}
+        />
+      );
+    }
+
+    if (lesson) {
+      return (
+        <LessonDemoStage
+          step={step}
+          lesson={lesson}
+          index={index}
+          total={total}
+          action={action}
+          next={next}
+          canPractice={canPractice}
+          onTryOnCamera={canPractice ? () => setPractice(true) : undefined}
+        />
+      );
+    }
+
     return <div><div className="page-heading"><h1>{stepTitle(step)}</h1><p>Look at the sign and try it yourself.</p></div>
     {practice && id ? <Camera term={{ id, name: step.term, demo, video: step.video }} image={step.image} match={() => setPractice(false)}
       fallback={<button className="button secondary" onClick={() => setPractice(false)}>Back to demonstration</button>} /> :
@@ -155,11 +196,48 @@ export function LessonStep({ step, lesson, next, previous, action = 'Next step' 
       {id && !practice && <button className="button secondary" onClick={() => setPractice(true)}>Try on camera</button>}
       <button className="button primary" onClick={next}>{action} <Icon name="arrow" /></button></div></div>;
   }
+
   const sign = 'letter' in step && isLabel(step.letter) ? findLetter(step.letter) : undefined;
-  const camera = sign && cameraSupports(sign.label) && practice;
+  const canCamera = Boolean(sign && cameraSupports(sign.label));
+
+  if (sign && practice && canCamera && lesson) {
+    return (
+      <Camera
+        target={sign.label}
+        image={step.image}
+        match={() => setPractice(false)}
+        lessonContext={{
+          lessonTitle: lesson.title,
+          stepIndex: index,
+          totalSteps: total,
+          onBackToDemo: () => setPractice(false),
+          onNext: next,
+          previousUrl: previous,
+          actionText: action,
+        }}
+        fallback={<button className="button secondary" onClick={() => setPractice(false)}>Back to demonstration</button>}
+      />
+    );
+  }
+
+  if (sign && lesson) {
+    return (
+      <LessonDemoStage
+        step={step}
+        lesson={lesson}
+        index={index}
+        total={total}
+        action={action}
+        next={next}
+        canPractice={canCamera}
+        onTryOnCamera={canCamera ? () => setPractice(true) : undefined}
+      />
+    );
+  }
+
   return <div>
     <div className="page-heading"><h1>{stepTitle(step)}</h1></div>
-    {sign && (camera ?
+    {sign && (practice && canCamera ?
       <Camera target={sign.label} image={step.image} match={() => setPractice(false)} fallback={<button className="button secondary" onClick={() => setPractice(false)}>Back to demonstration</button>} /> :
       <div className={'study-stage paper ' + sign.tone}>
         <LessonMedia letter={sign} image={step.image} file={step.video} />
@@ -167,7 +245,7 @@ export function LessonStep({ step, lesson, next, previous, action = 'Next step' 
       </div>)}
     <div className="actions section-actions">
       {previous && <a className="button secondary" href={previous}>Previous step</a>}
-      {sign && !camera && cameraSupports(sign.label) && <button className="button secondary" onClick={() => setPractice(true)}>Try on camera</button>}
+      {sign && !practice && canCamera && <button className="button secondary" onClick={() => setPractice(true)}>Try on camera</button>}
       <button className="button primary" onClick={next}>{action} <Icon name="arrow" /></button>
     </div>
   </div>;
