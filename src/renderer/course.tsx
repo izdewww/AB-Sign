@@ -8,7 +8,7 @@ import { LessonQuiz } from './lesson-quiz';
 import { LessonDemoStage } from './lesson-stage';
 import { StepProgress } from './learning-ui';
 import { cameraSupports, findLetter, isLabel, moves } from './letters';
-import { categories, categoryFor, quizFor, termCamera, type Lesson, type Step, type TeacherLibrary } from './lessons';
+import { categories, categoryFor, getSingleCoverWord, quizFor, termCamera, type Lesson, type Step, type TeacherLibrary } from './lessons';
 import { vocabularyVideo } from './vocabulary';
 
 type LibraryView = { library: TeacherLibrary; store: ClassroomStore };
@@ -20,7 +20,7 @@ export function LearningPath({ library, store }: LibraryView) {
     <div className="library-grid category-grid">{categories.map((category) => {
       const lessons = library.visible.filter((lesson) => categoryFor(lesson.category).id === category.id);
       const finished = lessons.filter((lesson) => store.data.completed.includes(lesson.id)).length;
-      return <a key={category.id} data-category={category.id} className="library-card paper" href={'#category/' + category.id}>
+      return <a key={category.id} data-category={category.id} className="library-card paper" href={'#category/' + category.id + '/path'}>
         <div className={'category-cover ' + category.tone}><span aria-hidden="true">{category.mark}</span>
           {store.data.badges.includes(category.id) && <Icon name="trophy" />}</div>
         <div className="category-card-copy"><h2>{category.title}</h2><p>{category.detail}</p>
@@ -32,30 +32,53 @@ export function LearningPath({ library, store }: LibraryView) {
   </section>;
 }
 
-export function CategoryView({ id, library, store, teacher }: LibraryView & { id?: string; teacher: boolean }) {
+export function CategoryView({ id, action, library, store, teacher }: LibraryView & { id?: string; action?: string; teacher: boolean }) {
   const category = categories.find((entry) => entry.id === id);
-  if (!category) return <div className="paper empty"><h1>Category unavailable</h1><a className="button secondary" href="#path">See categories</a></div>;
+  if (!category) return <div className="paper empty"><h1>Category unavailable</h1><a className="button secondary" href={action === 'path' ? '#path' : '#lessons'}>See {action === 'path' ? 'categories' : 'lessons'}</a></div>;
   const lessons = library.visible.filter((lesson) => categoryFor(lesson.category).id === category.id);
   const finished = lessons.filter((lesson) => store.data.completed.includes(lesson.id)).length;
+  const isFromPath = action === 'path';
+  const backHref = isFromPath ? '#path' : '#lessons';
+  const backLabel = isFromPath ? 'Learning path' : 'Lessons';
   return <section>
-    <a className="button secondary btn-3d back-nav-btn" href="#path"><Icon name="back" /> <span>Learning path</span></a>
+    <a className="button secondary btn-3d back-nav-btn" href={backHref}><Icon name="back" /> <span>{backLabel}</span></a>
     <header className={'category-heading path-card ' + category.tone}><div><h1>{category.title}</h1><p>{category.detail}</p>
       {lessons.length > 0 && <p>{finished} of {lessons.length} lessons finished</p>}</div>
       <span className="category-mark" aria-hidden="true">{category.mark}</span></header>
     <h2 className="section-actions">Lessons</h2>
     {library.status !== 'ready' ? <p role="status">{library.status === 'loading' ? 'Opening lessons…' : 'Could not open lessons. Restart the app to try again.'}</p> :
       lessons.length ? <div className="library-grid section-actions">{lessons.map((lesson, index) => {
-        const cover = [...new Set(lesson.steps.flatMap((step) => {
-          if ('letter' in step && isLabel(step.letter)) return [step.letter];
-          return category.id === 'numbers' && step.kind === 'media' && /^\d+$/.test(step.term) ? [step.term] : [];
-        }))].slice(0, 3);
+        const isAlphabet = category.id === 'alphabet';
+        const isNumbers = category.id === 'numbers';
+
+        let coverWord: string | undefined;
+        let coverGlyphs: string[] = [];
+
+        if (isAlphabet) {
+          coverGlyphs = [
+            ...new Set(lesson.steps.flatMap((step) => ('letter' in step && isLabel(step.letter) ? [step.letter] : [])))
+          ].slice(0, 3);
+        } else if (isNumbers) {
+          coverGlyphs = [
+            ...new Set(
+              lesson.steps.flatMap((step) =>
+                step.kind === 'media' && /^\d+$/.test(step.term) ? [step.term] : []
+              )
+            )
+          ].slice(0, 3);
+        } else {
+          coverWord = getSingleCoverWord(lesson);
+        }
+
         return <a key={lesson.id} className="library-card paper" href={'#lesson/' + lesson.id}>
-          <div className={'library-cover ' + ['mint', 'sky', 'peach', 'yellow'][index % 4]}>{cover.length > 0
-            ? cover.map((letter) => <span key={letter}>{letter}</span>) : <span><Icon name="book" /></span>}</div>
+          <div className={'library-cover ' + ['mint', 'sky', 'peach', 'yellow'][index % 4]}>{coverWord ? (
+            <span className="cover-single-word">{coverWord}</span>
+          ) : coverGlyphs.length > 0
+            ? coverGlyphs.map((letter) => <span key={letter}>{letter}</span>) : <span><Icon name="book" /></span>}</div>
           <div className="library-card-copy"><div><h2>{lesson.title}</h2><p>{store.data.completed.includes(lesson.id) ? 'Finished' : lesson.steps.length + (lesson.steps.length === 1 ? ' step' : ' steps')}</p></div><Icon name="arrow" /></div>
         </a>;
       })}</div> :
-        <div className="paper empty section-actions"><h2>No lessons here yet</h2>{!teacher && <a className="button secondary" href="#path">Choose a category</a>}</div>}
+        <div className="paper empty section-actions"><h2>No lessons here yet</h2>{!teacher && <a className="button secondary" href="#lessons">Choose a lesson</a>}</div>}
     {teacher && <a className="button primary section-actions" href={'#builder/new/' + category.id}>Create a lesson</a>}
   </section>;
 }

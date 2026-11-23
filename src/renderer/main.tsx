@@ -23,6 +23,7 @@ import { Camera } from './camera';
 import { Challenge } from './challenge';
 import { streak, useClassroom, type ClassroomStore } from './classroom';
 import { CategoryView, DashboardStrip, LearningPath, LessonView, Results } from './course';
+import { LessonsView } from './lessons-view';
 import { StepProgress } from './learning-ui';
 import { cameraSupports, findLetter, labels } from './letters';
 import { categories, quizFor, useTeacherLessons, type TeacherLibrary } from './lessons';
@@ -31,6 +32,7 @@ import './style.css';
 
 const pages = [
   { key: 'home', label: 'Home', icon: 'home' },
+  { key: 'lessons', label: 'Lessons', icon: 'book' },
   { key: 'path', label: 'Learn', icon: 'book' },
   { key: 'activities', label: 'Play', icon: 'match' },
   { key: 'challenge', label: 'Challenge', icon: 'trophy' },
@@ -204,7 +206,7 @@ function Classroom({ account, act }: { account: AccountState; act: AccountAction
     return () => window.removeEventListener('hashchange', navigate);
   }, []);
 
-  const active = ['learn', 'path', 'category', 'lesson', 'sign-check'].includes(page) ? 'path'
+  const active = page === 'lessons' ? 'lessons' : ['learn', 'path', 'category', 'lesson', 'sign-check'].includes(page) ? 'path'
     : ['match', 'camera', 'activities', 'camera-setup'].includes(page) ? 'activities'
       : page === 'student' ? 'students' : page;
   const navPages = teacher ? teacherPages : pages;
@@ -242,8 +244,9 @@ function Classroom({ account, act }: { account: AccountState; act: AccountAction
         {store.saveFailed && <p className="notice" role="alert">Changes could not be saved on this device.</p>}
         {firstRun && (page === 'teacher-sign-in' ? <AccountEntry key={page} state={account} teacher act={act} /> : <WelcomePage key={page} state={account} act={act} />)}
         {['home', 'preferences'].includes(page) && student && <LearnerDashboard store={store} library={library} student={student.student} />}
+        {page === 'lessons' && <LessonsView library={library} store={store} />}
         {['path', 'learn', 'sign-check'].includes(page) && <LearningPath library={library} store={store} />}
-        {page === 'category' && <CategoryView key={id} id={id} library={library} store={store} teacher={Boolean(teacher)} />}
+        {page === 'category' && <CategoryView key={id} id={id} action={action} library={library} store={store} teacher={Boolean(teacher)} />}
         {page === 'lesson' && <LessonView key={routeKey} id={id} action={action} position={position} store={store} library={library} />}
         {page === 'result' && <Results id={id} completion={action} store={store} library={library} />}
         {['activities', 'match'].includes(page) && student && <ActivitiesHub library={library} store={store} student={student.student} mode={page === 'match' ? 'guess' : id} />}
@@ -266,7 +269,7 @@ function Classroom({ account, act }: { account: AccountState; act: AccountAction
         })()}
         {!teacher && ['teachers', 'builder', 'students', 'student', 'teacher-account'].includes(page) &&
           <section className="paper empty"><h1>Teacher area</h1><button className="button primary" onClick={() => void act({ action: 'logout' }, 'teacher-sign-in')}>Teacher sign-in</button></section>}
-        {!['welcome', 'teacher-sign-in', 'preferences', 'sign-check', 'camera-setup', 'home', 'learn', 'path', 'category', 'lesson', 'result', 'activities', 'camera', 'match', 'challenge', 'progress', 'teachers', 'builder', 'students', 'student', 'teacher-account'].includes(page) &&
+        {!['welcome', 'teacher-sign-in', 'preferences', 'sign-check', 'camera-setup', 'home', 'learn', 'path', 'lessons', 'category', 'lesson', 'result', 'activities', 'camera', 'match', 'challenge', 'progress', 'teachers', 'builder', 'students', 'student', 'teacher-account'].includes(page) &&
           <section><h1>Page not found</h1><a className="button primary section-actions" href="#home">Go to Home</a></section>}
       </main>
     </div>

@@ -21,6 +21,7 @@ export function NavigationSidebar({
 
   const navItems = [
     { key: 'home', label: 'Dashboard', icon: 'home', href: '#home' },
+    { key: 'lessons', label: 'Lessons', icon: 'book', href: '#lessons' },
     { key: 'path', label: 'Learning Path', icon: 'map', href: '#path' },
     { key: 'activities', label: 'Games & Practice', icon: 'game', href: '#activities' },
     { key: 'progress', label: 'My Progress', icon: 'chart', href: '#progress' },
@@ -31,9 +32,7 @@ export function NavigationSidebar({
       {/* Top Brand Header */}
       <div className="sidebar-brand-header">
         <a href="#home" className="sidebar-brand-link" title="Return to Dashboard">
-          <div className="brand-badge-emerald">
-            <span className="brand-emoji-sign" aria-hidden="true">🤟</span>
-          </div>
+          <img src={logo} alt="A-B-Sign Logo" className="sidebar-brand-logo" width="44" height="44" />
           <div className="brand-title-group">
             <span className="brand-title">A-B-Sign!</span>
             <span className="brand-subtitle">FSL Learning</span>
@@ -46,8 +45,9 @@ export function NavigationSidebar({
         {navItems.map((item) => {
           const isActive =
             activeRoute === item.key ||
-            (item.key === 'path' && ['learn', 'category', 'lesson'].includes(activeRoute)) ||
-            (item.key === 'activities' && ['match'].includes(activeRoute));
+            (item.key === 'lessons' && ['lessons', 'lesson'].includes(activeRoute)) ||
+            (item.key === 'path' && ['learn', 'category', 'path', 'sign-check'].includes(activeRoute)) ||
+            (item.key === 'activities' && ['match', 'activities', 'camera-setup'].includes(activeRoute));
 
           return (
             <a

@@ -83,6 +83,41 @@ export function signImage(lesson: Lesson, label: Label) {
   for (const step of lesson.steps) if ('letter' in step && step.letter === label && step.image) return step.image;
 }
 
+export function getSingleCoverWord(lesson: Lesson): string {
+  const title = lesson.title.toLowerCase();
+  if (title.includes('goodbye') && !title.includes('hello')) return 'Goodbye';
+  if (title.includes('hello')) return 'Hello';
+  if (title.includes('feel')) return 'Feelings';
+  if (title.includes('polite')) return 'Polite';
+  if (title.includes('talk')) return 'Talk';
+  if (title.includes('asking') || title.includes('reply')) return 'Ask';
+  if (title.includes('parent') || title.includes('family')) return 'Family';
+  if (title.includes('aunt') || title.includes('cousin')) return 'Relatives';
+  if (title.includes('help')) return 'Helpers';
+  if (title.includes('work') || title.includes('occupation')) return 'Work';
+  if (title.includes('school')) return 'School';
+  if (title.includes('community')) return 'Community';
+
+  for (const step of lesson.steps) {
+    if (step.kind === 'media' && step.term) {
+      const clean = step.term.replace(/[!?,.]/g, '').trim();
+      const words = clean.split(/\s+/);
+      if (words.length === 1 && words[0].length >= 2) {
+        return words[0];
+      }
+    }
+  }
+
+  for (const step of lesson.steps) {
+    if (step.kind === 'media' && step.term) {
+      const first = step.term.replace(/[!?,.]/g, '').trim().split(/\s+/)[0];
+      if (first) return first;
+    }
+  }
+
+  return lesson.title.split(/\s+/)[0] || 'Sign';
+}
+
 export function quizFor(lesson: Lesson): QuizPlan<string> | undefined {
   const plan = lesson.quiz;
   const terms: string[] = lessonTerms(lesson);
