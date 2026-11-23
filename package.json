@@ -14,7 +14,8 @@
     "check": "tsc --noEmit -p tsconfig.json && tsc --noEmit -p tsconfig.electron.json",
     "build": "tsc -p tsconfig.electron.json && vite build && node scripts/copy-vision-assets.mjs",
     "smoke": "electron . --smoke-test",
-    "make": "npm run build && electron-forge make --platform=win32 --arch=x64"
+    "make": "npm run build && electron-forge make --platform=win32 --arch=x64",
+    "installer": "npm run build && electron-forge package --platform=win32 --arch=x64 && node scripts/build-installer.mjs"
   },
   "config": {
     "forge": "./forge.config.cjs"

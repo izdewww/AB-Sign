@@ -12,7 +12,18 @@ A Windows desktop app for teaching children Filipino Sign Language (FSL) through
 ![TypeScript](https://img.shields.io/badge/TypeScript-typed-3178c6)
 ![MediaPipe](https://img.shields.io/badge/MediaPipe-vision-00897b)
 
-[Quick start](#quick-start) · [Architecture](docs/ARCHITECTURE.md) · [Model results](#model-results) · [Implementation plan](IMPLEMENTATION_PLAN.md) · [Issues](https://github.com/izdewww/AB-Sign/issues)
+[Download for Windows](#download-for-windows) · [Build from source](#build-from-source) · [Architecture](docs/ARCHITECTURE.md) · [Model results](#model-results) · [Issues](https://github.com/izdewww/AB-Sign/issues)
+
+## Download for Windows
+
+| Package | How to use it |
+| --- | --- |
+| [Windows installer (.exe)](https://github.com/izdewww/AB-Sign/releases/download/v0.1.0/A-B-Sign-Setup-0.1.0-x64.exe) | Open Setup and follow the wizard. It adds a Start menu shortcut and offers an optional desktop shortcut. |
+| [Portable ZIP](https://github.com/izdewww/AB-Sign/releases/download/v0.1.0/A-B-Sign-Portable-0.1.0-x64.zip) | Extract the entire ZIP into a folder and open `ab-sign.exe` from that folder. |
+
+Both packages are for 64-bit Windows. The setup executable is unsigned. [Release notes and checksums](https://github.com/izdewww/AB-Sign/releases/latest)
+
+To remove the installed app, go to **Settings → Apps → Installed apps → A-B Sign! → Uninstall**. Classroom accounts, lesson uploads, and progress stay on the device for a future reinstall.
 
 ## Project status
 
@@ -38,9 +49,9 @@ Teachers can add a picture or video to a draft, then publish it for learners. Ol
 - Open **Students** to view progress, edit a name, or remove an account and its progress. The app asks before removing an account.
 - Progress from older versions was shared and stays separate from the new student accounts.
 
-## Camera challenge
+## Games and camera practice
 
-Open **Challenge** as a student to try 20 random signs. Choose **Letters only** or **Letters + numbers**. The mixed round draws 16 letters and four numbers from 1, 2, 5, 8, 9, and 10. Each round has its own classroom leaderboard. The app saves each student’s latest and best scores on this device.
+Open **Games & Practice** for sign matching, vocabulary practice, or **Sign on Camera**, a five-letter round.
 
 ## For teachers
 
@@ -55,7 +66,7 @@ Bundled lessons show the demonstrations first, then shuffle one question per sig
 
 ![The Numbers category shows two starter lessons covering 1–10.](docs/images/number-lessons.png)
 
-## Quick start
+## Build from source
 
 Use Windows x64 with Node.js 24 and npm. Run these commands from the repository root.
 
@@ -71,6 +82,9 @@ npm start
 | `npm run build` | Compiles the app and copies local model and WASM assets |
 | `npm run smoke` | Checks account permissions and persistence, student progress, lessons, quizzes, and synthetic camera recognition in Electron |
 | `npm run make` | Builds a Windows x64 ZIP under `out/make/` |
+| `npm run installer` | Builds the Inno Setup executable under `out/installer/` |
+
+For `npm run installer`, install [Inno Setup 7](https://jrsoftware.org/inno-setup/downloads). If it is installed in a custom folder, set `INNO_ISCC` to the full path to `ISCC.exe`.
 
 The [Windows workflow](.github/workflows/desktop.yml) runs these checks and attaches the ZIP to successful runs. [GitHub Actions](https://github.com/izdewww/AB-Sign/actions/workflows/desktop.yml)
 
